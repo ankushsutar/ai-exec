@@ -1,22 +1,12 @@
 const axios = require('axios');
 const config = require('../config/env');
 
-const SCHEMA = `
-TABLE: merchants
-  Columns: id (INTEGER), name (VARCHAR), country (VARCHAR), industry (VARCHAR), contact_email (VARCHAR), rating (DECIMAL), established_year (INTEGER)
+let dynamicSchema = '';
 
-TABLE: products
-  Columns: id (INTEGER), name (VARCHAR), category (VARCHAR), price (DECIMAL), stock_quantity (INTEGER)
-
-TABLE: employees
-  Columns: id (INTEGER), name (VARCHAR), department (VARCHAR), salary (DECIMAL), hire_date (DATE)
-
-TABLE: transactions
-  Columns: id (INTEGER), merchant_id (INTEGER), product_id (INTEGER), amount (DECIMAL), tax (DECIMAL), discount (DECIMAL), region (VARCHAR), status (VARCHAR 'COMPLETED'/'FAILED'), payment_method (VARCHAR), currency (VARCHAR), created_at (TIMESTAMP)
-
-TABLE: device_health
-  Columns: id (INTEGER), firmware_version (VARCHAR), status (VARCHAR 'OK'/'FAILED'), battery_level (INTEGER), temperature (DECIMAL), location (VARCHAR), last_maintenance_date (TIMESTAMP), reported_at (TIMESTAMP)
-`;
+function updateSchema(schemaString) {
+    dynamicSchema = schemaString;
+    console.log('[SQL Agent] Schema updated dynamically in memory.');
+}
 
 async function generateSQLFromPrompt(question) {
     console.log('[SQL Agent] Prompting LLM for SQL query conversion...');
@@ -43,7 +33,7 @@ User: "Top merchants this month"
 SQL: SELECT m.name, SUM(t.amount + t.tax - t.discount) AS total_revenue FROM merchants m JOIN transactions t ON m.id = t.merchant_id WHERE t.status = 'COMPLETED' GROUP BY m.name ORDER BY total_revenue DESC LIMIT 10;
 
 DATABASE SCHEMA:
-${SCHEMA}
+${dynamicSchema}
 
 USER QUESTION:
 "${question}"
@@ -74,4 +64,4 @@ USER QUESTION:
     }
 }
 
-module.exports = { generateSQLFromPrompt };
+module.exports = { generateSQLFromPrompt, updateSchema };
