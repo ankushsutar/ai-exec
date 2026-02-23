@@ -124,7 +124,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
                         this.messages[msgIndex].data!.summary = '';
                     }
 
-                    this.apiService.askSummaryStream(dataResponse.rawAnalytics, this.abortController!.signal).subscribe({
+                    this.apiService.askSummaryStream(dataResponse.rawAnalytics, currentQuestion, this.abortController!.signal).subscribe({
                         next: (chunk: string) => {
                             // Append each new word/token to the summary in real-time
                             if (this.messages[msgIndex] && this.messages[msgIndex].data) {

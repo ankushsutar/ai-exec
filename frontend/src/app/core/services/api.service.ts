@@ -25,12 +25,12 @@ export class ApiService {
         return this.http.post<AskDataResponse>(`${this.backendUrl}/ask/data`, { question });
     }
 
-    askSummaryStream(analytics: any, signal?: AbortSignal): Observable<string> {
+    askSummaryStream(analytics: any, question: string, signal?: AbortSignal): Observable<string> {
         return new Observable<string>(observer => {
             fetch(`${this.backendUrl}/ask/summary`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ analytics }),
+                body: JSON.stringify({ analytics, question }),
                 signal: signal
             }).then(async response => {
                 if (!response.body) throw new Error('ReadableStream not supported.');

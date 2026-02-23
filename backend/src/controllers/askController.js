@@ -6,9 +6,10 @@ const { getLLMSummaryStream } = require('../services/ollamaService');
 async function handleAskData(req, res, next) {
     try {
         const { question } = req.body;
+        const requestId = Date.now().toString().slice(-4);
         console.log('\n=======================================');
-        console.log('--- New Dynamic SQL Data Request ---');
-        console.time('TotalDataRequestTime');
+        console.log(`--- New Dynamic SQL Data Request [#${requestId}] ---`);
+        console.time(`TotalRequest_${requestId}`);
         console.log('Received Question:', question);
 
         let sqlQuery, dbData, analytics;
@@ -25,7 +26,7 @@ async function handleAskData(req, res, next) {
                 console.log('\nGenerating SQL for prompt...');
                 let promptVariation = question;
                 if (lastError) {
-                    promptVariation = `${question}\n\nWARNING: Your previous SQL failed with this exact PostgreSQL error: "${lastError}". Fix the tables/columns strictly matching the schema to resolve this!`;
+                    promptVariation = `${question}\n\nCRITICAL WARNING: Your previous SQL failed with this exact PostgreSQL error: "${lastError}". \n\nYou MUST fix this by ONLY using the exact tables and columns provided in the schema. Do NOT invent or guess tables (e.g., if there is no 'salaries' table, look for a 'salary' column in 'employees').`;
                 }
 
                 console.time('SQL_Gen_Time');
@@ -66,7 +67,7 @@ async function handleAskData(req, res, next) {
         console.log('Analytics Result KPI Count:', analytics?.kpis?.length);
 
         console.log('\nSending dynamic data response back to client.');
-        console.timeEnd('TotalDataRequestTime');
+        console.timeEnd(`TotalRequest_${requestId}`);
         console.log('=======================================\n');
 
         return res.json({
@@ -83,7 +84,7 @@ async function handleAskData(req, res, next) {
 
 async function handleAskSummary(req, res, next) {
     try {
-        const { analytics } = req.body;
+        const { analytics, question } = req.body;
         console.log('\n=======================================');
         console.log('--- New Summary Request ---');
         console.time('TotalSummaryRequestTime');
@@ -100,7 +101,7 @@ async function handleAskSummary(req, res, next) {
         res.setHeader('Transfer-Encoding', 'chunked');
 
         // The service will write to res and end it
-        await getLLMSummaryStream(analytics, res);
+        await getLLMSummaryStream(analytics, res, question);
 
         console.log('\nSummary stream started.');
         console.timeEnd('TotalSummaryRequestTime');

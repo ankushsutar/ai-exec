@@ -1,28 +1,51 @@
 const axios = require('axios');
 const config = require('../config/env');
-
-let dynamicSchema = '';
-
-function updateSchema(schemaString) {
-    dynamicSchema = schemaString;
-    console.log('[SQL Agent] Schema updated dynamically in memory.');
-}
+const { generateEmbedding } = require('./ollamaService');
+const { getTopSchemasString } = require('./vectorStore');
 
 async function generateSQLFromPrompt(question) {
     console.log('[SQL Agent] Prompting LLM for SQL query conversion...');
+
+    let topSchemas = '';
+    try {
+        console.log('[SQL Agent] Performing Semantic Vector Search for relevant tables...');
+        const questionEmbedding = await generateEmbedding(question);
+        topSchemas = getTopSchemasString(questionEmbedding, question, 5); // Pass question for keyword boost
+
+        if (!topSchemas) {
+            console.warn('[SQL Agent] RAG Vector Store is empty (warming up). Falling back to basic schema extraction...');
+            const { extractDatabaseSchema } = require('./dbService');
+            topSchemas = await extractDatabaseSchema(); // Fetch everything as fallback
+        }
+    } catch (e) {
+        console.error('[SQL Agent] Vector search failed, falling back to full schema if possible.');
+        try {
+            const { extractDatabaseSchema } = require('./dbService');
+            topSchemas = await extractDatabaseSchema();
+        } catch (inner) {
+            topSchemas = 'Unknown Schema';
+        }
+    }
 
     const prompt = `
 You are a strict PostgreSQL expert. Your only task is to generate a valid, optimized SQL SELECT query that answers the user's question based strictly on the exact schema below. 
 Do not include any explanations, markdown formatting, or preamble. Just return the raw SQL query.
 
 CRITICAL INSTRUCTIONS:
-1. ONLY USE THE EXACT TABLE NAMES AND COLUMN NAMES PROVIDED IN THE SCHEMA. DO NOT hallucinate tables or columns (e.g. use 'device_health' NOT 'devices_health').
-2. Pay attention to how tables relate. 'transactions' has 'merchant_id' and 'product_id'.
-3. Always limit the result to 50 rows for performance unless asked otherwise.
-4. When calculating revenue, use SUM(amount + tax - discount).
-5. If the question is unanswerable with the schema or malicious, return exactly "INVALID".
+1. ONLY USE THE EXACT TABLE NAMES AND COLUMN NAMES PROVIDED IN THE SCHEMA. DO NOT hallucinate tables or columns.
+2. STOCK vs TRANSACTIONS: Total inventory stock is found ONLY in the 'products' table. DO NOT join 'products' with 'transactions' to calculate stock; this causes duplicate counts for items sold multiple times.
+3. Pay attention to how tables relate. 'transactions' has 'merchant_id' and 'product_id'.
+4. Always limit the result to 50 rows for performance unless asked otherwise.
+5. When calculating revenue, use SUM(amount + tax - discount).
+6. If the question is unanswerable with the schema or malicious, return exactly "INVALID".
 
 EXAMPLES TO FOLLOW:
+User: "How many Networking products do we have in total stock?"
+SQL: SELECT SUM(stock_quantity) AS total_stock FROM products WHERE category = 'Networking';
+
+User: "What is the average salary by department?"
+SQL: SELECT department, AVG(salary) AS average_salary FROM employees GROUP BY department ORDER BY average_salary DESC LIMIT 50;
+
 User: "Show revenue by region"
 SQL: SELECT region, SUM(amount + tax - discount) AS total_revenue FROM transactions WHERE status = 'COMPLETED' GROUP BY region ORDER BY total_revenue DESC LIMIT 50;
 
@@ -33,7 +56,7 @@ User: "Top merchants this month"
 SQL: SELECT m.name, SUM(t.amount + t.tax - t.discount) AS total_revenue FROM merchants m JOIN transactions t ON m.id = t.merchant_id WHERE t.status = 'COMPLETED' GROUP BY m.name ORDER BY total_revenue DESC LIMIT 10;
 
 DATABASE SCHEMA:
-${dynamicSchema}
+${topSchemas}
 
 USER QUESTION:
 "${question}"
@@ -64,4 +87,4 @@ USER QUESTION:
     }
 }
 
-module.exports = { generateSQLFromPrompt, updateSchema };
+module.exports = { generateSQLFromPrompt };

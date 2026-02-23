@@ -22,6 +22,13 @@ async function extractAllTableNames() {
 async function getAICuratedTables(tableNames) {
     if (!tableNames || tableNames.length === 0) return [];
 
+    // RELIABILITY CHECK: If there are only a few tables anyway, don't prune.
+    // This prevents the AI from accidentally missing core tables in smaller databases.
+    if (tableNames.length <= 12) {
+        console.log(`[Schema Pruner] Skipping pruning for small database (${tableNames.length} tables). Using full whitelist.`);
+        return tableNames;
+    }
+
     console.log(`[Schema Pruner] Asking AI to prune ${tableNames.length} tables...`);
 
     const prompt = `
@@ -49,6 +56,8 @@ ${tableNames.join(', ')}
 
         // Clean and parse the CSV string
         const rawText = response.data.response;
+        console.log(`[Schema Pruner] Raw AI response: "${rawText.trim()}"`);
+
         // Strip markdown backticks, trim, and split by comma
         const curatedList = rawText.replace(/\`/g, '').split(',').map(name => name.trim()).filter(Boolean);
 

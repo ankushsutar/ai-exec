@@ -26,8 +26,9 @@ app.get('/health', (req, res) => {
 app.use(errorHandler);
 
 const { extractDatabaseSchema } = require('./src/services/dbService');
-const { updateSchema } = require('./src/services/sqlAgent');
 const { extractAllTableNames, getAICuratedTables } = require('./src/services/schemaPruner');
+const { generateEmbedding } = require('./src/services/ollamaService');
+const { addTableEmbedding } = require('./src/services/vectorStore');
 
 // Start Server
 app.listen(config.port, async () => {
@@ -43,8 +44,29 @@ app.listen(config.port, async () => {
     // 3. Introspect DB schema dynamically ONLY for those curated tables
     const schemaString = await extractDatabaseSchema(aiCuratedTables);
 
-    // 4. Inject dynamically into the SQL Agent
-    updateSchema(schemaString);
+    // 4. Populate In-Memory Vector Store for RAG
+    console.log('[Server] Populating In-Memory Vector Store...');
+    const tableBlocks = schemaString.split('\n\n').filter(block => block.trim() !== '');
+    console.log(`[Server] Found ${tableBlocks.length} table blocks to embed.`);
+
+    for (const block of tableBlocks) {
+      const trimmedBlock = block.trim();
+      if (trimmedBlock.startsWith('TABLE: ')) {
+        const tableName = trimmedBlock.split('\n')[0].replace('TABLE: ', '').trim();
+        try {
+          process.stdout.write(`[Server] Embedding table: ${tableName}... `);
+          const embedding = await generateEmbedding(trimmedBlock);
+          addTableEmbedding(tableName, trimmedBlock, embedding);
+          process.stdout.write('Done.\n');
+        } catch (embedErr) {
+          process.stdout.write('FAILED.\n');
+          console.error(`[Server] Error embedding ${tableName}:`, embedErr.message);
+        }
+      } else {
+        console.log(`[Server] Skipping block: Does not start with TABLE: "${trimmedBlock.substring(0, 20)}..."`);
+      }
+    }
+
     console.log('[Server] AI Platform Boot Sequence Complete. Ready for queries.');
   } catch (err) {
     console.error("Failed to initialize dynamic schema on boot.", err);
