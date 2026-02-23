@@ -30,6 +30,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     messages: ChatMessage[] = [];
     question: string = '';
     isLoading: boolean = false;
+    abortController?: AbortController;
 
     Highcharts: typeof Highcharts = Highcharts;
     chartOptionsMap = new Map<number, Highcharts.Options>();
@@ -80,8 +81,18 @@ export class ChatComponent implements OnInit, AfterViewChecked {
         this.cdr.detectChanges(); // Allow User text to render and scroll
         this.scrollToBottom();
 
+        // Create a new AbortController for this request
+        this.abortController = new AbortController();
+
         this.apiService.askData(currentQuestion).subscribe({
             next: (dataResponse) => {
+                // If the user aborted before getting data, don't proceed
+                if (this.abortController?.signal.aborted) {
+                    this.isLoading = false;
+                    this.cdr.detectChanges();
+                    return;
+                }
+
                 const msgIndex = this.messages.length;
 
                 // 1. Push the Data Response immediately
@@ -101,9 +112,9 @@ export class ChatComponent implements OnInit, AfterViewChecked {
                     this.chartOptionsMap.set(msgIndex, this.generateChartOptions(dataResponse.chartData, currentQuestion));
                 }
 
-                // Wait for AI but stop full-page spinner
-                this.isLoading = false;
-                this.cdr.detectChanges(); // Force update so charts appear immediately
+                // Keep isLoading true because we are still streaming the summary
+                // But we manually trigger detection so the chart shows up
+                this.cdr.detectChanges();
                 this.scrollToBottom();
 
                 // 3. Request the LLM Summary in the background (Streaming)
@@ -113,7 +124,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
                         this.messages[msgIndex].data!.summary = '';
                     }
 
-                    this.apiService.askSummaryStream(dataResponse.rawAnalytics).subscribe({
+                    this.apiService.askSummaryStream(dataResponse.rawAnalytics, this.abortController!.signal).subscribe({
                         next: (chunk: string) => {
                             // Append each new word/token to the summary in real-time
                             if (this.messages[msgIndex] && this.messages[msgIndex].data) {
@@ -123,6 +134,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
                             }
                         },
                         error: (err: any) => {
+                            this.isLoading = false;
                             console.error('LLM Summary stream error:', err);
                             if (this.messages[msgIndex] && this.messages[msgIndex].data) {
                                 this.messages[msgIndex].data!.summary += '\n\n[Analysis generation failed or timed out.]';
@@ -130,16 +142,25 @@ export class ChatComponent implements OnInit, AfterViewChecked {
                             }
                         },
                         complete: () => {
+                            this.isLoading = false;
                             // When stream finishes, set final confidence score
                             if (this.messages[msgIndex] && this.messages[msgIndex].data) {
                                 this.messages[msgIndex].data!.confidence = 0.95; // Hardcoded default confidence
+
+                                // Explicitly mark aborted if the user stopped it early
+                                if (this.abortController?.signal?.aborted) {
+                                    this.messages[msgIndex].data!.summary += ' [Aborted by User]';
+                                }
+
                                 this.cdr.detectChanges();
                             }
                         }
                     });
                 } else {
+                    this.isLoading = false;
                     if (this.messages[msgIndex] && this.messages[msgIndex].data) {
                         this.messages[msgIndex].data!.summary = "I could not understand the question. Please ask about revenue by region, firmware failures, or top merchants.";
+                        this.cdr.detectChanges();
                     }
                 }
             },
@@ -149,9 +170,18 @@ export class ChatComponent implements OnInit, AfterViewChecked {
                     content: 'An error occurred while fetching data. Please try again.'
                 });
                 this.isLoading = false;
+                this.cdr.detectChanges();
                 console.error(err);
             }
         });
+    }
+
+    stopGenerating(): void {
+        if (this.abortController) {
+            this.abortController.abort();
+            this.isLoading = false;
+            this.cdr.detectChanges();
+        }
     }
 
     generateChartOptions(chartData: any[], title: string): Highcharts.Options {

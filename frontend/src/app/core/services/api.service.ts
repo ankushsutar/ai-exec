@@ -25,12 +25,13 @@ export class ApiService {
         return this.http.post<AskDataResponse>(`${this.backendUrl}/ask/data`, { question });
     }
 
-    askSummaryStream(analytics: any): Observable<string> {
+    askSummaryStream(analytics: any, signal?: AbortSignal): Observable<string> {
         return new Observable<string>(observer => {
             fetch(`${this.backendUrl}/ask/summary`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ analytics })
+                body: JSON.stringify({ analytics }),
+                signal: signal
             }).then(async response => {
                 if (!response.body) throw new Error('ReadableStream not supported.');
                 const reader = response.body.getReader();
@@ -49,16 +50,25 @@ export class ApiService {
                                 if (parsed.response) {
                                     observer.next(parsed.response);
                                 }
+                                if (parsed.done === true) {
+                                    observer.complete();
+                                    reader.cancel();
+                                    return; // stop reading immediately
+                                }
                             } catch (e) {
                                 // Ignore incomplete JSON pieces
-                                console.warn('Stream parse error:', e);
                             }
                         }
                     }
                 }
                 observer.complete();
             }).catch(err => {
-                observer.error(err);
+                if (err.name === 'AbortError') {
+                    console.log('Stream aborted by user');
+                    observer.complete(); // Graceful completion on abort
+                } else {
+                    observer.error(err);
+                }
             });
         });
     }

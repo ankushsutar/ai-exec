@@ -1,5 +1,5 @@
-const { detectIntent } = require('../utils/intentDetector');
-const { executeQueryForIntent } = require('../services/dbService');
+const { generateSQLFromPrompt } = require('../services/sqlAgent');
+const { executeDynamicQuery } = require('../services/dbService');
 const { processAnalytics } = require('../utils/analyticsEngine');
 const { getLLMSummaryStream } = require('../services/ollamaService');
 
@@ -7,49 +7,72 @@ async function handleAskData(req, res, next) {
     try {
         const { question } = req.body;
         console.log('\n=======================================');
-        console.log('--- New Data Request ---');
+        console.log('--- New Dynamic SQL Data Request ---');
         console.time('TotalDataRequestTime');
         console.log('Received Question:', question);
 
-        // 1. Detect Intent
-        const intent = detectIntent(question);
-        console.log('Detected Intent:', intent);
-        if (intent === 'UNKNOWN') {
-            return res.status(400).json({
-                kpis: [],
-                chartData: [],
-                intent: 'UNKNOWN'
-            });
+        let sqlQuery, dbData, analytics;
+        let attempt = 0;
+        let maxAttempts = 3;
+        let lastError = "";
+
+        while (attempt < maxAttempts) {
+            try {
+                attempt++;
+                console.log(`\n--- Attempt ${attempt}/${maxAttempts} ---`);
+
+                // 1. Generate SQL via LLM Agent
+                console.log('\nGenerating SQL for prompt...');
+                let promptVariation = question;
+                if (lastError) {
+                    promptVariation = `${question}\n\nWARNING: Your previous SQL failed with this exact PostgreSQL error: "${lastError}". Fix the tables/columns strictly matching the schema to resolve this!`;
+                }
+
+                console.time('SQL_Gen_Time');
+                sqlQuery = await generateSQLFromPrompt(promptVariation);
+                console.timeEnd('SQL_Gen_Time');
+
+                // 2. Fetch Data Dynamically
+                console.log('\nExecuting Dynamic SQL...');
+                console.time('DB_Fetch_Time');
+                dbData = await executeDynamicQuery(sqlQuery);
+                console.timeEnd('DB_Fetch_Time');
+                console.log('Fetched dbData length:', dbData?.length);
+
+                // If we get here, the query succeeded! Break the retry loop.
+                break;
+
+            } catch (agentError) {
+                console.error(`Agent/DB Execution error on attempt ${attempt}:`, agentError.message);
+                lastError = agentError.message;
+
+                if (attempt >= maxAttempts) {
+                    // Fallback for UI if generating/executing SQL fails completely after retries
+                    return res.status(400).json({
+                        kpis: [],
+                        chartData: [],
+                        intent: 'UNKNOWN',
+                        error: `Could not generate a valid SQL query after ${maxAttempts} attempts. Final Error: ${lastError}`
+                    });
+                }
+            }
         }
 
-        // 2. Fetch Data
-        let dbData = [];
-        try {
-            console.log('\nFetching Data for intent:', intent);
-            console.time('DB_Fetch_Time');
-            dbData = await executeQueryForIntent(intent);
-            console.timeEnd('DB_Fetch_Time');
-            console.log('Fetched dbData length:', dbData?.length);
-        } catch (e) {
-            console.error("DB Execution error:", e.message);
-        }
-
-        // 3. Process Analytics
-        console.log('\nProcessing Analytics...');
+        // 3. Process Analytics Dynamically
+        console.log('\nProcessing Analytics Dynamically...');
         console.time('Analytics_Time');
-        const analytics = processAnalytics(intent, dbData);
+        analytics = processAnalytics(dbData);
         console.timeEnd('Analytics_Time');
         console.log('Analytics Result KPI Count:', analytics?.kpis?.length);
-        console.log('Analytics Result Chart Data Count:', analytics?.chartData?.length);
 
-        console.log('\nSending data response back to client.');
+        console.log('\nSending dynamic data response back to client.');
         console.timeEnd('TotalDataRequestTime');
         console.log('=======================================\n');
 
         return res.json({
             kpis: analytics.kpis,
             chartData: analytics.chartData,
-            intent: intent,
+            intent: 'DYNAMIC',
             rawAnalytics: analytics // Pass to next step internally if needed
         });
 
