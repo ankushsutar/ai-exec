@@ -4,7 +4,7 @@ An advanced, full-stack real-time analytics and chatbot platform designed for ex
 
 ## Features
 
-- **Angular Frontend:** Modern, responsive UI using Tailwind CSS and Highcharts.
+- **Angular Frontend:** Modern, responsive Chat UI using Tailwind CSS and Highcharts.
 - **Fast Data Retrieval:** Instant loading of charts and KPIs via dedicated data endpoints.
 - **Streaming AI Analysis:** Real-time text generation via Ollama (Server-Sent Events/NDJSON streaming) for zero wait-time perception.
 - **Node.js/Express Backend:** Modular architecture with intent detection and analytics processing.
