@@ -1,88 +1,156 @@
 <div class="flex flex-col h-screen bg-gray-50 font-sans">
-
   <!-- Header -->
-  <header class="bg-white border-b border-gray-200 py-4 px-6 flex items-center justify-between shadow-sm z-10">
+  <header
+    class="bg-white border-b border-gray-200 py-4 px-6 flex items-center justify-between shadow-sm z-10"
+  >
     <div class="flex items-center gap-2">
-      <div class="w-6 h-6 bg-blue-600 rounded flex items-center justify-center text-white font-bold text-xs">
+      <div
+        class="w-6 h-6 bg-blue-600 rounded flex items-center justify-center text-white font-bold text-xs"
+      >
         AI
       </div>
       <h1 class="text-lg font-semibold text-gray-800 tracking-tight">Executive Intelligence</h1>
     </div>
-    <div class="text-xs text-gray-500 font-medium">Status: <span class="text-green-500 ml-1">● Online</span></div>
+    <div class="text-xs text-gray-500 font-medium">
+      Status: <span class="text-green-500 ml-1">● Online</span>
+    </div>
   </header>
 
   <!-- Chat Area -->
   <main #scrollContainer class="flex-1 overflow-y-auto p-4 md:p-8 space-y-8 scroll-smooth">
-
-    <div *ngFor="let msg of messages; let i = index" class="w-full flex"
-      [ngClass]="msg.role === 'user' ? 'justify-end' : 'justify-start'">
-
+    <div
+      *ngFor="let msg of messages; let i = index"
+      class="w-full flex"
+      [ngClass]="msg.role === 'user' ? 'justify-end' : 'justify-start'"
+    >
       <!-- User Message -->
-      <div *ngIf="msg.role === 'user'"
-        class="max-w-[85%] md:max-w-2xl bg-blue-600 text-white p-3 rounded-2xl rounded-tr-none shadow-sm text-sm">
+      <div
+        *ngIf="msg.role === 'user'"
+        class="max-w-[85%] md:max-w-2xl bg-blue-600 text-white p-3 rounded-2xl rounded-tr-none shadow-sm text-sm"
+      >
         <p>{{ msg.content }}</p>
       </div>
 
       <!-- AI Message -->
       <div *ngIf="msg.role === 'system'" class="max-w-full md:max-w-4xl w-full">
         <div class="flex flex-col gap-4">
-
           <!-- KPI Data -->
           <div *ngIf="msg.data?.kpis?.length" class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
-            <app-kpi-card *ngFor="let kpi of msg.data!.kpis" [title]="kpi.name" [value]="kpi.value"></app-kpi-card>
+            <app-kpi-card
+              *ngFor="let kpi of msg.data!.kpis"
+              [title]="kpi.name"
+              [value]="kpi.value"
+            ></app-kpi-card>
           </div>
 
           <!-- Chart Area -->
-          <div *ngIf="msg.data?.chartData?.length"
-            class="bg-white p-3 rounded-xl shadow-sm border border-gray-100 mt-2">
-            <highcharts-chart [options]="getChartOptions(i)" style="width: 100%; height: 280px; display: block;">
+          <div
+            *ngIf="msg.data?.chartData?.length && msg.data!.columns!.length === 2"
+            class="bg-white p-3 rounded-xl shadow-sm border border-gray-100 mt-2"
+          >
+            <highcharts-chart
+              [options]="getChartOptions(i)"
+              style="width: 100%; height: 280px; display: block"
+            >
             </highcharts-chart>
           </div>
 
+          <!-- Table Area -->
+          <div
+            *ngIf="msg.data?.tableData?.length"
+            class="mt-2 text-sm max-h-[400px] overflow-y-auto bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
+          >
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50 border-b border-gray-200">
+                <tr>
+                  <th
+                    *ngFor="let col of msg.data!.columns"
+                    scope="col"
+                    class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap"
+                  >
+                    {{ col }}
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-100">
+                <tr
+                  *ngFor="let row of msg.data!.tableData"
+                  class="hover:bg-blue-50/50 transition-colors"
+                >
+                  <td
+                    *ngFor="let col of msg.data!.columns"
+                    class="px-4 py-2.5 whitespace-nowrap text-sm text-gray-700"
+                  >
+                    {{ row[col] !== null && row[col] !== undefined ? row[col] : 'N/A' }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
           <!-- Text Body -->
-          <div *ngIf="msg.content || msg.data?.summary"
-            class="bg-white text-gray-800 p-4 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 flex gap-3 text-sm">
+          <div
+            *ngIf="msg.content || msg.data?.summary"
+            class="bg-white text-gray-800 p-4 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 flex gap-3 text-sm"
+          >
             <div class="mt-0.5">
-              <div class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+              <div
+                class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-blue-600"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-4 w-4"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
                   <path
-                    d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
+                    d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"
+                  />
                 </svg>
               </div>
             </div>
             <div class="flex-1">
-              <p class="leading-relaxed whitespace-pre-wrap">{{ msg.content || msg.data?.summary }}</p>
-              <div *ngIf="msg.data?.confidence"
-                class="mt-2 inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-green-100 text-green-800">
+              <p class="leading-relaxed whitespace-pre-wrap">
+                {{ msg.content || msg.data?.summary }}
+              </p>
+              <div
+                *ngIf="msg.data?.confidence"
+                class="mt-2 inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-green-100 text-green-800"
+              >
                 Confidence: {{ (msg.data!.confidence! * 100).toFixed(0) }}%
               </div>
             </div>
           </div>
-
         </div>
       </div>
-
     </div>
 
     <!-- Loading State -->
     <div *ngIf="isLoading" class="flex justify-start">
       <app-loading-spinner></app-loading-spinner>
     </div>
-
   </main>
 
   <!-- Input Area -->
   <footer class="bg-white border-t border-gray-200 p-3">
     <div class="max-w-4xl mx-auto flex flex-col items-center">
-
       <!-- Stop Generating Button (Only visible while loading) -->
       <div *ngIf="isLoading" class="mb-3">
-        <button (click)="stopGenerating()"
-          class="flex items-center gap-2 px-4 py-1.5 text-xs font-medium text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 rounded-full transition-colors shadow-sm">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd"
+        <button
+          (click)="stopGenerating()"
+          class="flex items-center gap-2 px-4 py-1.5 text-xs font-medium text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 rounded-full transition-colors shadow-sm"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-4 w-4"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fill-rule="evenodd"
               d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1V8a1 1 0 00-1-1H8z"
-              clip-rule="evenodd" />
+              clip-rule="evenodd"
+            />
           </svg>
           Stop Generating
         </button>
@@ -90,24 +158,40 @@
 
       <!-- Suggestions -->
       <div class="flex flex-wrap justify-center gap-2 mb-3">
-        <button *ngFor="let sug of suggestions" (click)="askSuggestion(sug)"
+        <button
+          *ngFor="let sug of suggestions"
+          (click)="askSuggestion(sug)"
           class="px-3 py-1.5 text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full transition-colors whitespace-nowrap border border-gray-200"
-          [disabled]="isLoading">
+          [disabled]="isLoading"
+        >
           {{ sug }}
         </button>
       </div>
 
       <!-- Input Box -->
       <div class="relative flex items-center w-full">
-        <input type="text" [(ngModel)]="question" (keyup.enter)="submitQuestion()"
+        <input
+          type="text"
+          [(ngModel)]="question"
+          (keyup.enter)="submitQuestion()"
           placeholder="Ask about revenue, firmware failures, or merchants..."
           class="w-full pl-5 pr-14 py-3 bg-gray-50 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all shadow-sm text-sm"
-          [disabled]="isLoading">
-        <button (click)="submitQuestion()" [disabled]="isLoading || !question.trim()"
-          class="absolute right-1.5 p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-sm">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 rotate-90" viewBox="0 0 20 20" fill="currentColor">
+          [disabled]="isLoading"
+        />
+        <button
+          (click)="submitQuestion()"
+          [disabled]="isLoading || !question.trim()"
+          class="absolute right-1.5 p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-sm"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-4 w-4 rotate-90"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
             <path
-              d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+              d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"
+            />
           </svg>
         </button>
       </div>

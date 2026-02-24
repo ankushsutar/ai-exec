@@ -5,6 +5,8 @@ import { Observable } from 'rxjs';
 export interface AskDataResponse {
     kpis: any[];
     chartData: any[];
+    tableData?: any[];
+    columns?: string[];
     intent: string;
     rawAnalytics: any;
 }
@@ -19,7 +21,7 @@ export interface AskSummaryResponse {
 })
 export class ApiService {
     private http = inject(HttpClient);
-    private backendUrl = 'http://localhost:3000';
+    private backendUrl = 'http://localhost:3001';
 
     askData(question: string): Observable<AskDataResponse> {
         return this.http.post<AskDataResponse>(`${this.backendUrl}/ask/data`, { question });

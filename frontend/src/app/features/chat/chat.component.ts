@@ -40,9 +40,9 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     }
 
     suggestions = [
-        "Show revenue by region",
-        "Show firmware failures",
-        "Top merchants this month"
+        "How many devices are in deviceConfigInfo?",
+        "Show top 5 merchants by revenue from transactionInfo",
+        "List all users in the Admin userGroup"
     ];
 
     ngOnInit(): void {
@@ -159,7 +159,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
                 } else {
                     this.isLoading = false;
                     if (this.messages[msgIndex] && this.messages[msgIndex].data) {
-                        this.messages[msgIndex].data!.summary = "I could not understand the question. Please ask about revenue by region, firmware failures, or top merchants.";
+                        this.messages[msgIndex].data!.summary = "I could not understand the question. Try asking 'How many devices are in deviceConfigInfo?' or 'Show top 5 merchants by revenue from transactionInfo'.";
                         this.cdr.detectChanges();
                     }
                 }
