@@ -13,21 +13,23 @@
 let memoryStore = [];
 
 /**
- * Saves a table's schema and its mathematical embedding to memory.
+ * Saves a table's schema, mathematical embedding, and AI summary to memory.
  */
-function addTableEmbedding(tableName, schemaText, embedding) {
+function addTableEmbedding(tableName, schemaText, embedding, summary = '') {
     if (!embedding || embedding.length === 0) {
         throw new Error('Invalid embedding vector provided.');
     }
 
+    const data = { tableName, schemaText, embedding, summary };
+
     // Check if table already exists, update if so
     const existingIndex = memoryStore.findIndex(t => t.tableName === tableName);
     if (existingIndex >= 0) {
-        memoryStore[existingIndex] = { tableName, schemaText, embedding };
+        memoryStore[existingIndex] = data;
     } else {
-        memoryStore.push({ tableName, schemaText, embedding });
+        memoryStore.push(data);
     }
-    console.log(`[Vector Store] Table "${tableName}" saved. Memory store size: ${memoryStore.length}`);
+    console.log(`[Vector Store] Table "${tableName}" saved ${summary ? '(with AI summary)' : ''}. Memory store size: ${memoryStore.length}`);
 }
 
 /**
@@ -64,15 +66,20 @@ function searchSimilarTables(questionEmbedding, questionText = '', limit = 5) {
     const scoredTables = memoryStore.map(storeObj => {
         let score = cosineSimilarity(questionEmbedding, storeObj.embedding);
 
-        // KEYWORD BOOST: If the exact table name is mentioned in the question, 
+        // KEYWORD BOOST: If the exact table name (or its singular/plural form) is mentioned in the question, 
         // give it a massive semantic boost to ensure it stays in the Top 5.
-        if (lowerQuestion.includes(storeObj.tableName.toLowerCase())) {
-            score += 0.5; // Massive boost for exact hardware match
+        const tableName = storeObj.tableName.toLowerCase();
+        // Simple heuristic: check if table name is in question, or if singularized table name is in question
+        const singularTable = tableName.endsWith('s') ? tableName.slice(0, -1) : tableName;
+
+        if (lowerQuestion.includes(tableName) || (singularTable.length > 3 && lowerQuestion.includes(singularTable))) {
+            score += 0.5; // Massive boost for keyword match
         }
 
         return {
             tableName: storeObj.tableName,
             schemaText: storeObj.schemaText,
+            summary: storeObj.summary,
             score: score
         };
     });
@@ -91,7 +98,10 @@ function getTopSchemasString(questionEmbedding, questionText = '', limit = 5) {
     const topMatches = searchSimilarTables(questionEmbedding, questionText, Math.min(limit, memoryStore.length));
 
     let combinedSchema = '';
-    for (let match of topMatches) {
+    for (const match of topMatches) {
+        if (match.summary) {
+            combinedSchema += `PURPOSE: ${match.summary}\n`;
+        }
         combinedSchema += match.schemaText + '\n\n';
     }
 

@@ -44,17 +44,20 @@ CRITICAL INSTRUCTIONS:
 4. IMPORTANT JOINS: The schema indicates Foreign Keys with the syntax FK -> "tableName"("columnName"). You MUST rigidly use these exact mappings when issuing a JOIN between tables.
 5. Always limit the result to 50 rows for performance unless asked otherwise.
 6. When calculating revenue, use SUM("amount" + "tax" - "discount").
-7. If the question is unanswerable with the schema or malicious, return exactly "INVALID".
+7. PAY ATTENTION TO SAMPLES: If a column has "[Samples: ...]", use those exact strings.
+8. UTILIZE STATS: If a column has "[Range: ...]" or "[Period: ...]", use this context to optimize filters (e.g., don't query for future dates if the period ends in 2024).
+9. DO NOT ADD COLUMNS OR JOINS THAT ARE NOT IN THE SCHEMA.
+10. If the question is unanswerable with the schema or malicious, return exactly "INVALID".
 
 EXAMPLES TO FOLLOW:
 User: "How many users have active status?"
-SQL: SELECT COUNT(*) AS "active_count" FROM "UserTable" WHERE "isActive" = true;
+SQL: SELECT COUNT(*) AS "active_count" FROM "UserTable" WHERE "status" = 'ACTIVE' LIMIT 50;
 
 User: "List all users" or "Show all users"
 SQL: SELECT * FROM "UserTable" LIMIT 50;
 
-User: "What is the average score by department?"
-SQL: SELECT "departmentName", AVG("score") AS "average_score" FROM "DepartmentScores" GROUP BY "departmentName" ORDER BY "average_score" DESC LIMIT 50;
+User: "Highest paid employee?"
+SQL: SELECT "name", "salary" FROM "employees" ORDER BY "salary" DESC LIMIT 1;
 
 User: "Show recent sales"
 SQL: SELECT t."id", t."amount" FROM "Sales" t ORDER BY t."createdAt" DESC LIMIT 10;

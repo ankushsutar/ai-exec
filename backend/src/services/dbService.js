@@ -72,6 +72,45 @@ async function extractDatabaseSchema(allowedTables = null) {
       }
 
       let colDef = `"${row.column_name}" (${row.data_type})`;
+
+      const colNameLower = row.column_name.toLowerCase();
+      const dataTypeLower = row.data_type.toLowerCase();
+
+      // EXTRA INTELLIGENCE: Categorical Samples
+      const categoricalKeywords = ['status', 'region', 'category', 'method', 'type', 'industry', 'country'];
+      if (categoricalKeywords.some(kw => colNameLower.includes(kw))) {
+        try {
+          const sampleResult = await db.query(`SELECT DISTINCT "${row.column_name}" FROM "${row.table_name}" WHERE "${row.column_name}" IS NOT NULL LIMIT 5;`);
+          const samples = sampleResult.rows.map(r => r[row.column_name]);
+          if (samples.length > 0) {
+            colDef += ` [Samples: ${samples.join(', ')}]`;
+          }
+        } catch (e) { }
+      }
+
+      // EXTRA INTELLIGENCE: Numerical Statistics (Price, Salary, Amount, etc.)
+      const numericKeywords = ['price', 'salary', 'amount', 'total', 'rating', 'level', 'temperature'];
+      if (numericKeywords.some(kw => colNameLower.includes(kw)) || dataTypeLower.includes('int') || dataTypeLower.includes('decimal') || dataTypeLower.includes('numeric')) {
+        try {
+          const res = await db.query(`SELECT MIN("${row.column_name}") as min_val, MAX("${row.column_name}") as max_val FROM "${row.table_name}";`);
+          if (res.rows[0].min_val !== null) {
+            colDef += ` [Range: ${res.rows[0].min_val} to ${res.rows[0].max_val}]`;
+          }
+        } catch (e) { }
+      }
+
+      // EXTRA INTELLIGENCE: Date Ranges
+      if (dataTypeLower.includes('date') || dataTypeLower.includes('timestamp')) {
+        try {
+          const res = await db.query(`SELECT MIN("${row.column_name}") as min_date, MAX("${row.column_name}") as max_date FROM "${row.table_name}";`);
+          if (res.rows[0].min_date !== null) {
+            const minStr = new Date(res.rows[0].min_date).toISOString().split('T')[0];
+            const maxStr = new Date(res.rows[0].max_date).toISOString().split('T')[0];
+            colDef += ` [Period: ${minStr} to ${maxStr}]`;
+          }
+        } catch (e) { }
+      }
+
       if (fks[row.table_name] && fks[row.table_name][row.column_name]) {
         const fk = fks[row.table_name][row.column_name];
         colDef += ` FK -> "${fk.table}"("${fk.column}")`;
