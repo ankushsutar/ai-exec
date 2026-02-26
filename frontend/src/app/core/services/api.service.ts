@@ -21,7 +21,7 @@ export interface AskSummaryResponse {
 })
 export class ApiService {
     private http = inject(HttpClient);
-    private backendUrl = 'http://localhost:3000';
+    private backendUrl = 'http://10.0.0.218:3001';
 
     askData(question: string): Observable<AskDataResponse> {
         return this.http.post<AskDataResponse>(`${this.backendUrl}/ask/data`, { question });

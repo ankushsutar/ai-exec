@@ -1,0 +1,2534 @@
+[
+  {
+    "table_name": "accessRightsInfo",
+    "column_name": "id"
+  },
+  {
+    "table_name": "accessRightsInfo",
+    "column_name": "accessRightName"
+  },
+  {
+    "table_name": "accessRightsInfo",
+    "column_name": "accessRightDesc"
+  },
+  {
+    "table_name": "accessRightsInfo",
+    "column_name": "isActive"
+  },
+  {
+    "table_name": "accessRightsInfo",
+    "column_name": "createdBy"
+  },
+  {
+    "table_name": "accessRightsInfo",
+    "column_name": "updatedBy"
+  },
+  {
+    "table_name": "accessRightsInfo",
+    "column_name": "deletedBy"
+  },
+  {
+    "table_name": "accessRightsInfo",
+    "column_name": "createdAt"
+  },
+  {
+    "table_name": "accessRightsInfo",
+    "column_name": "updatedAt"
+  },
+  {
+    "table_name": "accessRightsInfo",
+    "column_name": "deletedAt"
+  },
+  {
+    "table_name": "advertisementAudioDeviceRelationInfo",
+    "column_name": "id"
+  },
+  {
+    "table_name": "advertisementAudioDeviceRelationInfo",
+    "column_name": "advertisementID"
+  },
+  {
+    "table_name": "advertisementAudioDeviceRelationInfo",
+    "column_name": "deviceTypeId"
+  },
+  {
+    "table_name": "advertisementAudioDeviceRelationInfo",
+    "column_name": "isDefault"
+  },
+  {
+    "table_name": "advertisementAudioInfo",
+    "column_name": "id"
+  },
+  {
+    "table_name": "advertisementAudioInfo",
+    "column_name": "advertisementName"
+  },
+  {
+    "table_name": "advertisementAudioInfo",
+    "column_name": "advertisementDescription"
+  },
+  {
+    "table_name": "advertisementAudioInfo",
+    "column_name": "advertisementLanguage"
+  },
+  {
+    "table_name": "advertisementAudioInfo",
+    "column_name": "advertisementVersion"
+  },
+  {
+    "table_name": "advertisementAudioInfo",
+    "column_name": "gender"
+  },
+  {
+    "table_name": "advertisementAudioInfo",
+    "column_name": "fileId"
+  },
+  {
+    "table_name": "advertisementAudioInfo",
+    "column_name": "isActive"
+  },
+  {
+    "table_name": "advertisementAudioInfo",
+    "column_name": "isVerified"
+  },
+  {
+    "table_name": "advertisementAudioInfo",
+    "column_name": "createdBy"
+  },
+  {
+    "table_name": "advertisementAudioInfo",
+    "column_name": "updatedBy"
+  },
+  {
+    "table_name": "advertisementAudioInfo",
+    "column_name": "deletedBy"
+  },
+  {
+    "table_name": "advertisementAudioInfo",
+    "column_name": "createdAt"
+  },
+  {
+    "table_name": "advertisementAudioInfo",
+    "column_name": "updatedAt"
+  },
+  {
+    "table_name": "advertisementAudioInfo",
+    "column_name": "deletedAt"
+  },
+  {
+    "table_name": "advertisementInfo",
+    "column_name": "id"
+  },
+  {
+    "table_name": "advertisementInfo",
+    "column_name": "reqRefNo"
+  },
+  {
+    "table_name": "advertisementInfo",
+    "column_name": "deviceId"
+  },
+  {
+    "table_name": "advertisementInfo",
+    "column_name": "advertisementId"
+  },
+  {
+    "table_name": "advertisementInfo",
+    "column_name": "messageOriginType"
+  },
+  {
+    "table_name": "advertisementInfo",
+    "column_name": "time"
+  },
+  {
+    "table_name": "advertisementInfo",
+    "column_name": "expirationTime"
+  },
+  {
+    "table_name": "advertisementInfo",
+    "column_name": "tMsgRecvByServer"
+  },
+  {
+    "table_name": "advertisementInfo",
+    "column_name": "tMsgRecvFromDev"
+  },
+  {
+    "table_name": "advertisementInfo",
+    "column_name": "tMsgAck"
+  },
+  {
+    "table_name": "advertisementInfo",
+    "column_name": "tMsgTimeElapsed"
+  },
+  {
+    "table_name": "advertisementInfo",
+    "column_name": "audioPlayed"
+  },
+  {
+    "table_name": "advertisementInfo",
+    "column_name": "deviceAvail"
+  },
+  {
+    "table_name": "advertisementInfo",
+    "column_name": "createdBy"
+  },
+  {
+    "table_name": "advertisementInfo",
+    "column_name": "createdAt"
+  },
+  {
+    "table_name": "batteryTypeInfo",
+    "column_name": "batteryVersionId"
+  },
+  {
+    "table_name": "batteryTypeInfo",
+    "column_name": "batteryType"
+  },
+  {
+    "table_name": "batteryTypeInfo",
+    "column_name": "batteryName"
+  },
+  {
+    "table_name": "batteryTypeInfo",
+    "column_name": "batteryTypeVersion"
+  },
+  {
+    "table_name": "batteryTypeInfo",
+    "column_name": "manufacturerName"
+  },
+  {
+    "table_name": "batteryTypeInfo",
+    "column_name": "batteryCapacity"
+  },
+  {
+    "table_name": "batteryTypeInfo",
+    "column_name": "adcConfig"
+  },
+  {
+    "table_name": "batteryTypeInfo",
+    "column_name": "adcConfigVersion"
+  },
+  {
+    "table_name": "batteryTypeInfo",
+    "column_name": "isVerified"
+  },
+  {
+    "table_name": "batteryTypeInfo",
+    "column_name": "isActive"
+  },
+  {
+    "table_name": "batteryTypeInfo",
+    "column_name": "createdBy"
+  },
+  {
+    "table_name": "batteryTypeInfo",
+    "column_name": "updatedBy"
+  },
+  {
+    "table_name": "batteryTypeInfo",
+    "column_name": "deletedBy"
+  },
+  {
+    "table_name": "batteryTypeInfo",
+    "column_name": "createdAt"
+  },
+  {
+    "table_name": "batteryTypeInfo",
+    "column_name": "updatedAt"
+  },
+  {
+    "table_name": "batteryTypeInfo",
+    "column_name": "deletedAt"
+  },
+  {
+    "table_name": "connectivityHistoryInfo",
+    "column_name": "id"
+  },
+  {
+    "table_name": "connectivityHistoryInfo",
+    "column_name": "deviceId"
+  },
+  {
+    "table_name": "connectivityHistoryInfo",
+    "column_name": "connectivityStatus"
+  },
+  {
+    "table_name": "connectivityHistoryInfo",
+    "column_name": "timeStamp"
+  },
+  {
+    "table_name": "connectivityHistoryInfo",
+    "column_name": "createdBy"
+  },
+  {
+    "table_name": "connectivityHistoryInfo",
+    "column_name": "createdAt"
+  },
+  {
+    "table_name": "deviceAdvertisementRelationInfo",
+    "column_name": "id"
+  },
+  {
+    "table_name": "deviceAdvertisementRelationInfo",
+    "column_name": "deviceId"
+  },
+  {
+    "table_name": "deviceAdvertisementRelationInfo",
+    "column_name": "advertisementId"
+  },
+  {
+    "table_name": "deviceAdvertisementRelationInfo",
+    "column_name": "repeatInterval"
+  },
+  {
+    "table_name": "deviceAdvertisementRelationInfo",
+    "column_name": "repeatCount"
+  },
+  {
+    "table_name": "deviceAdvertisementRelationInfo",
+    "column_name": "minute"
+  },
+  {
+    "table_name": "deviceAdvertisementRelationInfo",
+    "column_name": "hour"
+  },
+  {
+    "table_name": "deviceAdvertisementRelationInfo",
+    "column_name": "dayOfMonth"
+  },
+  {
+    "table_name": "deviceAdvertisementRelationInfo",
+    "column_name": "month"
+  },
+  {
+    "table_name": "deviceAdvertisementRelationInfo",
+    "column_name": "dayOfWeek"
+  },
+  {
+    "table_name": "deviceAdvertisementRelationInfo",
+    "column_name": "createdBy"
+  },
+  {
+    "table_name": "deviceAdvertisementRelationInfo",
+    "column_name": "updatedBy"
+  },
+  {
+    "table_name": "deviceAdvertisementRelationInfo",
+    "column_name": "deletedBy"
+  },
+  {
+    "table_name": "deviceAdvertisementRelationInfo",
+    "column_name": "createdAt"
+  },
+  {
+    "table_name": "deviceAdvertisementRelationInfo",
+    "column_name": "updatedAt"
+  },
+  {
+    "table_name": "deviceAdvertisementRelationInfo",
+    "column_name": "deletedAt"
+  },
+  {
+    "table_name": "deviceBriefInfo",
+    "column_name": "deviceId"
+  },
+  {
+    "table_name": "deviceBriefInfo",
+    "column_name": "iccid"
+  },
+  {
+    "table_name": "deviceBriefInfo",
+    "column_name": "imsi"
+  },
+  {
+    "table_name": "deviceBriefInfo",
+    "column_name": "mobileNo"
+  },
+  {
+    "table_name": "deviceBriefInfo",
+    "column_name": "mcc"
+  },
+  {
+    "table_name": "deviceBriefInfo",
+    "column_name": "mnc"
+  },
+  {
+    "table_name": "deviceBriefInfo",
+    "column_name": "batteryLevel"
+  },
+  {
+    "table_name": "deviceBriefInfo",
+    "column_name": "currentRSSI"
+  },
+  {
+    "table_name": "deviceBriefInfo",
+    "column_name": "currentNetworkType"
+  },
+  {
+    "table_name": "deviceBriefInfo",
+    "column_name": "chargingStatus"
+  },
+  {
+    "table_name": "deviceBriefInfo",
+    "column_name": "lastSeen"
+  },
+  {
+    "table_name": "deviceBriefInfo",
+    "column_name": "currentFWVersion"
+  },
+  {
+    "table_name": "deviceBriefInfo",
+    "column_name": "totalTransaction"
+  },
+  {
+    "table_name": "deviceBriefInfo",
+    "column_name": "isBind"
+  },
+  {
+    "table_name": "deviceBriefInfo",
+    "column_name": "updatedAt"
+  },
+  {
+    "table_name": "deviceConfigInfo",
+    "column_name": "deviceId"
+  },
+  {
+    "table_name": "deviceConfigInfo",
+    "column_name": "deviceTypeId"
+  },
+  {
+    "table_name": "deviceConfigInfo",
+    "column_name": "deviceMode"
+  },
+  {
+    "table_name": "deviceConfigInfo",
+    "column_name": "hardwareType"
+  },
+  {
+    "table_name": "deviceConfigInfo",
+    "column_name": "deviceBriefId"
+  },
+  {
+    "table_name": "deviceConfigInfo",
+    "column_name": "firmwareId"
+  },
+  {
+    "table_name": "deviceConfigInfo",
+    "column_name": "firmwareMajorVersion"
+  },
+  {
+    "table_name": "deviceConfigInfo",
+    "column_name": "defaultVolume"
+  },
+  {
+    "table_name": "deviceConfigInfo",
+    "column_name": "enableDisableFallback"
+  },
+  {
+    "table_name": "deviceConfigInfo",
+    "column_name": "enableSimBindingLock"
+  },
+  {
+    "table_name": "deviceConfigInfo",
+    "column_name": "batteryType"
+  },
+  {
+    "table_name": "deviceConfigInfo",
+    "column_name": "batteryVersionId"
+  },
+  {
+    "table_name": "deviceConfigInfo",
+    "column_name": "deviceStage"
+  },
+  {
+    "table_name": "deviceConfigInfo",
+    "column_name": "mqttId"
+  },
+  {
+    "table_name": "deviceConfigInfo",
+    "column_name": "mqttStatus"
+  },
+  {
+    "table_name": "deviceConfigInfo",
+    "column_name": "mqttCertUpdate"
+  },
+  {
+    "table_name": "deviceConfigInfo",
+    "column_name": "httpId"
+  },
+  {
+    "table_name": "deviceConfigInfo",
+    "column_name": "httpStatus"
+  },
+  {
+    "table_name": "deviceConfigInfo",
+    "column_name": "groupId"
+  },
+  {
+    "table_name": "deviceConfigInfo",
+    "column_name": "languageId"
+  },
+  {
+    "table_name": "deviceConfigInfo",
+    "column_name": "systemAudioId"
+  },
+  {
+    "table_name": "deviceConfigInfo",
+    "column_name": "loginTimeout"
+  },
+  {
+    "table_name": "deviceConfigInfo",
+    "column_name": "configTimeOut"
+  },
+  {
+    "table_name": "deviceConfigInfo",
+    "column_name": "statFreq"
+  },
+  {
+    "table_name": "deviceConfigInfo",
+    "column_name": "serverEventControl"
+  },
+  {
+    "table_name": "deviceConfigInfo",
+    "column_name": "eventLoggerEnabled"
+  },
+  {
+    "table_name": "deviceConfigInfo",
+    "column_name": "eventMask"
+  },
+  {
+    "table_name": "deviceConfigInfo",
+    "column_name": "deviceFeatureMask"
+  },
+  {
+    "table_name": "deviceConfigInfo",
+    "column_name": "httpPrcntThrshld"
+  },
+  {
+    "table_name": "deviceConfigInfo",
+    "column_name": "httpDwnldPrcntThrshld"
+  },
+  {
+    "table_name": "deviceConfigInfo",
+    "column_name": "bootPrcntThrshld"
+  },
+  {
+    "table_name": "deviceConfigInfo",
+    "column_name": "bootPrcntThrshldWChrg"
+  },
+  {
+    "table_name": "deviceConfigInfo",
+    "column_name": "audioPlayPrcntThrshld"
+  },
+  {
+    "table_name": "deviceConfigInfo",
+    "column_name": "fotaBtryPrcntThrshld"
+  },
+  {
+    "table_name": "deviceConfigInfo",
+    "column_name": "isActive"
+  },
+  {
+    "table_name": "deviceConfigInfo",
+    "column_name": "deviceUpdateStatus"
+  },
+  {
+    "table_name": "deviceConfigInfo",
+    "column_name": "connEnabledAt"
+  },
+  {
+    "table_name": "deviceConfigInfo",
+    "column_name": "connDisabledAt"
+  },
+  {
+    "table_name": "deviceConfigInfo",
+    "column_name": "connUpdatedBy"
+  },
+  {
+    "table_name": "deviceConfigInfo",
+    "column_name": "createdBy"
+  },
+  {
+    "table_name": "deviceConfigInfo",
+    "column_name": "updatedBy"
+  },
+  {
+    "table_name": "deviceConfigInfo",
+    "column_name": "deletedBy"
+  },
+  {
+    "table_name": "deviceConfigInfo",
+    "column_name": "createdAt"
+  },
+  {
+    "table_name": "deviceConfigInfo",
+    "column_name": "updatedAt"
+  },
+  {
+    "table_name": "deviceConfigInfo",
+    "column_name": "deletedAt"
+  },
+  {
+    "table_name": "deviceIdentInfo",
+    "column_name": "id"
+  },
+  {
+    "table_name": "deviceIdentInfo",
+    "column_name": "imei"
+  },
+  {
+    "table_name": "deviceIdentInfo",
+    "column_name": "apiKey"
+  },
+  {
+    "table_name": "deviceIdentInfo",
+    "column_name": "tempApiKey"
+  },
+  {
+    "table_name": "deviceIdentInfo",
+    "column_name": "changeApiKey"
+  },
+  {
+    "table_name": "deviceIdentInfo",
+    "column_name": "apiKeyCreatedAt"
+  },
+  {
+    "table_name": "deviceIdentInfo",
+    "column_name": "terminalId"
+  },
+  {
+    "table_name": "deviceIdentInfo",
+    "column_name": "relationId"
+  },
+  {
+    "table_name": "deviceIdentInfo",
+    "column_name": "mqttSubTopic"
+  },
+  {
+    "table_name": "deviceIdentInfo",
+    "column_name": "mqttPubTopic"
+  },
+  {
+    "table_name": "deviceIdentInfo",
+    "column_name": "isActive"
+  },
+  {
+    "table_name": "deviceIdentInfo",
+    "column_name": "isBind"
+  },
+  {
+    "table_name": "deviceIdentInfo",
+    "column_name": "deviceStage"
+  },
+  {
+    "table_name": "deviceIdentInfo",
+    "column_name": "assignedAt"
+  },
+  {
+    "table_name": "deviceIdentInfo",
+    "column_name": "unAssignedAt"
+  },
+  {
+    "table_name": "deviceIdentInfo",
+    "column_name": "apiKeyChangeFailureCount"
+  },
+  {
+    "table_name": "deviceIdentInfo",
+    "column_name": "apiKeyChangeFailureResetCount"
+  },
+  {
+    "table_name": "deviceIdentInfo",
+    "column_name": "apiKeyChangeFailureLastResetTime"
+  },
+  {
+    "table_name": "deviceIdentInfo",
+    "column_name": "createdBy"
+  },
+  {
+    "table_name": "deviceIdentInfo",
+    "column_name": "updatedBy"
+  },
+  {
+    "table_name": "deviceIdentInfo",
+    "column_name": "deletedBy"
+  },
+  {
+    "table_name": "deviceIdentInfo",
+    "column_name": "createdAt"
+  },
+  {
+    "table_name": "deviceIdentInfo",
+    "column_name": "updatedAt"
+  },
+  {
+    "table_name": "deviceIdentInfo",
+    "column_name": "deletedAt"
+  },
+  {
+    "table_name": "deviceInfo",
+    "column_name": "id"
+  },
+  {
+    "table_name": "deviceInfo",
+    "column_name": "deviceIdSequence"
+  },
+  {
+    "table_name": "deviceInfo",
+    "column_name": "imei"
+  },
+  {
+    "table_name": "deviceInfo",
+    "column_name": "deviceTypeId"
+  },
+  {
+    "table_name": "deviceInfo",
+    "column_name": "manufacturerTypeID"
+  },
+  {
+    "table_name": "deviceInfo",
+    "column_name": "createdBy"
+  },
+  {
+    "table_name": "deviceInfo",
+    "column_name": "updatedBy"
+  },
+  {
+    "table_name": "deviceInfo",
+    "column_name": "deletedBy"
+  },
+  {
+    "table_name": "deviceInfo",
+    "column_name": "createdAt"
+  },
+  {
+    "table_name": "deviceInfo",
+    "column_name": "updatedAt"
+  },
+  {
+    "table_name": "deviceInfo",
+    "column_name": "deletedAt"
+  },
+  {
+    "table_name": "deviceRelationInfo",
+    "column_name": "relationId"
+  },
+  {
+    "table_name": "deviceRelationInfo",
+    "column_name": "deviceId"
+  },
+  {
+    "table_name": "deviceRelationInfo",
+    "column_name": "isVerified"
+  },
+  {
+    "table_name": "deviceRelationInfo",
+    "column_name": "isActive"
+  },
+  {
+    "table_name": "deviceRelationInfo",
+    "column_name": "createdBy"
+  },
+  {
+    "table_name": "deviceRelationInfo",
+    "column_name": "createdAt"
+  },
+  {
+    "table_name": "deviceRelationInfo",
+    "column_name": "updatedBy"
+  },
+  {
+    "table_name": "deviceRelationInfo",
+    "column_name": "updatedAt"
+  },
+  {
+    "table_name": "deviceRelationInfo",
+    "column_name": "deletedBy"
+  },
+  {
+    "table_name": "deviceRelationInfo",
+    "column_name": "deletedAt"
+  },
+  {
+    "table_name": "deviceSimRelationInfo",
+    "column_name": "id"
+  },
+  {
+    "table_name": "deviceSimRelationInfo",
+    "column_name": "simIccid"
+  },
+  {
+    "table_name": "deviceSimRelationInfo",
+    "column_name": "deviceId"
+  },
+  {
+    "table_name": "deviceSimRelationInfo",
+    "column_name": "iccidLock"
+  },
+  {
+    "table_name": "deviceSimRelationInfo",
+    "column_name": "createdBy"
+  },
+  {
+    "table_name": "deviceSimRelationInfo",
+    "column_name": "updatedBy"
+  },
+  {
+    "table_name": "deviceSimRelationInfo",
+    "column_name": "createdAt"
+  },
+  {
+    "table_name": "deviceSimRelationInfo",
+    "column_name": "updatedAt"
+  },
+  {
+    "table_name": "deviceStatsInfo",
+    "column_name": "id"
+  },
+  {
+    "table_name": "deviceStatsInfo",
+    "column_name": "deviceId"
+  },
+  {
+    "table_name": "deviceStatsInfo",
+    "column_name": "deviceUptime"
+  },
+  {
+    "table_name": "deviceStatsInfo",
+    "column_name": "mqttUptime"
+  },
+  {
+    "table_name": "deviceStatsInfo",
+    "column_name": "totalTransactionsPlayed"
+  },
+  {
+    "table_name": "deviceStatsInfo",
+    "column_name": "totalTransactionsFailedToPlay"
+  },
+  {
+    "table_name": "deviceStatsInfo",
+    "column_name": "volumeUpPressCounts"
+  },
+  {
+    "table_name": "deviceStatsInfo",
+    "column_name": "volumeDownPressCounts"
+  },
+  {
+    "table_name": "deviceStatsInfo",
+    "column_name": "replayPressCounts"
+  },
+  {
+    "table_name": "deviceStatsInfo",
+    "column_name": "totalSIMInsertedCount"
+  },
+  {
+    "table_name": "deviceStatsInfo",
+    "column_name": "totalModemResetCount"
+  },
+  {
+    "table_name": "deviceStatsInfo",
+    "column_name": "totalNWFailureCount"
+  },
+  {
+    "table_name": "deviceStatsInfo",
+    "column_name": "totalNWDiscDueToBadRSSICount"
+  },
+  {
+    "table_name": "deviceStatsInfo",
+    "column_name": "mqttConnectionFailCount"
+  },
+  {
+    "table_name": "deviceStatsInfo",
+    "column_name": "httpPostFailCount"
+  },
+  {
+    "table_name": "deviceStatsInfo",
+    "column_name": "httpDownloadFailCount"
+  },
+  {
+    "table_name": "deviceStatsInfo",
+    "column_name": "totalFilesDownloadedCount"
+  },
+  {
+    "table_name": "deviceStatsInfo",
+    "column_name": "flashFileWriteFailCount"
+  },
+  {
+    "table_name": "deviceStatsInfo",
+    "column_name": "flashFileReadFailCount"
+  },
+  {
+    "table_name": "deviceStatsInfo",
+    "column_name": "totalLanguageChangeCount"
+  },
+  {
+    "table_name": "deviceStatsInfo",
+    "column_name": "totalAdvertisementsChangeCount"
+  },
+  {
+    "table_name": "deviceStatsInfo",
+    "column_name": "totalSystemAudioChangeCount"
+  },
+  {
+    "table_name": "deviceStatsInfo",
+    "column_name": "createdAt"
+  },
+  {
+    "table_name": "deviceTypeInfo",
+    "column_name": "id"
+  },
+  {
+    "table_name": "deviceTypeInfo",
+    "column_name": "name"
+  },
+  {
+    "table_name": "deviceTypeInfo",
+    "column_name": "networkType"
+  },
+  {
+    "table_name": "deviceTypeInfo",
+    "column_name": "formFactor"
+  },
+  {
+    "table_name": "deviceTypeInfo",
+    "column_name": "audioType"
+  },
+  {
+    "table_name": "deviceTypeInfo",
+    "column_name": "isActive"
+  },
+  {
+    "table_name": "deviceTypeInfo",
+    "column_name": "hardwareVersion"
+  },
+  {
+    "table_name": "deviceTypeInfo",
+    "column_name": "manufacturerTypeId"
+  },
+  {
+    "table_name": "fileInfo",
+    "column_name": "id"
+  },
+  {
+    "table_name": "fileInfo",
+    "column_name": "fileName"
+  },
+  {
+    "table_name": "fileInfo",
+    "column_name": "filePath"
+  },
+  {
+    "table_name": "fileInfo",
+    "column_name": "fileType"
+  },
+  {
+    "table_name": "fileInfo",
+    "column_name": "fileExtention"
+  },
+  {
+    "table_name": "fileInfo",
+    "column_name": "fileChecksum"
+  },
+  {
+    "table_name": "fileInfo",
+    "column_name": "fileDescription"
+  },
+  {
+    "table_name": "fileInfo",
+    "column_name": "isActive"
+  },
+  {
+    "table_name": "fileInfo",
+    "column_name": "isVerified"
+  },
+  {
+    "table_name": "fileInfo",
+    "column_name": "createdBy"
+  },
+  {
+    "table_name": "fileInfo",
+    "column_name": "updatedBy"
+  },
+  {
+    "table_name": "fileInfo",
+    "column_name": "deletedBy"
+  },
+  {
+    "table_name": "fileInfo",
+    "column_name": "createdAt"
+  },
+  {
+    "table_name": "fileInfo",
+    "column_name": "updatedAt"
+  },
+  {
+    "table_name": "fileInfo",
+    "column_name": "deletedAt"
+  },
+  {
+    "table_name": "firmwareInfo",
+    "column_name": "id"
+  },
+  {
+    "table_name": "firmwareInfo",
+    "column_name": "fwVersion"
+  },
+  {
+    "table_name": "firmwareInfo",
+    "column_name": "description"
+  },
+  {
+    "table_name": "firmwareInfo",
+    "column_name": "fileId"
+  },
+  {
+    "table_name": "firmwareInfo",
+    "column_name": "isActive"
+  },
+  {
+    "table_name": "firmwareInfo",
+    "column_name": "isVerified"
+  },
+  {
+    "table_name": "firmwareInfo",
+    "column_name": "deviceTypeId"
+  },
+  {
+    "table_name": "firmwareInfo",
+    "column_name": "createdBy"
+  },
+  {
+    "table_name": "firmwareInfo",
+    "column_name": "updatedBy"
+  },
+  {
+    "table_name": "firmwareInfo",
+    "column_name": "deletedBy"
+  },
+  {
+    "table_name": "firmwareInfo",
+    "column_name": "createdAt"
+  },
+  {
+    "table_name": "firmwareInfo",
+    "column_name": "updatedAt"
+  },
+  {
+    "table_name": "firmwareInfo",
+    "column_name": "deletedAt"
+  },
+  {
+    "table_name": "groupHierarchyInfo",
+    "column_name": "id"
+  },
+  {
+    "table_name": "groupHierarchyInfo",
+    "column_name": "groupLevel"
+  },
+  {
+    "table_name": "groupHierarchyInfo",
+    "column_name": "groupId"
+  },
+  {
+    "table_name": "groupHierarchyInfo",
+    "column_name": "levelA"
+  },
+  {
+    "table_name": "groupHierarchyInfo",
+    "column_name": "levelB"
+  },
+  {
+    "table_name": "groupHierarchyInfo",
+    "column_name": "levelC"
+  },
+  {
+    "table_name": "groupHierarchyInfo",
+    "column_name": "levelD"
+  },
+  {
+    "table_name": "groupHierarchyInfo",
+    "column_name": "levelE"
+  },
+  {
+    "table_name": "groupHierarchyInfo",
+    "column_name": "levelF"
+  },
+  {
+    "table_name": "groupHierarchyInfo",
+    "column_name": "levelG"
+  },
+  {
+    "table_name": "groupHierarchyInfo",
+    "column_name": "levelH"
+  },
+  {
+    "table_name": "groupHierarchyInfo",
+    "column_name": "levelI"
+  },
+  {
+    "table_name": "groupHierarchyInfo",
+    "column_name": "levelJ"
+  },
+  {
+    "table_name": "groupHierarchyInfo",
+    "column_name": "levelK"
+  },
+  {
+    "table_name": "groupHierarchyInfo",
+    "column_name": "isActive"
+  },
+  {
+    "table_name": "groupHierarchyInfo",
+    "column_name": "createdBy"
+  },
+  {
+    "table_name": "groupHierarchyInfo",
+    "column_name": "updatedBy"
+  },
+  {
+    "table_name": "groupHierarchyInfo",
+    "column_name": "deletedBy"
+  },
+  {
+    "table_name": "groupHierarchyInfo",
+    "column_name": "createdAt"
+  },
+  {
+    "table_name": "groupHierarchyInfo",
+    "column_name": "updatedAt"
+  },
+  {
+    "table_name": "groupHierarchyInfo",
+    "column_name": "deletedAt"
+  },
+  {
+    "table_name": "groupInfo",
+    "column_name": "id"
+  },
+  {
+    "table_name": "groupInfo",
+    "column_name": "groupName"
+  },
+  {
+    "table_name": "groupInfo",
+    "column_name": "groupDesc"
+  },
+  {
+    "table_name": "groupInfo",
+    "column_name": "groupLevel"
+  },
+  {
+    "table_name": "groupInfo",
+    "column_name": "imageId"
+  },
+  {
+    "table_name": "groupInfo",
+    "column_name": "isActive"
+  },
+  {
+    "table_name": "groupInfo",
+    "column_name": "createdBy"
+  },
+  {
+    "table_name": "groupInfo",
+    "column_name": "updatedBy"
+  },
+  {
+    "table_name": "groupInfo",
+    "column_name": "deletedBy"
+  },
+  {
+    "table_name": "groupInfo",
+    "column_name": "createdAt"
+  },
+  {
+    "table_name": "groupInfo",
+    "column_name": "updatedAt"
+  },
+  {
+    "table_name": "groupInfo",
+    "column_name": "deletedAt"
+  },
+  {
+    "table_name": "languageAudioDeviceRelationInfo",
+    "column_name": "id"
+  },
+  {
+    "table_name": "languageAudioDeviceRelationInfo",
+    "column_name": "languageID"
+  },
+  {
+    "table_name": "languageAudioDeviceRelationInfo",
+    "column_name": "deviceTypeId"
+  },
+  {
+    "table_name": "languageAudioDeviceRelationInfo",
+    "column_name": "isDefault"
+  },
+  {
+    "table_name": "languageAudioInfo",
+    "column_name": "id"
+  },
+  {
+    "table_name": "languageAudioInfo",
+    "column_name": "languageName"
+  },
+  {
+    "table_name": "languageAudioInfo",
+    "column_name": "languageDescription"
+  },
+  {
+    "table_name": "languageAudioInfo",
+    "column_name": "languageVersion"
+  },
+  {
+    "table_name": "languageAudioInfo",
+    "column_name": "gender"
+  },
+  {
+    "table_name": "languageAudioInfo",
+    "column_name": "fileId"
+  },
+  {
+    "table_name": "languageAudioInfo",
+    "column_name": "isActive"
+  },
+  {
+    "table_name": "languageAudioInfo",
+    "column_name": "isVerified"
+  },
+  {
+    "table_name": "languageAudioInfo",
+    "column_name": "isMerged"
+  },
+  {
+    "table_name": "languageAudioInfo",
+    "column_name": "createdBy"
+  },
+  {
+    "table_name": "languageAudioInfo",
+    "column_name": "updatedBy"
+  },
+  {
+    "table_name": "languageAudioInfo",
+    "column_name": "deletedBy"
+  },
+  {
+    "table_name": "languageAudioInfo",
+    "column_name": "createdAt"
+  },
+  {
+    "table_name": "languageAudioInfo",
+    "column_name": "updatedAt"
+  },
+  {
+    "table_name": "languageAudioInfo",
+    "column_name": "deletedAt"
+  },
+  {
+    "table_name": "manufacturerTypeInfo",
+    "column_name": "id"
+  },
+  {
+    "table_name": "manufacturerTypeInfo",
+    "column_name": "name"
+  },
+  {
+    "table_name": "manufacturerTypeInfo",
+    "column_name": "addressDetails1"
+  },
+  {
+    "table_name": "manufacturerTypeInfo",
+    "column_name": "addressDetails2"
+  },
+  {
+    "table_name": "manufacturerTypeInfo",
+    "column_name": "addressDetails3"
+  },
+  {
+    "table_name": "manufacturerTypeInfo",
+    "column_name": "email"
+  },
+  {
+    "table_name": "manufacturerTypeInfo",
+    "column_name": "mobileNo"
+  },
+  {
+    "table_name": "manufacturerTypeInfo",
+    "column_name": "isActive"
+  },
+  {
+    "table_name": "manufacturerTypeInfo",
+    "column_name": "createdBy"
+  },
+  {
+    "table_name": "manufacturerTypeInfo",
+    "column_name": "updatedBy"
+  },
+  {
+    "table_name": "manufacturerTypeInfo",
+    "column_name": "deletedBy"
+  },
+  {
+    "table_name": "manufacturerTypeInfo",
+    "column_name": "createdAt"
+  },
+  {
+    "table_name": "manufacturerTypeInfo",
+    "column_name": "updatedAt"
+  },
+  {
+    "table_name": "manufacturerTypeInfo",
+    "column_name": "deletedAt"
+  },
+  {
+    "table_name": "merchantAuthInfo",
+    "column_name": "id"
+  },
+  {
+    "table_name": "merchantAuthInfo",
+    "column_name": "merchantId"
+  },
+  {
+    "table_name": "merchantAuthInfo",
+    "column_name": "merchantDetailsConfirmed"
+  },
+  {
+    "table_name": "merchantAuthInfo",
+    "column_name": "merchantMobileNo"
+  },
+  {
+    "table_name": "merchantAuthInfo",
+    "column_name": "otp"
+  },
+  {
+    "table_name": "merchantAuthInfo",
+    "column_name": "otpCreatedAt"
+  },
+  {
+    "table_name": "merchantAuthInfo",
+    "column_name": "otpCheckFailedCount"
+  },
+  {
+    "table_name": "merchantAuthInfo",
+    "column_name": "dailyOtpRequestCount"
+  },
+  {
+    "table_name": "merchantAuthInfo",
+    "column_name": "otpUsed"
+  },
+  {
+    "table_name": "merchantAuthInfo",
+    "column_name": "otpLockedTill"
+  },
+  {
+    "table_name": "merchantAuthInfo",
+    "column_name": "mpin"
+  },
+  {
+    "table_name": "merchantAuthInfo",
+    "column_name": "mpinCreatedAt"
+  },
+  {
+    "table_name": "merchantAuthInfo",
+    "column_name": "mpinCheckFailedCount"
+  },
+  {
+    "table_name": "merchantAuthInfo",
+    "column_name": "mpinValid"
+  },
+  {
+    "table_name": "merchantAuthInfo",
+    "column_name": "resetMpinLockedTill"
+  },
+  {
+    "table_name": "merchantAuthInfo",
+    "column_name": "profileLockedTill"
+  },
+  {
+    "table_name": "merchantAuthInfo",
+    "column_name": "isStaticOTPEnabled"
+  },
+  {
+    "table_name": "merchantAuthInfo",
+    "column_name": "isActive"
+  },
+  {
+    "table_name": "merchantAuthInfo",
+    "column_name": "createdAt"
+  },
+  {
+    "table_name": "merchantAuthInfo",
+    "column_name": "updatedAt"
+  },
+  {
+    "table_name": "merchantAuthInfo",
+    "column_name": "updatedBy"
+  },
+  {
+    "table_name": "merchantAuthInfo",
+    "column_name": "deletedAt"
+  },
+  {
+    "table_name": "merchantInfo",
+    "column_name": "id"
+  },
+  {
+    "table_name": "merchantInfo",
+    "column_name": "reqRefNo"
+  },
+  {
+    "table_name": "merchantInfo",
+    "column_name": "merchantId"
+  },
+  {
+    "table_name": "merchantInfo",
+    "column_name": "groupId"
+  },
+  {
+    "table_name": "merchantInfo",
+    "column_name": "merchantCategoryCode"
+  },
+  {
+    "table_name": "merchantInfo",
+    "column_name": "merchantBusinessName"
+  },
+  {
+    "table_name": "merchantInfo",
+    "column_name": "merchantLegalName"
+  },
+  {
+    "table_name": "merchantInfo",
+    "column_name": "merchantAddressDetails1"
+  },
+  {
+    "table_name": "merchantInfo",
+    "column_name": "merchantAddressDetails2"
+  },
+  {
+    "table_name": "merchantInfo",
+    "column_name": "merchantAddressDetails3"
+  },
+  {
+    "table_name": "merchantInfo",
+    "column_name": "merchantCity"
+  },
+  {
+    "table_name": "merchantInfo",
+    "column_name": "merchantState"
+  },
+  {
+    "table_name": "merchantInfo",
+    "column_name": "merchantPincode"
+  },
+  {
+    "table_name": "merchantInfo",
+    "column_name": "merchantMobileNo"
+  },
+  {
+    "table_name": "merchantInfo",
+    "column_name": "merchantEmailId"
+  },
+  {
+    "table_name": "merchantInfo",
+    "column_name": "merchantContactName"
+  },
+  {
+    "table_name": "merchantInfo",
+    "column_name": "isBind"
+  },
+  {
+    "table_name": "merchantInfo",
+    "column_name": "deviceClientId"
+  },
+  {
+    "table_name": "merchantInfo",
+    "column_name": "merchantStage"
+  },
+  {
+    "table_name": "merchantInfo",
+    "column_name": "isActive"
+  },
+  {
+    "table_name": "merchantInfo",
+    "column_name": "createdBy"
+  },
+  {
+    "table_name": "merchantInfo",
+    "column_name": "createdAt"
+  },
+  {
+    "table_name": "merchantInfo",
+    "column_name": "updatedBy"
+  },
+  {
+    "table_name": "merchantInfo",
+    "column_name": "updatedAt"
+  },
+  {
+    "table_name": "merchantInfo",
+    "column_name": "deletedBy"
+  },
+  {
+    "table_name": "merchantInfo",
+    "column_name": "deletedAt"
+  },
+  {
+    "table_name": "merchantInfo",
+    "column_name": "assignedAt"
+  },
+  {
+    "table_name": "merchantInfo",
+    "column_name": "assignedBy"
+  },
+  {
+    "table_name": "merchantInfo",
+    "column_name": "unAssignedAt"
+  },
+  {
+    "table_name": "merchantInfo",
+    "column_name": "unAssignedBy"
+  },
+  {
+    "table_name": "merchantRelationInfo",
+    "column_name": "relationId"
+  },
+  {
+    "table_name": "merchantRelationInfo",
+    "column_name": "merchantId"
+  },
+  {
+    "table_name": "merchantRelationInfo",
+    "column_name": "isBind"
+  },
+  {
+    "table_name": "merchantRelationInfo",
+    "column_name": "isVerified"
+  },
+  {
+    "table_name": "merchantRelationInfo",
+    "column_name": "isActive"
+  },
+  {
+    "table_name": "merchantRelationInfo",
+    "column_name": "createdBy"
+  },
+  {
+    "table_name": "merchantRelationInfo",
+    "column_name": "createdAt"
+  },
+  {
+    "table_name": "merchantRelationInfo",
+    "column_name": "updatedBy"
+  },
+  {
+    "table_name": "merchantRelationInfo",
+    "column_name": "updatedAt"
+  },
+  {
+    "table_name": "merchantRelationInfo",
+    "column_name": "deletedBy"
+  },
+  {
+    "table_name": "merchantRelationInfo",
+    "column_name": "deletedAt"
+  },
+  {
+    "table_name": "monthlyActiveDevicesInfo",
+    "column_name": "id"
+  },
+  {
+    "table_name": "monthlyActiveDevicesInfo",
+    "column_name": "deviceId"
+  },
+  {
+    "table_name": "monthlyActiveDevicesInfo",
+    "column_name": "timeStamp"
+  },
+  {
+    "table_name": "monthlyActiveDevicesInfo",
+    "column_name": "createdBy"
+  },
+  {
+    "table_name": "monthlyActiveDevicesInfo",
+    "column_name": "createdAt"
+  },
+  {
+    "table_name": "mqttBrokerInfo",
+    "column_name": "id"
+  },
+  {
+    "table_name": "mqttBrokerInfo",
+    "column_name": "brokerAddr"
+  },
+  {
+    "table_name": "mqttBrokerInfo",
+    "column_name": "brokerPortNo"
+  },
+  {
+    "table_name": "mqttBrokerInfo",
+    "column_name": "brokerStatus"
+  },
+  {
+    "table_name": "mqttBrokerInfo",
+    "column_name": "devicesConnected"
+  },
+  {
+    "table_name": "mqttBrokerInfo",
+    "column_name": "connLimit"
+  },
+  {
+    "table_name": "mqttBrokerInfo",
+    "column_name": "createdAt"
+  },
+  {
+    "table_name": "mqttBrokerInfo",
+    "column_name": "updatedAt"
+  },
+  {
+    "table_name": "mqttBrokerInfo",
+    "column_name": "deletedAt"
+  },
+  {
+    "table_name": "mqttUserInfo",
+    "column_name": "id"
+  },
+  {
+    "table_name": "mqttUserInfo",
+    "column_name": "mqttBrokerId"
+  },
+  {
+    "table_name": "mqttUserInfo",
+    "column_name": "mqttSubTopic"
+  },
+  {
+    "table_name": "mqttUserInfo",
+    "column_name": "mqttPubTopic"
+  },
+  {
+    "table_name": "mqttUserInfo",
+    "column_name": "isConnected"
+  },
+  {
+    "table_name": "mqttUserInfo",
+    "column_name": "mqttTranStatus"
+  },
+  {
+    "table_name": "mqttUserInfo",
+    "column_name": "mqttAdvStatus"
+  },
+  {
+    "table_name": "mqttUserInfo",
+    "column_name": "deviceMode"
+  },
+  {
+    "table_name": "mqttUserInfo",
+    "column_name": "lastSeen"
+  },
+  {
+    "table_name": "mqttUserInfo",
+    "column_name": "isActive"
+  },
+  {
+    "table_name": "mqttUserInfo",
+    "column_name": "createdBy"
+  },
+  {
+    "table_name": "mqttUserInfo",
+    "column_name": "updatedBy"
+  },
+  {
+    "table_name": "mqttUserInfo",
+    "column_name": "deletedBy"
+  },
+  {
+    "table_name": "mqttUserInfo",
+    "column_name": "createdAt"
+  },
+  {
+    "table_name": "mqttUserInfo",
+    "column_name": "updatedAt"
+  },
+  {
+    "table_name": "mqttUserInfo",
+    "column_name": "deletedAt"
+  },
+  {
+    "table_name": "qrInfo",
+    "column_name": "id"
+  },
+  {
+    "table_name": "qrInfo",
+    "column_name": "merchantVPA"
+  },
+  {
+    "table_name": "qrInfo",
+    "column_name": "qrType"
+  },
+  {
+    "table_name": "qrInfo",
+    "column_name": "qrString"
+  },
+  {
+    "table_name": "qrInfo",
+    "column_name": "isActive"
+  },
+  {
+    "table_name": "qrInfo",
+    "column_name": "createdBy"
+  },
+  {
+    "table_name": "qrInfo",
+    "column_name": "createdAt"
+  },
+  {
+    "table_name": "qrInfo",
+    "column_name": "updatedBy"
+  },
+  {
+    "table_name": "qrInfo",
+    "column_name": "updatedAt"
+  },
+  {
+    "table_name": "qrInfo",
+    "column_name": "deletedBy"
+  },
+  {
+    "table_name": "qrInfo",
+    "column_name": "deletedAt"
+  },
+  {
+    "table_name": "qrRelationInfo",
+    "column_name": "relationId"
+  },
+  {
+    "table_name": "qrRelationInfo",
+    "column_name": "qrId"
+  },
+  {
+    "table_name": "qrRelationInfo",
+    "column_name": "isVerified"
+  },
+  {
+    "table_name": "qrRelationInfo",
+    "column_name": "isActive"
+  },
+  {
+    "table_name": "qrRelationInfo",
+    "column_name": "createdBy"
+  },
+  {
+    "table_name": "qrRelationInfo",
+    "column_name": "createdAt"
+  },
+  {
+    "table_name": "qrRelationInfo",
+    "column_name": "updatedBy"
+  },
+  {
+    "table_name": "qrRelationInfo",
+    "column_name": "updatedAt"
+  },
+  {
+    "table_name": "qrRelationInfo",
+    "column_name": "deletedBy"
+  },
+  {
+    "table_name": "qrRelationInfo",
+    "column_name": "deletedAt"
+  },
+  {
+    "table_name": "roleInfo",
+    "column_name": "id"
+  },
+  {
+    "table_name": "roleInfo",
+    "column_name": "roleName"
+  },
+  {
+    "table_name": "roleInfo",
+    "column_name": "roleDesc"
+  },
+  {
+    "table_name": "roleInfo",
+    "column_name": "isActive"
+  },
+  {
+    "table_name": "roleInfo",
+    "column_name": "createdBy"
+  },
+  {
+    "table_name": "roleInfo",
+    "column_name": "updatedBy"
+  },
+  {
+    "table_name": "roleInfo",
+    "column_name": "deletedBy"
+  },
+  {
+    "table_name": "roleInfo",
+    "column_name": "createdAt"
+  },
+  {
+    "table_name": "roleInfo",
+    "column_name": "updatedAt"
+  },
+  {
+    "table_name": "roleInfo",
+    "column_name": "deletedAt"
+  },
+  {
+    "table_name": "rolesAccessRightsInfo",
+    "column_name": "id"
+  },
+  {
+    "table_name": "rolesAccessRightsInfo",
+    "column_name": "roleId"
+  },
+  {
+    "table_name": "rolesAccessRightsInfo",
+    "column_name": "accessRightId"
+  },
+  {
+    "table_name": "rolesAccessRightsInfo",
+    "column_name": "isActive"
+  },
+  {
+    "table_name": "rolesAccessRightsInfo",
+    "column_name": "createdBy"
+  },
+  {
+    "table_name": "rolesAccessRightsInfo",
+    "column_name": "updatedBy"
+  },
+  {
+    "table_name": "rolesAccessRightsInfo",
+    "column_name": "deletedBy"
+  },
+  {
+    "table_name": "rolesAccessRightsInfo",
+    "column_name": "createdAt"
+  },
+  {
+    "table_name": "rolesAccessRightsInfo",
+    "column_name": "updatedAt"
+  },
+  {
+    "table_name": "rolesAccessRightsInfo",
+    "column_name": "deletedAt"
+  },
+  {
+    "table_name": "serverInfo",
+    "column_name": "id"
+  },
+  {
+    "table_name": "serverInfo",
+    "column_name": "serverHostName"
+  },
+  {
+    "table_name": "serverInfo",
+    "column_name": "serverPortNo"
+  },
+  {
+    "table_name": "serverInfo",
+    "column_name": "serverKeepAlive"
+  },
+  {
+    "table_name": "serverInfo",
+    "column_name": "authType"
+  },
+  {
+    "table_name": "serverInfo",
+    "column_name": "mqttQOS"
+  },
+  {
+    "table_name": "serverInfo",
+    "column_name": "isActive"
+  },
+  {
+    "table_name": "serverInfo",
+    "column_name": "isVerified"
+  },
+  {
+    "table_name": "serverInfo",
+    "column_name": "serverType"
+  },
+  {
+    "table_name": "serverInfo",
+    "column_name": "defaultServer"
+  },
+  {
+    "table_name": "serverInfo",
+    "column_name": "createdBy"
+  },
+  {
+    "table_name": "serverInfo",
+    "column_name": "updatedBy"
+  },
+  {
+    "table_name": "serverInfo",
+    "column_name": "deletedBy"
+  },
+  {
+    "table_name": "serverInfo",
+    "column_name": "createdAt"
+  },
+  {
+    "table_name": "serverInfo",
+    "column_name": "updatedAt"
+  },
+  {
+    "table_name": "serverInfo",
+    "column_name": "deletedAt"
+  },
+  {
+    "table_name": "simInfo",
+    "column_name": "iccid"
+  },
+  {
+    "table_name": "simInfo",
+    "column_name": "simProviderId"
+  },
+  {
+    "table_name": "simInfo",
+    "column_name": "activationDate"
+  },
+  {
+    "table_name": "simInfo",
+    "column_name": "expiryDate"
+  },
+  {
+    "table_name": "simInfo",
+    "column_name": "dataType"
+  },
+  {
+    "table_name": "simInfo",
+    "column_name": "dataUsed"
+  },
+  {
+    "table_name": "simInfo",
+    "column_name": "dataUnits"
+  },
+  {
+    "table_name": "simInfo",
+    "column_name": "planName"
+  },
+  {
+    "table_name": "simInfo",
+    "column_name": "planStatus"
+  },
+  {
+    "table_name": "simInfo",
+    "column_name": "smsUnits"
+  },
+  {
+    "table_name": "simInfo",
+    "column_name": "smsUsed"
+  },
+  {
+    "table_name": "simInfo",
+    "column_name": "deviceId"
+  },
+  {
+    "table_name": "simInfo",
+    "column_name": "isActive"
+  },
+  {
+    "table_name": "simInfo",
+    "column_name": "createdBy"
+  },
+  {
+    "table_name": "simInfo",
+    "column_name": "updatedBy"
+  },
+  {
+    "table_name": "simInfo",
+    "column_name": "deletedBy"
+  },
+  {
+    "table_name": "simInfo",
+    "column_name": "createdAt"
+  },
+  {
+    "table_name": "simInfo",
+    "column_name": "updatedAt"
+  },
+  {
+    "table_name": "simInfo",
+    "column_name": "deletedAt"
+  },
+  {
+    "table_name": "simOperatorInfo",
+    "column_name": "id"
+  },
+  {
+    "table_name": "simOperatorInfo",
+    "column_name": "operatorId"
+  },
+  {
+    "table_name": "simOperatorInfo",
+    "column_name": "operatorName"
+  },
+  {
+    "table_name": "simOperatorInfo",
+    "column_name": "isActive"
+  },
+  {
+    "table_name": "simOperatorInfo",
+    "column_name": "createdBy"
+  },
+  {
+    "table_name": "simOperatorInfo",
+    "column_name": "updatedBy"
+  },
+  {
+    "table_name": "simOperatorInfo",
+    "column_name": "deletedBy"
+  },
+  {
+    "table_name": "simOperatorInfo",
+    "column_name": "createdAt"
+  },
+  {
+    "table_name": "simOperatorInfo",
+    "column_name": "updatedAt"
+  },
+  {
+    "table_name": "simOperatorInfo",
+    "column_name": "deletedAt"
+  },
+  {
+    "table_name": "simProfileInfo",
+    "column_name": "id"
+  },
+  {
+    "table_name": "simProfileInfo",
+    "column_name": "profileId"
+  },
+  {
+    "table_name": "simProfileInfo",
+    "column_name": "imsi"
+  },
+  {
+    "table_name": "simProfileInfo",
+    "column_name": "msisdn"
+  },
+  {
+    "table_name": "simProfileInfo",
+    "column_name": "simIccid"
+  },
+  {
+    "table_name": "simProfileInfo",
+    "column_name": "operatorName"
+  },
+  {
+    "table_name": "simProfileInfo",
+    "column_name": "operatorId"
+  },
+  {
+    "table_name": "simProfileInfo",
+    "column_name": "isWhiteListed"
+  },
+  {
+    "table_name": "simProfileInfo",
+    "column_name": "smsStatus"
+  },
+  {
+    "table_name": "simProfileInfo",
+    "column_name": "profilePathInSim"
+  },
+  {
+    "table_name": "simProfileInfo",
+    "column_name": "priority"
+  },
+  {
+    "table_name": "simProfileInfo",
+    "column_name": "simStatus"
+  },
+  {
+    "table_name": "simProfileInfo",
+    "column_name": "planName"
+  },
+  {
+    "table_name": "simProfileInfo",
+    "column_name": "planCode"
+  },
+  {
+    "table_name": "simProfileInfo",
+    "column_name": "apnType"
+  },
+  {
+    "table_name": "simProfileInfo",
+    "column_name": "apnName"
+  },
+  {
+    "table_name": "simProfileInfo",
+    "column_name": "apnIpType"
+  },
+  {
+    "table_name": "simProfileInfo",
+    "column_name": "dataUsed"
+  },
+  {
+    "table_name": "simProfileInfo",
+    "column_name": "dataType"
+  },
+  {
+    "table_name": "simProfileInfo",
+    "column_name": "smsUsage"
+  },
+  {
+    "table_name": "simProfileInfo",
+    "column_name": "lastStatus"
+  },
+  {
+    "table_name": "simProfileInfo",
+    "column_name": "lastSafeCustodyUpdate"
+  },
+  {
+    "table_name": "simProfileInfo",
+    "column_name": "totalUpdateCount"
+  },
+  {
+    "table_name": "simProfileInfo",
+    "column_name": "isActive"
+  },
+  {
+    "table_name": "simProfileInfo",
+    "column_name": "activationDate"
+  },
+  {
+    "table_name": "simProfileInfo",
+    "column_name": "expiryDate"
+  },
+  {
+    "table_name": "simProfileInfo",
+    "column_name": "createdBy"
+  },
+  {
+    "table_name": "simProfileInfo",
+    "column_name": "updatedBy"
+  },
+  {
+    "table_name": "simProfileInfo",
+    "column_name": "deletedBy"
+  },
+  {
+    "table_name": "simProfileInfo",
+    "column_name": "createdAt"
+  },
+  {
+    "table_name": "simProfileInfo",
+    "column_name": "updatedAt"
+  },
+  {
+    "table_name": "simProfileInfo",
+    "column_name": "deletedAt"
+  },
+  {
+    "table_name": "systemAudioDeviceRelationInfo",
+    "column_name": "id"
+  },
+  {
+    "table_name": "systemAudioDeviceRelationInfo",
+    "column_name": "systemID"
+  },
+  {
+    "table_name": "systemAudioDeviceRelationInfo",
+    "column_name": "deviceTypeId"
+  },
+  {
+    "table_name": "systemAudioDeviceRelationInfo",
+    "column_name": "isDefault"
+  },
+  {
+    "table_name": "systemAudioInfo",
+    "column_name": "id"
+  },
+  {
+    "table_name": "systemAudioInfo",
+    "column_name": "systemAudioName"
+  },
+  {
+    "table_name": "systemAudioInfo",
+    "column_name": "systemAudioDescription"
+  },
+  {
+    "table_name": "systemAudioInfo",
+    "column_name": "systemAudioVersion"
+  },
+  {
+    "table_name": "systemAudioInfo",
+    "column_name": "gender"
+  },
+  {
+    "table_name": "systemAudioInfo",
+    "column_name": "fileId"
+  },
+  {
+    "table_name": "systemAudioInfo",
+    "column_name": "isActive"
+  },
+  {
+    "table_name": "systemAudioInfo",
+    "column_name": "isVerified"
+  },
+  {
+    "table_name": "systemAudioInfo",
+    "column_name": "createdBy"
+  },
+  {
+    "table_name": "systemAudioInfo",
+    "column_name": "updatedBy"
+  },
+  {
+    "table_name": "systemAudioInfo",
+    "column_name": "deletedBy"
+  },
+  {
+    "table_name": "systemAudioInfo",
+    "column_name": "createdAt"
+  },
+  {
+    "table_name": "systemAudioInfo",
+    "column_name": "updatedAt"
+  },
+  {
+    "table_name": "systemAudioInfo",
+    "column_name": "deletedAt"
+  },
+  {
+    "table_name": "terminalInfo",
+    "column_name": "id"
+  },
+  {
+    "table_name": "terminalInfo",
+    "column_name": "terminalId"
+  },
+  {
+    "table_name": "terminalInfo",
+    "column_name": "isActive"
+  },
+  {
+    "table_name": "terminalInfo",
+    "column_name": "createdBy"
+  },
+  {
+    "table_name": "terminalInfo",
+    "column_name": "createdAt"
+  },
+  {
+    "table_name": "terminalInfo",
+    "column_name": "deletedBy"
+  },
+  {
+    "table_name": "terminalInfo",
+    "column_name": "deletedAt"
+  },
+  {
+    "table_name": "terminalRelationInfo",
+    "column_name": "relationId"
+  },
+  {
+    "table_name": "terminalRelationInfo",
+    "column_name": "terminalId"
+  },
+  {
+    "table_name": "terminalRelationInfo",
+    "column_name": "isVerified"
+  },
+  {
+    "table_name": "terminalRelationInfo",
+    "column_name": "isActive"
+  },
+  {
+    "table_name": "terminalRelationInfo",
+    "column_name": "createdBy"
+  },
+  {
+    "table_name": "terminalRelationInfo",
+    "column_name": "createdAt"
+  },
+  {
+    "table_name": "terminalRelationInfo",
+    "column_name": "updatedBy"
+  },
+  {
+    "table_name": "terminalRelationInfo",
+    "column_name": "updatedAt"
+  },
+  {
+    "table_name": "terminalRelationInfo",
+    "column_name": "deletedBy"
+  },
+  {
+    "table_name": "terminalRelationInfo",
+    "column_name": "deletedAt"
+  },
+  {
+    "table_name": "transactionInfo",
+    "column_name": "id"
+  },
+  {
+    "table_name": "transactionInfo",
+    "column_name": "reqRefNo"
+  },
+  {
+    "table_name": "transactionInfo",
+    "column_name": "rrn"
+  },
+  {
+    "table_name": "transactionInfo",
+    "column_name": "transactionType"
+  },
+  {
+    "table_name": "transactionInfo",
+    "column_name": "messageOriginType"
+  },
+  {
+    "table_name": "transactionInfo",
+    "column_name": "transactionMode"
+  },
+  {
+    "table_name": "transactionInfo",
+    "column_name": "amount"
+  },
+  {
+    "table_name": "transactionInfo",
+    "column_name": "txnTime"
+  },
+  {
+    "table_name": "transactionInfo",
+    "column_name": "time"
+  },
+  {
+    "table_name": "transactionInfo",
+    "column_name": "deviceId"
+  },
+  {
+    "table_name": "transactionInfo",
+    "column_name": "expirationTime"
+  },
+  {
+    "table_name": "transactionInfo",
+    "column_name": "tMsgRecvByServer"
+  },
+  {
+    "table_name": "transactionInfo",
+    "column_name": "tMsgRecvFromDev"
+  },
+  {
+    "table_name": "transactionInfo",
+    "column_name": "tMsgAck"
+  },
+  {
+    "table_name": "transactionInfo",
+    "column_name": "tMsgTimeElapsed"
+  },
+  {
+    "table_name": "transactionInfo",
+    "column_name": "audioPlayed"
+  },
+  {
+    "table_name": "transactionInfo",
+    "column_name": "deviceAvail"
+  },
+  {
+    "table_name": "transactionInfo",
+    "column_name": "createdAt"
+  },
+  {
+    "table_name": "userAPIKeysInfo",
+    "column_name": "id"
+  },
+  {
+    "table_name": "userAPIKeysInfo",
+    "column_name": "userId"
+  },
+  {
+    "table_name": "userAPIKeysInfo",
+    "column_name": "APIKey"
+  },
+  {
+    "table_name": "userAPIKeysInfo",
+    "column_name": "isActive"
+  },
+  {
+    "table_name": "userAPIKeysInfo",
+    "column_name": "createdBy"
+  },
+  {
+    "table_name": "userAPIKeysInfo",
+    "column_name": "updatedBy"
+  },
+  {
+    "table_name": "userAPIKeysInfo",
+    "column_name": "deletedBy"
+  },
+  {
+    "table_name": "userAPIKeysInfo",
+    "column_name": "createdAt"
+  },
+  {
+    "table_name": "userAPIKeysInfo",
+    "column_name": "updatedAt"
+  },
+  {
+    "table_name": "userAPIKeysInfo",
+    "column_name": "deletedAt"
+  },
+  {
+    "table_name": "userGroupInfo",
+    "column_name": "id"
+  },
+  {
+    "table_name": "userGroupInfo",
+    "column_name": "userId"
+  },
+  {
+    "table_name": "userGroupInfo",
+    "column_name": "groupId"
+  },
+  {
+    "table_name": "userGroupInfo",
+    "column_name": "groupLevel"
+  },
+  {
+    "table_name": "userGroupInfo",
+    "column_name": "isActive"
+  },
+  {
+    "table_name": "userGroupInfo",
+    "column_name": "createdBy"
+  },
+  {
+    "table_name": "userGroupInfo",
+    "column_name": "updatedBy"
+  },
+  {
+    "table_name": "userGroupInfo",
+    "column_name": "deletedBy"
+  },
+  {
+    "table_name": "userGroupInfo",
+    "column_name": "createdAt"
+  },
+  {
+    "table_name": "userGroupInfo",
+    "column_name": "updatedAt"
+  },
+  {
+    "table_name": "userGroupInfo",
+    "column_name": "deletedAt"
+  },
+  {
+    "table_name": "userInfo",
+    "column_name": "id"
+  },
+  {
+    "table_name": "userInfo",
+    "column_name": "firstName"
+  },
+  {
+    "table_name": "userInfo",
+    "column_name": "lastName"
+  },
+  {
+    "table_name": "userInfo",
+    "column_name": "employeeCode"
+  },
+  {
+    "table_name": "userInfo",
+    "column_name": "location"
+  },
+  {
+    "table_name": "userInfo",
+    "column_name": "countryCode"
+  },
+  {
+    "table_name": "userInfo",
+    "column_name": "mobileNo"
+  },
+  {
+    "table_name": "userInfo",
+    "column_name": "emailId"
+  },
+  {
+    "table_name": "userInfo",
+    "column_name": "password"
+  },
+  {
+    "table_name": "userInfo",
+    "column_name": "roleId"
+  },
+  {
+    "table_name": "userInfo",
+    "column_name": "imageId"
+  },
+  {
+    "table_name": "userInfo",
+    "column_name": "autoResetPassword"
+  },
+  {
+    "table_name": "userInfo",
+    "column_name": "lastOTPRequest"
+  },
+  {
+    "table_name": "userInfo",
+    "column_name": "isActive"
+  },
+  {
+    "table_name": "userInfo",
+    "column_name": "allowLogin"
+  },
+  {
+    "table_name": "userInfo",
+    "column_name": "createdBy"
+  },
+  {
+    "table_name": "userInfo",
+    "column_name": "updatedBy"
+  },
+  {
+    "table_name": "userInfo",
+    "column_name": "deletedBy"
+  },
+  {
+    "table_name": "userInfo",
+    "column_name": "createdAt"
+  },
+  {
+    "table_name": "userInfo",
+    "column_name": "updatedAt"
+  },
+  {
+    "table_name": "userInfo",
+    "column_name": "deletedAt"
+  },
+  {
+    "table_name": "userOTPInfo",
+    "column_name": "id"
+  },
+  {
+    "table_name": "userOTPInfo",
+    "column_name": "userId"
+  },
+  {
+    "table_name": "userOTPInfo",
+    "column_name": "otp"
+  },
+  {
+    "table_name": "userOTPInfo",
+    "column_name": "expirationTime"
+  },
+  {
+    "table_name": "userOTPInfo",
+    "column_name": "used"
+  },
+  {
+    "table_name": "userOTPInfo",
+    "column_name": "createdAt"
+  },
+  {
+    "table_name": "userOTPInfo",
+    "column_name": "updatedAt"
+  }
+]

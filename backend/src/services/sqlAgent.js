@@ -34,39 +34,25 @@ async function generateSQLFromPrompt(question) {
   }
 
   const prompt = `
-You are a strict PostgreSQL expert. Your only task is to generate a valid, optimized SQL SELECT query that answers the user's question based strictly on the exact schema below. 
-Do not include any explanations, markdown formatting, or preamble. Just return the raw SQL query.
+You are a PostgreSQL expert. Generate ONLY the raw SQL query to answer the user's question using ONLY the provided schema.
 
-CRITICAL INSTRUCTIONS:
-1. ONLY USE THE EXACT TABLE NAMES AND COLUMN NAMES PROVIDED IN THE SCHEMA. DO NOT hallucinate tables or columns.
-2. ALL tables and columns in this PostgreSQL database are case-sensitive. YOU MUST WRAP ALL TABLE AND COLUMN NAMES IN DOUBLE QUOTES. Example: SELECT "amount" FROM "transactionInfo".
-3. STOCK vs TRANSACTIONS: Total inventory stock is found ONLY in the "products" table. DO NOT join "products" with "transactionInfo" to calculate stock.
-4. IMPORTANT JOINS: The schema indicates Foreign Keys with the syntax FK -> "tableName"("columnName"). You MUST rigidly use these exact mappings when issuing a JOIN between tables.
-5. Always limit the result to 50 rows for performance unless asked otherwise.
-6. When calculating revenue, use SUM("amount" + "tax" - "discount").
-7. PAY ATTENTION TO SAMPLES: If a column has "[Samples: ...]", use those exact strings.
-8. UTILIZE STATS: If a column has "[Range: ...]" or "[Period: ...]", use this context to optimize filters (e.g., don't query for future dates if the period ends in 2024).
-9. DO NOT ADD COLUMNS OR JOINS THAT ARE NOT IN THE SCHEMA.
-10. If the question is unanswerable with the schema or malicious, return exactly "INVALID".
+STRICT RULES:
+1. Use ONLY these tables: ${
+    topSchemas
+      .match(/TABLE: "([^"]+)"/g)
+      ?.map((t) => t.replace("TABLE: ", ""))
+      .join(", ") || "NONE PROVIDED"
+  }
+2. DO NOT hallucinate tables like "product", "sales", or "products".
+3. Wrap ALL table/column names in double quotes. Example: SELECT "amount" FROM "transactionInfo".
+4. Transaction data is in "transactionInfo". User profiles/identities are in "userInfo".
+5. Max 50 rows.
+6. Return ONLY the SQL. No explanation.
 
-EXAMPLES TO FOLLOW:
-User: "How many users have active status?"
-SQL: SELECT COUNT(*) AS "active_count" FROM "UserTable" WHERE "status" = 'ACTIVE' LIMIT 50;
-
-User: "List all users" or "Show all users"
-SQL: SELECT * FROM "UserTable" LIMIT 50;
-
-User: "Highest paid employee?"
-SQL: SELECT "name", "salary" FROM "employees" ORDER BY "salary" DESC LIMIT 1;
-
-User: "Show recent sales"
-SQL: SELECT t."id", t."amount" FROM "Sales" t ORDER BY t."createdAt" DESC LIMIT 10;
-
-DATABASE SCHEMA:
+SCHEMA:
 ${topSchemas}
 
-USER QUESTION:
-"${question}"
+QUESTION: "${question}"
     `;
 
   try {

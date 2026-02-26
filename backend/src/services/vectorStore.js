@@ -15,21 +15,23 @@ let memoryStore = [];
 /**
  * Saves a table's schema, mathematical embedding, and AI summary to memory.
  */
-function addTableEmbedding(tableName, schemaText, embedding, summary = '') {
-    if (!embedding || embedding.length === 0) {
-        throw new Error('Invalid embedding vector provided.');
-    }
+function addTableEmbedding(tableName, schemaText, embedding, summary = "") {
+  if (!embedding || embedding.length === 0) {
+    throw new Error("Invalid embedding vector provided.");
+  }
 
-    const data = { tableName, schemaText, embedding, summary };
+  const data = { tableName, schemaText, embedding, summary };
 
-    // Check if table already exists, update if so
-    const existingIndex = memoryStore.findIndex(t => t.tableName === tableName);
-    if (existingIndex >= 0) {
-        memoryStore[existingIndex] = data;
-    } else {
-        memoryStore.push(data);
-    }
-    console.log(`[Vector Store] Table "${tableName}" saved ${summary ? '(with AI summary)' : ''}. Memory store size: ${memoryStore.length}`);
+  // Check if table already exists, update if so
+  const existingIndex = memoryStore.findIndex((t) => t.tableName === tableName);
+  if (existingIndex >= 0) {
+    memoryStore[existingIndex] = data;
+  } else {
+    memoryStore.push(data);
+  }
+  console.log(
+    `[Vector Store] Table "${tableName}" saved ${summary ? "(with AI summary)" : ""}. Memory store size: ${memoryStore.length}`,
+  );
 }
 
 /**
@@ -38,89 +40,112 @@ function addTableEmbedding(tableName, schemaText, embedding, summary = '') {
  * -1.0 means exactly opposite.
  */
 function cosineSimilarity(vecA, vecB) {
-    if (vecA.length !== vecB.length) return 0;
+  if (vecA.length !== vecB.length) return 0;
 
-    let dotProduct = 0;
-    let normA = 0;
-    let normB = 0;
+  let dotProduct = 0;
+  let normA = 0;
+  let normB = 0;
 
-    for (let i = 0; i < vecA.length; i++) {
-        dotProduct += vecA[i] * vecB[i];
-        normA += vecA[i] * vecA[i];
-        normB += vecB[i] * vecB[i];
-    }
+  for (let i = 0; i < vecA.length; i++) {
+    dotProduct += vecA[i] * vecB[i];
+    normA += vecA[i] * vecA[i];
+    normB += vecB[i] * vecB[i];
+  }
 
-    if (normA === 0 || normB === 0) return 0;
-    return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
+  if (normA === 0 || normB === 0) return 0;
+  return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
 }
 
 /**
  * Searches the memory store for the top K tables using Hybrid Search (Vector + Keyword)
  */
-function searchSimilarTables(questionEmbedding, questionText = '', limit = 5) {
-    if (memoryStore.length === 0) return [];
+function searchSimilarTables(questionEmbedding, questionText = "", limit = 5) {
+  if (memoryStore.length === 0) return [];
 
-    const lowerQuestion = questionText.toLowerCase();
+  const lowerQuestion = questionText.toLowerCase();
 
-    // Calculate similarity score between the question and every table in memory
-    const scoredTables = memoryStore.map(storeObj => {
-        let score = cosineSimilarity(questionEmbedding, storeObj.embedding);
+  // Calculate similarity score between the question and every table in memory
+  const scoredTables = memoryStore.map((storeObj) => {
+    let score = cosineSimilarity(questionEmbedding, storeObj.embedding);
 
-        // KEYWORD BOOST: If the exact table name (or its singular/plural form) is mentioned in the question, 
-        // give it a massive semantic boost to ensure it stays in the Top 5.
-        const tableName = storeObj.tableName.toLowerCase();
-        // Simple heuristic: check if table name is in question, or if singularized table name is in question
-        const singularTable = tableName.endsWith('s') ? tableName.slice(0, -1) : tableName;
+    // KEYWORD BOOST: Split camelCase table names into individual keywords
+    // (e.g. "userInfo" -> ["user", "info"])
+    const tableName = storeObj.tableName;
+    const keywords = tableName
+      .replace(/([A-Z])/g, " $1")
+      .toLowerCase()
+      .split(" ");
 
-        if (lowerQuestion.includes(tableName) || (singularTable.length > 3 && lowerQuestion.includes(singularTable))) {
-            score += 0.5; // Massive boost for keyword match
-        }
+    let keywordMatch = false;
+    for (const kw of keywords) {
+      if (kw.length < 3) continue; // Skip short words like "id"
 
-        return {
-            tableName: storeObj.tableName,
-            schemaText: storeObj.schemaText,
-            summary: storeObj.summary,
-            score: score
-        };
-    });
+      // Check if keyword or its singular form is in the question
+      const singularKw = kw.endsWith("s") ? kw.slice(0, -1) : kw;
+      if (
+        lowerQuestion.includes(kw) ||
+        (singularKw.length > 3 && lowerQuestion.includes(singularKw))
+      ) {
+        keywordMatch = true;
+        break;
+      }
+    }
 
-    // Sort descending by score (highest similarity first)
-    scoredTables.sort((a, b) => b.score - a.score);
+    if (keywordMatch || lowerQuestion.includes(tableName.toLowerCase())) {
+      score += 0.8; // Increased massive boost for keyword match
+    }
 
-    // Return the top K closest matches
-    return scoredTables.slice(0, limit);
+    return {
+      tableName: storeObj.tableName,
+      schemaText: storeObj.schemaText,
+      summary: storeObj.summary,
+      score: score,
+    };
+  });
+
+  // Sort descending by score (highest similarity first)
+  scoredTables.sort((a, b) => b.score - a.score);
+
+  // Return the top K closest matches
+  return scoredTables.slice(0, limit);
 }
 
 /**
  * Returns the raw string containing only the top 5 schemas joined together.
  */
-function getTopSchemasString(questionEmbedding, questionText = '', limit = 5) {
-    const topMatches = searchSimilarTables(questionEmbedding, questionText, Math.min(limit, memoryStore.length));
+function getTopSchemasString(questionEmbedding, questionText = "", limit = 5) {
+  const topMatches = searchSimilarTables(
+    questionEmbedding,
+    questionText,
+    Math.min(limit, memoryStore.length),
+  );
 
-    let combinedSchema = '';
-    for (const match of topMatches) {
-        if (match.summary) {
-            combinedSchema += `PURPOSE: ${match.summary}\n`;
-        }
-        combinedSchema += match.schemaText + '\n\n';
+  let combinedSchema = "";
+  for (const match of topMatches) {
+    if (match.summary) {
+      combinedSchema += `PURPOSE: ${match.summary}\n`;
     }
+    combinedSchema += match.schemaText + "\n\n";
+  }
 
-    const matchedNames = topMatches.map(m => `${m.tableName} (${(m.score * 100).toFixed(1)}%)`).join(', ');
-    console.log(`[Vector Store] Top hybrid matches: ${matchedNames}`);
+  const matchedNames = topMatches
+    .map((m) => `${m.tableName} (${(m.score * 100).toFixed(1)}%)`)
+    .join(", ");
+  console.log(`[Vector Store] Top hybrid matches: ${matchedNames}`);
 
-    return combinedSchema.trim();
+  return combinedSchema.trim();
 }
 
 /**
  * Wipes the store (useful for server restarts/schema reloads)
  */
 function clearStore() {
-    memoryStore = [];
+  memoryStore = [];
 }
 
 module.exports = {
-    addTableEmbedding,
-    searchSimilarTables,
-    getTopSchemasString,
-    clearStore
+  addTableEmbedding,
+  searchSimilarTables,
+  getTopSchemasString,
+  clearStore,
 };
