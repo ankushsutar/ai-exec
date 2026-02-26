@@ -32,6 +32,7 @@ async function getLLMSummaryStream(analyticsData, res, question = "") {
         model: "qwen2.5:0.5b",
         prompt: prompt,
         stream: true,
+        timeout: 30000, // 30 second timeout
       },
       {
         responseType: "stream",
@@ -56,10 +57,14 @@ async function getLLMSummaryStream(analyticsData, res, question = "") {
 async function generateEmbedding(text) {
   try {
     // qwen2.5 model natively supports the /api/embeddings endpoint in Ollama
-    const response = await axios.post(EMBEDDING_URL, {
-      model: "qwen2.5:0.5b",
-      prompt: text,
-    });
+    const response = await axios.post(
+      EMBEDDING_URL,
+      {
+        model: "qwen2.5:0.5b",
+        prompt: text,
+      },
+      { timeout: 30000 },
+    ); // 30 second timeout
 
     return response.data.embedding;
   } catch (error) {

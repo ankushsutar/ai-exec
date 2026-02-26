@@ -29,15 +29,15 @@ async function handleAskData(req, res, next) {
           promptVariation = `${question}\n\nCRITICAL WARNING: Your previous SQL failed with this exact PostgreSQL error: "${lastError}". \n\nYou MUST fix this by ONLY using the exact tables and columns provided in the schema. Do NOT invent or guess tables (e.g., if there is no 'salaries' table, look for a 'salary' column in 'employees').`;
         }
 
-        console.time("SQL_Gen_Time");
+        console.time(`SQL_Gen_Time_${requestId}`);
         sqlQuery = await generateSQLFromPrompt(promptVariation);
-        console.timeEnd("SQL_Gen_Time");
+        console.timeEnd(`SQL_Gen_Time_${requestId}`);
 
         // 2. Fetch Data Dynamically
         console.log("\nExecuting Dynamic SQL...");
-        console.time("DB_Fetch_Time");
+        console.time(`DB_Fetch_Time_${requestId}`);
         dbData = await executeDynamicQuery(sqlQuery);
-        console.timeEnd("DB_Fetch_Time");
+        console.timeEnd(`DB_Fetch_Time_${requestId}`);
         console.log("Fetched dbData length:", dbData?.length);
 
         // If we get here, the query succeeded! Break the retry loop.
@@ -63,9 +63,9 @@ async function handleAskData(req, res, next) {
 
     // 3. Process Analytics Dynamically
     console.log("\nProcessing Analytics Dynamically...");
-    console.time("Analytics_Time");
+    console.time(`Analytics_Time_${requestId}`);
     analytics = processAnalytics(dbData);
-    console.timeEnd("Analytics_Time");
+    console.timeEnd(`Analytics_Time_${requestId}`);
     console.log("Analytics Result KPI Count:", analytics?.kpis?.length);
 
     console.log("\nSending dynamic data response back to client.");
@@ -88,9 +88,10 @@ async function handleAskData(req, res, next) {
 async function handleAskSummary(req, res, next) {
   try {
     const { analytics, question } = req.body;
+    const requestId = Date.now().toString().slice(-4);
     console.log("\n=======================================");
-    console.log("--- New Summary Request ---");
-    console.time("TotalSummaryRequestTime");
+    console.log(`--- New Summary Request [#${requestId}] ---`);
+    console.time(`TotalSummaryRequestTime_${requestId}`);
 
     if (!analytics) {
       return res.status(400).json({ summary: "No analytics provided." });
@@ -107,7 +108,7 @@ async function handleAskSummary(req, res, next) {
     await getLLMSummaryStream(analytics, res, question);
 
     console.log("\nSummary stream started.");
-    console.timeEnd("TotalSummaryRequestTime");
+    console.timeEnd(`TotalSummaryRequestTime_${requestId}`);
     console.log("=======================================\n");
 
     // Note: res is ended by the getLLMSummaryStream func

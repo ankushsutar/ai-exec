@@ -56,11 +56,15 @@ QUESTION: "${question}"
     `;
 
   try {
-    const response = await axios.post(config.ollamaUrl, {
-      model: "qwen2.5:0.5b", // Using the fast local model configured
-      prompt: prompt,
-      stream: false,
-    });
+    const response = await axios.post(
+      config.ollamaUrl,
+      {
+        model: "qwen2.5:0.5b", // Using the fast local model configured
+        prompt: prompt,
+        stream: false,
+      },
+      { timeout: 30000 },
+    ); // 30 second timeout
 
     const rawText = response.data.response;
 
