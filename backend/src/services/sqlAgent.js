@@ -2,17 +2,34 @@ const axios = require("axios");
 const config = require("../config/env");
 const { generateEmbedding } = require("./ollamaService");
 const { getTopSchemasString } = require("./vectorStore");
+const { getBestFewShotExample } = require("./knowledgeBase");
 
-async function generateSQLFromPrompt(question) {
+async function generateSQLFromPrompt(question, originalQuestion = null) {
   console.log("[SQL Agent] Prompting LLM for SQL query conversion...");
 
   let topSchemas = "";
+  let fewShotExample = "";
+  const searchKey = originalQuestion || question;
+
   try {
     console.log(
-      "[SQL Agent] Performing Semantic Vector Search for relevant tables...",
+      `[SQL Agent] Performing Semantic Vector Search using key: "${searchKey.substring(0, 50)}..."`,
     );
-    const questionEmbedding = await generateEmbedding(question);
-    topSchemas = getTopSchemasString(questionEmbedding, question, 5); // Pass question for keyword boost
+    const questionEmbedding = await generateEmbedding(searchKey);
+    topSchemas = getTopSchemasString(
+      questionEmbedding,
+      searchKey,
+      10,
+      "postgres",
+    );
+
+    // Filter out "transactionInfo" from topSchemas to prevent hallucination in SQL
+    topSchemas = topSchemas
+      .split("\n\n")
+      .filter((s) => !s.includes('TABLE: "transactionInfo"'))
+      .join("\n\n");
+
+    fewShotExample = getBestFewShotExample(questionEmbedding);
 
     if (!topSchemas) {
       console.warn(
@@ -33,8 +50,21 @@ async function generateSQLFromPrompt(question) {
     }
   }
 
+  const concepts = require("../config/concepts.json");
+
   const prompt = `
 You are a PostgreSQL expert. Generate ONLY the raw SQL query to answer the user's question using ONLY the provided schema.
+
+BUSINESS CONCEPTS:
+- Mapping Path: ${concepts.relationships[0].path}
+- Key Logic: ${concepts.relationships[0].description}
+- Terminology: ${JSON.stringify(concepts.aliases)}
+
+STRICT RULES:
+1. RETURN ONLY RAW SQL. No markdown.
+2. TRANSACTION DATA PROHIBITED: "transactionInfo" is off-limits.
+3. JOINS: Use "merchantRelationInfo" -> "terminalRelationInfo".
+4. MANDATORY: Use "terminalId" as the final device identifier.
 
 STRICT RULES:
 1. Use ONLY these tables: ${
@@ -45,13 +75,13 @@ STRICT RULES:
   }
 2. DO NOT hallucinate tables like "product", "sales", or "products".
 3. Wrap ALL table/column names in double quotes. Example: SELECT "amount" FROM "transactionInfo".
-4. Transaction data is in "transactionInfo". User profiles/identities are in "userInfo".
+4. Follow foreign key relationships exactly as specified.
 5. Max 50 rows.
 6. Return ONLY the SQL. No explanation.
 
 SCHEMA:
 ${topSchemas}
-
+${fewShotExample}
 QUESTION: "${question}"
     `;
 
@@ -68,12 +98,19 @@ QUESTION: "${question}"
 
     const rawText = response.data.response;
 
-    // Clean up any potential markdown ticks the LLM might have ignored instructions and added
+    // Clean up markdown and extract ONLY the SQL block
     let sql = rawText
       .replace(/\`\`\`sql/gi, "")
       .replace(/\`\`\`/g, "")
       .replace(/\`/g, '"') // Replace any remaining backticks with double quotes for PG compatibility
       .trim();
+
+    // Small models often add preamble or summary text.
+    // We attempt to extract everything from the first SELECT to the first semicolon (or end of string).
+    const selectMatch = sql.match(/SELECT[\s\S]*?(?:;|$)/i);
+    if (selectMatch) {
+      sql = selectMatch[0].trim();
+    }
 
     // The small LLM often forgets to quote identifiers. Let's force-quote known tables.
     const tableMatches = [...topSchemas.matchAll(/TABLE: "([^"]+)"/g)].map(

@@ -1,60 +1,85 @@
-# AI-Exec System Architecture
+# AI-Exec: Technical Architecture Guide
 
-This document explains the technical architecture and AI processing pipeline of the AI-Exec system, specifically focusing on how it achieves high reliability with small Language Models (LLMs) like `qwen2.5:0.5b`.
+This document provides a deep dive into the AI-Exec system architecture, designed to provide high-accuracy natural language querying across multiple database technologies.
 
-## Overview
+## 1. System Overview
 
-The system provides a Natural Language to SQL (NL2SQL) interface with dynamic analytics. It uses a hybrid RAG (Retrieval-Augmented Generation) approach to feed only the most relevant database schema to the LLM.
+AI-Exec is an Intelligent Query Engine that transforms natural language questions into executable queries (SQL for PostgreSQL, MQL for MongoDB). It uses a hybrid RAG approach to handle complex schemas with small Language Models (LLMs) like `qwen2.5:0.5b`.
+
+### Tech Stack
+
+- **Frontend**: Angular (Standalone Components), Highcharts for visualization, TailwindCSS for styling.
+- **Backend**: Node.js, Express.
+- **Databases**: PostgreSQL (Relational) & MongoDB (Document-based).
+- **AI/LLM**: Ollama (Local LLM), `qwen2.5:0.5b` model for both embeddings and generation.
+
+---
+
+## 2. Multi-Database AI Pipeline
+
+The system uses a **Dynamic Router** to identify where the requested data resides.
 
 ```mermaid
 graph TD
-    A[User Question] --> B[NLP Dictionary Normalizer]
-    B --> C[Vector Store RAG]
-    C --> D[Strict Context Pruner]
-    D --> E[SQL Agent - qwen2.5:0.5b]
-    E --> F[SQL Extractor & Identifier Fixer]
-    F --> G[PostgreSQL Database]
-    G --> H[Analytics Engine]
+    A[User Question] --> B[Dynamic Router - Intelligent Broker]
+    B -- "Relational" --> C[SQL Agent]
+    B -- "NoSQL" --> D[Mongo Agent]
+    B -- "Hybrid" --> E[Cross-Database Stitcher]
+
+    C --> F[PostgreSQL]
+    D --> G[MongoDB]
+    E --> F
+    E --> G
+
+    F --> H[Unified Analytics Engine]
+    G --> H
     H --> I[Summary LLM - qwen2.5:0.5b]
     I --> J[User Response]
 ```
 
-## Core Components
+### Request Flow Sequence
 
-### 1. Dynamic Schema Analyzer (`dbService.js`)
+1. **Intelligence Brokering**: The Router analyzes the question against the Vector Store to determine target databases.
+2. **Specialized Generation**: Either `sqlAgent.js` (SQL) or a future `mongoAgent.js` (MQL) generates the database-specific query.
+3. **Execution & Analytics**: Data is fetched and normalized by the `analyticsEngine.js`.
+4. **Streaming Summary**: The results are summarized by the LLM and streamed to the UI.
 
-Unlike static systems, AI-Exec extracts the database schema in real-time.
+---
 
-- **Categorical Extraction:** It identifies columns with low cardinality and extracts exact sample values.
-- **Relationship Mapping:** It explicitly maps Foreign Key joins to prevent the LLM from inventing join conditions.
-- **NLP Dictionary:** It builds a mapping of natural language terms (e.g., "Active") to exact SQL constraints (e.g., `"status" = 'ACTIVE'`).
+## 3. Core Engine Components
 
-### 2. Hybrid RAG Vector Store (`vectorStore.js`)
+### 3.1. Hybrid RAG Vector Store (`vectorStore.js`)
 
-To handle 40+ tables with a small LLM, we use an in-memory vector store with custom weighting.
+Handles database schema retrieval for high-context questions.
 
-- **Keyword Boosting:** If a user mentions "user" or "merchant", the system applies a mathematical boost to ensure the `userInfo` or `merchantInfo` tables are prioritized over semantic similarity.
-- **Strict Context Pruning:** If a "Definitive Match" is found (score > 0.9), the system aggressively hides all other irrelevant tables. This eliminates "distraction" for the LLM.
+- **Support**: Maps both SQL Table schemas and MongoDB Collection samples.
+- **Search**: Hybrid search combining Cosine Similarity and Keyword Boosting.
+- **Keyword Logic**: Splits camelCase names (e.g., `userInfo` -> `user`) to prioritize relevant sources.
 
-### 3. SQL Agent Strategy (`sqlAgent.js`)
+### 3.2. Dynamic Query Agents
 
-The SQL Agent is optimized for deterministic output.
+- **SQL Agent (`sqlAgent.js`)**: Optimized for deterministic PostgreSQL output with auto-identifier quoting.
+- **Future Mongo Agent**: Designed for high-performance MongoDB Aggregation pipeline generation.
 
-- **Schema Grounding:** The prompt is structured so the Schema is the very first thing the LLM sees, ensuring it anchors on the provided columns.
-- **Deterministic Flags:** Uses `temperature: 0` to prevent hallucinations and "creative" column guessing.
-- **Auto-Identifier Quoting:** A post-processor automatically wraps table and column names in double quotes to satisfy PostgreSQL case-sensitivity requirements.
+### 3.3. Analytics Engine (`analyticsEngine.js`)
 
-### 4. analytics Engine (`analyticsEngine.js`)
+Extracts business value from raw results, regardless of the source database.
 
-Raw data is processed into human-readable KPIs.
+- **KPI Generation**: Automatically calculates Totals, Averages, and Extreme values.
+- **Visual Mapping**: identifies "Label" and "Value" pairs for chart generation.
 
-- **Intelligent Exclusion:** Columns like `reqRefNo`, `merchantId`, or `pincode` are automatically detected and excluded from mathematical sums/averages.
-- **KPI Generation:** Extracts record counts and meaningful financial totals while ignoring non-additive numeric codes.
+---
 
-### 5. Zero-Knowledge Summarizer (`ollamaService.js`)
+## 4. Reliability & Edge Case Handling
 
-To prevent the LLM from making up stories (e.g., hallucinating prisons or business risks), the summarizer operates in "Zero-Knowledge" mode. It is forced to strictly repeat only the data points provided in the JSON context.
+- **Automatic Retries**: `askController.js` implements a 3-attempt retry loop with error-feedback grounding.
+- **Unique Observability**: Every request has a unique ID for tracing concurrent overlapping sessions.
+- **Service Timeouts**: 30-second timeouts on all LLM calls prevent server hangs.
 
-## AI Optimization
+---
 
-The system is specifically tuned for local execution on small hardware. By using **Strict Pruning** and **NLP Pre-processing**, we achieve performance comparable to 7B+ models using a tiny 0.5B model.
+## 5. Security & Isolation
+
+- **Read-Only Intent**: Strict system prompts prevent data mutation (INSERT/UPDATE/DELETE).
+- **Rate Limiting**: `express-rate-limit` protects endpoints from abuse.
+- **Local Isolation**: All AI processing is local; no data perimeters are breached.

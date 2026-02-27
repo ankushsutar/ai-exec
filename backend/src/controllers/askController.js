@@ -1,5 +1,4 @@
-const { generateSQLFromPrompt } = require("../services/sqlAgent");
-const { executeDynamicQuery } = require("../services/dbService");
+const { orchestrateHybridQuery } = require("../services/hybridBroker");
 const { processAnalytics } = require("../utils/analyticsEngine");
 const { getLLMSummaryStream } = require("../services/ollamaService");
 
@@ -8,54 +7,38 @@ async function handleAskData(req, res, next) {
     const { question } = req.body;
     const requestId = Date.now().toString().slice(-4);
     console.log("\n=======================================");
-    console.log(`--- New Dynamic SQL Data Request [#${requestId}] ---`);
+    console.log(`--- New Hybrid Data Request [#${requestId}] ---`);
     console.time(`TotalRequest_${requestId}`);
     console.log("Received Question:", question);
 
-    let sqlQuery, dbData, analytics;
+    let dbData, analytics;
     let attempt = 0;
-    let maxAttempts = 3;
+    let maxAttempts = 2; // Reduced as Broker handles internal retries if needed
     let lastError = "";
 
     while (attempt < maxAttempts) {
       try {
         attempt++;
-        console.log(`\n--- Attempt ${attempt}/${maxAttempts} ---`);
+        console.log(`\n--- Hybrid Attempt ${attempt}/${maxAttempts} ---`);
 
-        // 1. Generate SQL via LLM Agent
-        console.log("\nGenerating SQL for prompt...");
-        let promptVariation = question;
-        if (lastError) {
-          promptVariation = `${question}\n\nCRITICAL WARNING: Your previous SQL failed with this exact PostgreSQL error: "${lastError}". \n\nYou MUST fix this by ONLY using the exact tables and columns provided in the schema. Do NOT invent or guess tables (e.g., if there is no 'salaries' table, look for a 'salary' column in 'employees').`;
-        }
+        console.time(`Orchestration_Time_${requestId}_att${attempt}`);
+        dbData = await orchestrateHybridQuery(question, requestId);
+        console.timeEnd(`Orchestration_Time_${requestId}_att${attempt}`);
 
-        console.time(`SQL_Gen_Time_${requestId}`);
-        sqlQuery = await generateSQLFromPrompt(promptVariation);
-        console.timeEnd(`SQL_Gen_Time_${requestId}`);
-
-        // 2. Fetch Data Dynamically
-        console.log("\nExecuting Dynamic SQL...");
-        console.time(`DB_Fetch_Time_${requestId}`);
-        dbData = await executeDynamicQuery(sqlQuery);
-        console.timeEnd(`DB_Fetch_Time_${requestId}`);
         console.log("Fetched dbData length:", dbData?.length);
-
-        // If we get here, the query succeeded! Break the retry loop.
         break;
-      } catch (agentError) {
+      } catch (err) {
         console.error(
-          `Agent/DB Execution error on attempt ${attempt}:`,
-          agentError.message,
+          `Hybrid Orchestration error on attempt ${attempt}:`,
+          err.message,
         );
-        lastError = agentError.message;
-
+        lastError = err.message;
         if (attempt >= maxAttempts) {
-          // Fallback for UI if generating/executing SQL fails completely after retries
           return res.status(400).json({
             kpis: [],
             chartData: [],
             intent: "UNKNOWN",
-            error: `Could not generate a valid SQL query after ${maxAttempts} attempts. Final Error: ${lastError}`,
+            error: `Hybrid Broker failed after ${maxAttempts} attempts. Error: ${lastError}`,
           });
         }
       }

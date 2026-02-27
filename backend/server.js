@@ -32,12 +32,21 @@ const {
 } = require("./src/services/schemaPruner");
 const { generateEmbedding } = require("./src/services/ollamaService");
 const { addTableEmbedding } = require("./src/services/vectorStore");
+const { initializeKnowledgeBase } = require("./src/services/knowledgeBase");
+const {
+  generateSchemaSummary,
+  loadCache,
+  saveCache,
+} = require("./src/services/trainingService");
 
 // Start Server
 app.listen(config.port, async () => {
   console.log(`Server is running on port ${config.port}`);
 
   try {
+    // 0. Load Knowledge Cache
+    const knowledgeCache = loadCache();
+
     // 1. Get raw list of all tables
     const rawTables = await extractAllTableNames();
 
@@ -63,9 +72,19 @@ app.listen(config.port, async () => {
           .trim();
         const tableName = rawTableName.replace(/^"|"$/g, ""); // Strip leading/trailing quotes for store key
         try {
-          process.stdout.write(`[Server] Embedding table: ${tableName}... `);
-          const embedding = await generateEmbedding(trimmedBlock);
-          addTableEmbedding(tableName, trimmedBlock, embedding);
+          process.stdout.write(
+            `[Server] Training & Embedding table: ${tableName}... `,
+          );
+          const summary = await generateSchemaSummary(
+            tableName,
+            trimmedBlock,
+            "postgres",
+            knowledgeCache,
+          );
+          const embedding = await generateEmbedding(
+            `${trimmedBlock}\nPURPOSE: ${summary}`,
+          );
+          addTableEmbedding(tableName, trimmedBlock, embedding, summary);
           process.stdout.write("Done.\n");
         } catch (embedErr) {
           process.stdout.write("FAILED.\n");
@@ -80,6 +99,78 @@ app.listen(config.port, async () => {
         );
       }
     }
+
+    // Save cache after postgres training
+    saveCache(knowledgeCache);
+
+    // 5. Populate MongoDB Collections for RAG
+    const {
+      listCollections,
+      extractMongoSchema,
+    } = require("./src/services/mongoService");
+    try {
+      console.log("[Server] Discovering MongoDB Collections...");
+      const mongoCollections = await listCollections();
+      const mongoSchemaString = await extractMongoSchema(mongoCollections);
+
+      const mongoBlocks = mongoSchemaString
+        .split("\n\n")
+        .filter((block) => block.trim() !== "");
+
+      console.log(
+        `[Server] Found ${mongoBlocks.length} MongoDB collections to embed.`,
+      );
+
+      for (const block of mongoBlocks) {
+        const trimmedBlock = block.trim();
+        if (trimmedBlock.startsWith('COLLECTION: "')) {
+          const collectionName = trimmedBlock
+            .split("\n")[0]
+            .replace('COLLECTION: "', "")
+            .replace('"', "")
+            .trim();
+
+          try {
+            process.stdout.write(
+              `[Server] Training & Embedding collection: ${collectionName}... `,
+            );
+            const summary = await generateSchemaSummary(
+              collectionName,
+              trimmedBlock,
+              "mongodb",
+              knowledgeCache,
+            );
+            const embedding = await generateEmbedding(
+              `${trimmedBlock}\nPURPOSE: ${summary}`,
+            );
+            addTableEmbedding(
+              collectionName,
+              trimmedBlock,
+              embedding,
+              summary,
+              "mongodb",
+            );
+            process.stdout.write("Done.\n");
+          } catch (embedErr) {
+            process.stdout.write("FAILED.\n");
+            console.error(
+              `[Server] Error embedding ${collectionName}:`,
+              embedErr.message,
+            );
+          }
+        }
+      }
+
+      // Save cache after mongo training
+      saveCache(knowledgeCache);
+    } catch (mongoErr) {
+      console.warn(
+        "[Server] MongoDB discovery failed or no collections found. Skipping MongoDB indexing.",
+      );
+    }
+
+    // 6. Initialize Golden Queries Knowledge Base
+    await initializeKnowledgeBase();
 
     console.log(
       "[Server] AI Platform Boot Sequence Complete. Ready for queries.",

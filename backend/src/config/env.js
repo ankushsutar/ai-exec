@@ -1,13 +1,14 @@
-require('dotenv').config();
+require("dotenv").config();
 
 module.exports = {
-    port: process.env.PORT || 3000,
-    db: {
-        host: process.env.DB_HOST,
-        port: process.env.DB_PORT,
-        user: process.env.DB_USER,
-        password: process.env.DB_PASSWORD,
-        database: process.env.DB_NAME,
-    },
-    ollamaUrl: process.env.OLLAMA_URL || 'http://localhost:11434/api/generate'
+  port: process.env.PORT || 3000,
+  db: {
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+  },
+  mongoUri: process.env.MONGO_URI || "mongodb://localhost:27017/ai_exec_demo",
+  ollamaUrl: process.env.OLLAMA_URL || "http://localhost:11434/api/generate",
 };

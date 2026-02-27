@@ -40,9 +40,11 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     }
 
     suggestions = [
-        "How many devices are in deviceConfigInfo?",
-        "Show top 5 merchants by revenue from transactionInfo",
-        "List all users in the Admin userGroup"
+        "What is the total transaction amount for today?",
+        "Show top 5 merchants by revenue volume",
+        "How many devices are currently inactive?",
+        "List all users in the 'Admin' group",
+        "Show revenue trend for the last 7 days"
     ];
 
     ngOnInit(): void {

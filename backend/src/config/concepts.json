@@ -1,0 +1,34 @@
+{
+    "relationships": [
+        {
+            "source": "merchantInfo",
+            "target": "terminalRelationInfo",
+            "path": "merchantInfo.merchantId -> merchantRelationInfo.merchantId -> terminalRelationInfo.relationId",
+            "description": "Primary path to link merchants to terminal IDs (deviceId in Mongo)."
+        }
+    ],
+    "aliases": {
+        "terminalId": "deviceId",
+        "revenue": "transactionHistoryInfo.amount",
+        "volume": "transactionHistoryInfo.amount"
+    },
+    "guardrails": {
+        "sql": {
+            "avoid": [
+                "transactionInfo",
+                "deviceIdentInfo"
+            ],
+            "must_use": [
+                "merchantRelationInfo",
+                "terminalRelationInfo"
+            ]
+        },
+        "mongo": {
+            "primary_transactions": "transactionHistoryInfo",
+            "avoid": [
+                "merchantSummaryInfo",
+                "transactionInfo"
+            ]
+        }
+    }
+}

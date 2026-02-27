@@ -15,12 +15,18 @@ let memoryStore = [];
 /**
  * Saves a table's schema, mathematical embedding, and AI summary to memory.
  */
-function addTableEmbedding(tableName, schemaText, embedding, summary = "") {
+function addTableEmbedding(
+  tableName,
+  schemaText,
+  embedding,
+  summary = "",
+  dbType = "postgres",
+) {
   if (!embedding || embedding.length === 0) {
     throw new Error("Invalid embedding vector provided.");
   }
 
-  const data = { tableName, schemaText, embedding, summary };
+  const data = { tableName, schemaText, embedding, summary, dbType };
 
   // Check if table already exists, update if so
   const existingIndex = memoryStore.findIndex((t) => t.tableName === tableName);
@@ -59,13 +65,25 @@ function cosineSimilarity(vecA, vecB) {
 /**
  * Searches the memory store for the top K tables using Hybrid Search (Vector + Keyword)
  */
-function searchSimilarTables(questionEmbedding, questionText = "", limit = 5) {
+function searchSimilarTables(
+  questionEmbedding,
+  questionText = "",
+  limit = 5,
+  dbType = null,
+) {
   if (memoryStore.length === 0) return [];
 
   const lowerQuestion = questionText.toLowerCase();
 
-  // Calculate similarity score between the question and every table in memory
-  const scoredTables = memoryStore.map((storeObj) => {
+  // Filter by dbType if provided
+  const targetStore = dbType
+    ? memoryStore.filter((item) => item.dbType === dbType)
+    : memoryStore;
+
+  if (targetStore.length === 0) return [];
+
+  // Calculate similarity score between the question and every table in the filtered store
+  const scoredTables = targetStore.map((storeObj) => {
     let score = cosineSimilarity(questionEmbedding, storeObj.embedding);
 
     // KEYWORD BOOST: Split camelCase table names into individual keywords
@@ -92,13 +110,14 @@ function searchSimilarTables(questionEmbedding, questionText = "", limit = 5) {
     }
 
     if (keywordMatch || lowerQuestion.includes(tableName.toLowerCase())) {
-      score += 0.8; // Increased massive boost for keyword match
+      score += 0.4; // Reduced boost to prevent noise from overpowering semantic similarity
     }
 
     return {
       tableName: storeObj.tableName,
       schemaText: storeObj.schemaText,
       summary: storeObj.summary,
+      dbType: storeObj.dbType, // Added dbType here
       score: score,
     };
   });
@@ -113,15 +132,22 @@ function searchSimilarTables(questionEmbedding, questionText = "", limit = 5) {
 /**
  * Returns the raw string containing only the top 5 schemas joined together.
  */
-function getTopSchemasString(questionEmbedding, questionText = "", limit = 5) {
+function getTopSchemasString(
+  questionEmbedding,
+  questionText = "",
+  limit = 5,
+  dbType = null,
+) {
   const topMatches = searchSimilarTables(
     questionEmbedding,
     questionText,
-    Math.min(limit, memoryStore.length),
+    limit,
+    dbType,
   );
 
   let combinedSchema = "";
   for (const match of topMatches) {
+    combinedSchema += `SOURCE: ${match.dbType}\n`;
     if (match.summary) {
       combinedSchema += `PURPOSE: ${match.summary}\n`;
     }
@@ -148,4 +174,5 @@ module.exports = {
   searchSimilarTables,
   getTopSchemasString,
   clearStore,
+  cosineSimilarity,
 };

@@ -1,46 +1,27 @@
 [
     {
-        "question": "Show all active devices",
-        "sql": "SELECT \"deviceInfo\".* FROM \"deviceInfo\" JOIN \"deviceRelationInfo\" ON \"deviceInfo\".\"id\" = \"deviceRelationInfo\".\"deviceId\" WHERE \"deviceRelationInfo\".\"isActive\" = true;"
+        "question": "Show top 5 merchants by revenue",
+        "type": "hybrid",
+        "context": "Calculates revenue per merchant by joining Postgres metadata with Mongo transactions.",
+        "steps": [
+            "Query SQL for merchant names and terminalIds",
+            "Query Mongo transactionHistoryInfo for revenue by terminalId",
+            "Enrich results with names"
+        ]
     },
     {
-        "question": "List all merchants in Mumbai",
-        "sql": "SELECT * FROM \"merchantInfo\" WHERE \"merchantCity\" = 'Mumbai';"
+        "question": "show transactions",
+        "type": "mql",
+        "content": "{ \"collection\": \"transactionHistoryInfo\", \"query\": {}, \"limit\": 50 }"
     },
     {
-        "question": "What is the total transaction amount for today?",
-        "sql": "SELECT SUM(CAST(\"amount\" AS NUMERIC)) as \"totalAmount\" FROM \"transactionInfo\" WHERE \"createdAt\"::date = CURRENT_DATE;"
+        "question": "list all merchants",
+        "type": "sql",
+        "content": "SELECT \"merchantBusinessName\", \"merchantId\" FROM \"merchantInfo\" LIMIT 10;"
     },
     {
-        "question": "Show transactions for merchants in Maharashtra",
-        "sql": "SELECT \"transactionInfo\".* FROM \"transactionInfo\" JOIN \"merchantInfo\" ON \"transactionInfo\".\"merchantId\" = \"merchantInfo\".\"merchantId\" WHERE \"merchantInfo\".\"merchantState\" = 'Maharashtra';"
-    },
-    {
-        "question": "List all male gender advertisers",
-        "sql": "SELECT * FROM \"advertisementAudioInfo\" WHERE \"gender\" = 'Male';"
-    },
-    {
-        "question": "How many devices are in the Maharashtra group?",
-        "sql": "SELECT COUNT(*) FROM \"deviceConfigInfo\" JOIN \"groupInfo\" ON \"deviceConfigInfo\".\"groupId\" = \"groupInfo\".\"id\" WHERE \"groupInfo\".\"groupName\" = 'Maharashtra';"
-    },
-    {
-        "question": "Show the top 5 highest transactions",
-        "sql": "SELECT * FROM \"transactionInfo\" ORDER BY CAST(\"amount\" AS NUMERIC) DESC LIMIT 5;"
-    },
-    {
-        "question": "Which merchants are currently active?",
-        "sql": "SELECT * FROM \"merchantInfo\" WHERE \"isActive\" = true;"
-    },
-    {
-        "question": "Show connectivity history for device 1001",
-        "sql": "SELECT * FROM \"connectivityHistoryInfo\" WHERE \"deviceId\" = 1001 ORDER BY \"createdAt\" DESC;"
-    },
-    {
-        "question": "List advertisement audios in Hindi",
-        "sql": "SELECT * FROM \"advertisementAudioInfo\" WHERE \"advertisementLanguage\" = 'Hindi' OR \"advertisementName\" ILIKE '%Hindi%';"
-    },
-    {
-        "question": "Show top 5 merchants by revenue from transactionInfo",
-        "sql": "SELECT m.\"merchantName\", SUM(CAST(t.\"amount\" AS NUMERIC)) as \"totalRevenue\" FROM \"transactionInfo\" t JOIN \"deviceRelationInfo\" dr ON t.\"deviceId\" = dr.\"deviceId\" JOIN \"merchantRelationInfo\" mr ON dr.\"relationId\" = mr.\"relationId\" JOIN \"merchantInfo\" m ON mr.\"merchantId\" = m.\"merchantId\" GROUP BY m.\"merchantName\" ORDER BY \"totalRevenue\" DESC LIMIT 5;"
+        "question": "find device for merchant Ankush",
+        "type": "sql",
+        "content": "SELECT m.\"merchantBusinessName\", tr.\"terminalId\" \nFROM \"merchantInfo\" m \nJOIN \"merchantRelationInfo\" mr ON m.\"merchantId\" = mr.\"merchantId\" \nJOIN \"terminalRelationInfo\" tr ON mr.\"relationId\" = tr.\"relationId\" \nWHERE m.\"merchantBusinessName\" ILIKE '%Ankush%';"
     }
 ]
