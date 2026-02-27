@@ -33,25 +33,30 @@ async function dispatchIntent(question) {
   console.log(`[Intent Dispatcher] Analyzing intent for: "${question}"`);
 
   const prompt = `
-    You are a Query Router for a multi-database system.
-    Goal: Categorize the user question into "SQL", "MONGODB", or "HYBRID".
+You are AI-Exec, an enterprise-grade data intelligence engine.
+Goal: Categorize the user question into "SQL", "MONGODB", or "HYBRID" to route it to the correct engine.
 
-    DATABASES:
-    - SQL (PostgreSQL): PostgreSQL contains metadata, merchant info, device relations.
-    - MONGODB: MongoDB contains "transactionHistoryInfo" (all transactions, revenue, volume).
+DATABASES:
+- SQL (PostgreSQL): Contains metadata, merchant info, device relations.
+- MONGODB: Contains transaction history, revenue, volume.
 
-    CATEGories:
-    - SQL: Use for finding metadata, listing merchants/users, checking status.
-    - MONGODB: Use for direct transaction searches or system-wide metrics.
-    - HYBRID: Use when filtering by NAME (Postgres) but needing metrics/transactions (Mongo).
+CATEGORIES:
+- SQL: Use for finding metadata, listing merchants/users, checking status.
+- MONGODB: Use for direct transaction searches or system-wide metrics.
+- HYBRID: Use when filtering by metadata (Postgres) but needing metrics/transactions (Mongo).
 
-    FEW-SHOT:
-    - "top 5 merchants by revenue" -> HYBRID
-    - "show transactions" -> MONGODB
-    - "list all merchants" -> SQL
+FEW-SHOT:
+- "top 5 merchants by revenue" -> HYBRID
+- "show transactions" -> MONGODB
+- "list all merchants" -> SQL
 
-    QUESTION: "${question}"
-    CATEGORY (ONLY ONE WORD):
+QUESTION: "${question}"
+
+OUTPUT RULES:
+- Return ONLY the category name: "SQL", "MONGODB", or "HYBRID".
+- Do not explain.
+- Do not add markdown.
+- Do not add commentary.
   `;
 
   try {

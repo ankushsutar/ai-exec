@@ -11,6 +11,25 @@
  * ]
  */
 let memoryStore = [];
+const embeddingCache = new Map();
+
+/**
+ * Gets a cached embedding if available.
+ */
+function getCachedEmbedding(text) {
+  return embeddingCache.get(text);
+}
+
+/**
+ * Caches an embedding.
+ */
+function setCachedEmbedding(text, embedding) {
+  if (embeddingCache.size > 1000) {
+    // Basic eviction: clear if too large
+    embeddingCache.clear();
+  }
+  embeddingCache.set(text, embedding);
+}
 
 /**
  * Saves a table's schema, mathematical embedding, and AI summary to memory.
@@ -175,4 +194,6 @@ module.exports = {
   getTopSchemasString,
   clearStore,
   cosineSimilarity,
+  getCachedEmbedding,
+  setCachedEmbedding,
 };

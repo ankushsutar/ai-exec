@@ -2,14 +2,21 @@ function processAnalytics(data) {
   if (!data || data.length === 0)
     return { summary: "No data available", kpis: [], chartData: [] };
 
-  // Strip sensitive columns from the data before processing
-  const sensitiveKeywords = ["password", "token", "secret", "hash"];
+  // Mask sensitive columns from the data before processing
+  const sensitiveKeywords = [
+    "password",
+    "token",
+    "secret",
+    "hash",
+    "cvv",
+    "key",
+  ];
   data = data.map((row) => {
     const safeRow = { ...row };
     Object.keys(safeRow).forEach((key) => {
       const lowerKey = key.toLowerCase();
       if (sensitiveKeywords.some((keyword) => lowerKey.includes(keyword))) {
-        delete safeRow[key];
+        safeRow[key] = "[MASKED]";
       }
     });
     return safeRow;

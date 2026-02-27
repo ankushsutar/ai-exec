@@ -31,8 +31,15 @@ async function orchestrateHybridQuery(question, requestId) {
 
   if (intent === "SQL") {
     console.log("[Hybrid Broker] SQL primary intent detected.");
-    const sql = await generateSQLFromPrompt(question);
-    return await executeDynamicQuery(sql);
+    let sql = await generateSQLFromPrompt(question);
+    try {
+      return await executeDynamicQuery(sql);
+    } catch (error) {
+      console.warn("[Hybrid Broker] SQL failed, attempting self-correction...");
+      const { fixSQLFromError } = require("./sqlAgent");
+      const fixedSql = await fixSQLFromError(question, sql, error.message);
+      return await executeDynamicQuery(fixedSql);
+    }
   }
 
   if (intent === "MONGODB") {
@@ -44,19 +51,22 @@ async function orchestrateHybridQuery(question, requestId) {
     "[Hybrid Broker] HYBRID Bridge detected: Postgres Metadata -> MongoDB Transactions.",
   );
 
+  const startTime = Date.now();
+
   // STEP 2: Query Postgres to get IDs/Context
-  // We ask the SQL Agent to find the mapping first.
-  // IMPORTANT: We must find the link between merchant/user and deviceId.
   const contextPrompt = `Find the "id" and "deviceId" for any merchants or users mentioned here: "${question}". 
   HINT: You likely need to JOIN "merchantInfo", "merchantRelationInfo", and "deviceIdentInfo" to find the "id" that maps to a MongoDB "deviceId". 
   Return a simple table with the result.`;
 
-  const sqlAgent = require("./sqlAgent"); // Lazy load or ensure it's imported
+  const sqlAgent = require("./sqlAgent");
   const metadataSql = await sqlAgent.generateSQLFromPrompt(
     contextPrompt,
     question,
   );
+
+  const pgStart = Date.now();
   const metadataResults = await executeDynamicQuery(metadataSql);
+  const pgDuration = Date.now() - pgStart;
 
   if (!metadataResults || metadataResults.length === 0) {
     console.log(
@@ -74,9 +84,11 @@ async function orchestrateHybridQuery(question, requestId) {
   );
 
   // STEP 3: Query MongoDB with retrieved IDs
+  const mongoStart = Date.now();
   const mongoResults = await executeDirectMongoQuery(question, {
     deviceId: { $in: deviceIds },
   });
+  const mongoDuration = Date.now() - mongoStart;
 
   // STEP 4: ENRICHMENT - Join Postgres Names with Mongo Data
   const nameMap = {};
@@ -87,9 +99,15 @@ async function orchestrateHybridQuery(question, requestId) {
         r.merchantBusinessName || r.merchantName || r.merchantId;
   });
 
+  const totalDuration = Date.now() - startTime;
+  console.log(
+    `[Hybrid Broker] Timing: Total=${totalDuration}ms | PG=${pgDuration}ms | Mongo=${mongoDuration}ms`,
+  );
+
   return mongoResults.map((r) => ({
     ...r,
     merchantName: nameMap[String(r.deviceId)] || "Unknown Merchant",
+    _profiling: { totalDuration, pgDuration, mongoDuration },
   }));
 }
 

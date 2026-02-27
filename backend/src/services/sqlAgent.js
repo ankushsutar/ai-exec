@@ -4,8 +4,24 @@ const { generateEmbedding } = require("./ollamaService");
 const { getTopSchemasString } = require("./vectorStore");
 const { getBestFewShotExample } = require("./knowledgeBase");
 
-async function generateSQLFromPrompt(question, originalQuestion = null) {
-  console.log("[SQL Agent] Prompting LLM for SQL query conversion...");
+async function generateSQLFromPrompt(
+  question,
+  originalQuestion = null,
+  requestId = "N/A",
+) {
+  const { getCache, setCache } = require("./cacheService");
+  const cachedSql = getCache(question);
+  if (cachedSql) {
+    console.log(
+      `[SQL Agent] [#${requestId}] Cache hit for question:`,
+      question,
+    );
+    return cachedSql;
+  }
+
+  console.log(
+    `[SQL Agent] [#${requestId}] Prompting LLM for SQL query conversion...`,
+  );
 
   let topSchemas = "";
   let fewShotExample = "";
@@ -52,61 +68,53 @@ async function generateSQLFromPrompt(question, originalQuestion = null) {
 
   const concepts = require("../config/concepts.json");
 
-  const prompt = `
-You are a PostgreSQL expert. Generate ONLY the raw SQL query to answer the user's question using ONLY the provided schema.
+  const { getPostgresPrompt } = require("../prompts/postgresPrompt");
+  const { routeModel } = require("./modelRouter");
 
-BUSINESS CONCEPTS:
-- Mapping Path: ${concepts.relationships[0].path}
-- Key Logic: ${concepts.relationships[0].description}
-- Terminology: ${JSON.stringify(concepts.aliases)}
+  const { model, complexity } = routeModel(question);
+  const prompt = getPostgresPrompt(question, topSchemas);
 
-STRICT RULES:
-1. RETURN ONLY RAW SQL. No markdown.
-2. TRANSACTION DATA PROHIBITED: "transactionInfo" is off-limits.
-3. JOINS: Use "merchantRelationInfo" -> "terminalRelationInfo".
-4. MANDATORY: Use "terminalId" as the final device identifier.
-
-STRICT RULES:
-1. Use ONLY these tables: ${
-    topSchemas
-      .match(/TABLE: "([^"]+)"/g)
-      ?.map((t) => t.replace("TABLE: ", ""))
-      .join(", ") || "NONE PROVIDED"
-  }
-2. DO NOT hallucinate tables like "product", "sales", or "products".
-3. Wrap ALL table/column names in double quotes. Example: SELECT "amount" FROM "transactionInfo".
-4. Follow foreign key relationships exactly as specified.
-5. Max 50 rows.
-6. Return ONLY the SQL. No explanation.
-
-SCHEMA:
-${topSchemas}
-${fewShotExample}
-QUESTION: "${question}"
-    `;
+  const { Parser } = require("node-sql-parser");
+  const parser = new Parser();
 
   try {
     const response = await axios.post(
       config.ollamaUrl,
       {
-        model: "qwen2.5:0.5b", // Using the fast local model configured
+        model: model,
         prompt: prompt,
         stream: false,
       },
       { timeout: 30000 },
     ); // 30 second timeout
 
-    const rawText = response.data.response;
+    let rawText = response.data.response;
 
     // Clean up markdown and extract ONLY the SQL block
     let sql = rawText
       .replace(/\`\`\`sql/gi, "")
       .replace(/\`\`\`/g, "")
-      .replace(/\`/g, '"') // Replace any remaining backticks with double quotes for PG compatibility
+      .replace(/\`/g, '"')
       .trim();
 
-    // Small models often add preamble or summary text.
-    // We attempt to extract everything from the first SELECT to the first semicolon (or end of string).
+    // AST VALIDATION LAYER
+    try {
+      const ast = parser.astify(sql);
+      const statement = Array.isArray(ast) ? ast[0] : ast;
+
+      if (statement.type !== "select") {
+        throw new Error("PROHIBITED_STMT: Only SELECT queries are allowed.");
+      }
+
+      // Re-stringify to ensure clean SQL and auto-quoting if parser supports it
+      sql = parser.sqlify(ast);
+    } catch (astError) {
+      console.warn("[SQL Agent] AST Validation warning:", astError.message);
+      // If it's a parse error, we still try the regex fallback but with caution
+      if (astError.message.includes("PROHIBITED_STMT")) throw astError;
+    }
+
+    // Regex fallback/cleanup for small LLMs if AST failed or missed something
     const selectMatch = sql.match(/SELECT[\s\S]*?(?:;|$)/i);
     if (selectMatch) {
       sql = selectMatch[0].trim();
@@ -177,6 +185,8 @@ QUESTION: "${question}"
     }
 
     console.log("[SQL Agent] Generated SQL:", sql);
+    const { setCache } = require("./cacheService");
+    setCache(question, sql);
     return sql;
   } catch (error) {
     console.error("[SQL Agent] Error generating SQL:", error.message);
@@ -184,4 +194,39 @@ QUESTION: "${question}"
   }
 }
 
-module.exports = { generateSQLFromPrompt };
+async function fixSQLFromError(question, failedSql, errorMessage) {
+  console.log("[SQL Agent] Attempting to fix failed SQL query...");
+
+  const { getRetryPrompt } = require("../prompts/retryPrompt");
+  const prompt = getRetryPrompt(question, failedSql, errorMessage);
+
+  try {
+    const response = await axios.post(
+      config.ollamaUrl,
+      {
+        model: "llama3.2:latest", // Always use stronger model for correction
+        prompt: prompt,
+        stream: false,
+      },
+      { timeout: 30000 },
+    );
+
+    let sql = response.data.response
+      .replace(/\`\`\`sql/gi, "")
+      .replace(/\`\`\`/g, "")
+      .trim();
+
+    const selectMatch = sql.match(/SELECT[\s\S]*?(?:;|$)/i);
+    if (selectMatch) {
+      sql = selectMatch[0].trim();
+    }
+
+    console.log("[SQL Agent] Fixed SQL:", sql);
+    return sql;
+  } catch (error) {
+    console.error("[SQL Agent] Error fixing SQL:", error.message);
+    throw new Error("Failed to fix SQL from error.");
+  }
+}
+
+module.exports = { generateSQLFromPrompt, fixSQLFromError };
