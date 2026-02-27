@@ -222,6 +222,11 @@ async function fixSQLFromError(question, failedSql, errorMessage) {
     }
 
     console.log("[SQL Agent] Fixed SQL:", sql);
+
+    // LEARN FROM SUCCESS: Record this fix in the knowledge base
+    const { recordLearnedFix } = require("./knowledgeBase");
+    recordLearnedFix(question, sql);
+
     return sql;
   } catch (error) {
     console.error("[SQL Agent] Error fixing SQL:", error.message);

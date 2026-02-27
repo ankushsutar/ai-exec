@@ -44,37 +44,32 @@ app.listen(config.port, async () => {
   console.log(`Server is running on port ${config.port}`);
 
   try {
-    // 0. Load Knowledge Cache
-    const knowledgeCache = loadCache();
+    const { loadStore, saveStore } = require("./src/services/vectorStore");
+    const isStoreLoaded = loadStore();
 
-    // 1. Get raw list of all tables
-    const rawTables = await extractAllTableNames();
+    if (!isStoreLoaded) {
+      console.log(
+        "[Server] Pre-computed embeddings not found. Starting full training sequence...",
+      );
 
-    // 2. Ask AI to filter out system noise and return a whitelist
-    const aiCuratedTables = await getAICuratedTables(rawTables);
+      const knowledgeCache = loadCache();
+      const rawTables = await extractAllTableNames();
+      const aiCuratedTables = await getAICuratedTables(rawTables);
+      const schemaString = await extractDatabaseSchema(aiCuratedTables);
 
-    // 3. Introspect DB schema dynamically ONLY for those curated tables
-    const schemaString = await extractDatabaseSchema(aiCuratedTables);
+      console.log("[Server] Populating In-Memory Vector Store...");
+      const tableBlocks = schemaString
+        .split("\n\n")
+        .filter((b) => b.trim() !== "");
 
-    // 4. Populate In-Memory Vector Store for RAG
-    console.log("[Server] Populating In-Memory Vector Store...");
-    const tableBlocks = schemaString
-      .split("\n\n")
-      .filter((block) => block.trim() !== "");
-    console.log(`[Server] Found ${tableBlocks.length} table blocks to embed.`);
-
-    for (const block of tableBlocks) {
-      const trimmedBlock = block.trim();
-      if (trimmedBlock.startsWith("TABLE: ")) {
-        const rawTableName = trimmedBlock
-          .split("\n")[0]
-          .replace("TABLE: ", "")
-          .trim();
-        const tableName = rawTableName.replace(/^"|"$/g, ""); // Strip leading/trailing quotes for store key
-        try {
-          process.stdout.write(
-            `[Server] Training & Embedding table: ${tableName}... `,
-          );
+      for (const block of tableBlocks) {
+        const trimmedBlock = block.trim();
+        if (trimmedBlock.startsWith("TABLE: ")) {
+          const tableName = trimmedBlock
+            .split("\n")[0]
+            .replace("TABLE: ", "")
+            .replace(/^"|"$/g, "")
+            .trim();
           const summary = await generateSchemaSummary(
             tableName,
             trimmedBlock,
@@ -85,55 +80,29 @@ app.listen(config.port, async () => {
             `${trimmedBlock}\nPURPOSE: ${summary}`,
           );
           addTableEmbedding(tableName, trimmedBlock, embedding, summary);
-          process.stdout.write("Done.\n");
-        } catch (embedErr) {
-          process.stdout.write("FAILED.\n");
-          console.error(
-            `[Server] Error embedding ${tableName}:`,
-            embedErr.message,
-          );
         }
-      } else {
-        console.log(
-          `[Server] Skipping block: Does not start with TABLE: "${trimmedBlock.substring(0, 20)}..."`,
-        );
       }
-    }
 
-    // Save cache after postgres training
-    saveCache(knowledgeCache);
+      // Mongo initialization
+      const {
+        listCollections,
+        extractMongoSchema,
+      } = require("./src/services/mongoService");
+      try {
+        const mongoCollections = await listCollections();
+        const mongoSchemaString = await extractMongoSchema(mongoCollections);
+        const mongoBlocks = mongoSchemaString
+          .split("\n\n")
+          .filter((b) => b.trim() !== "");
 
-    // 5. Populate MongoDB Collections for RAG
-    const {
-      listCollections,
-      extractMongoSchema,
-    } = require("./src/services/mongoService");
-    try {
-      console.log("[Server] Discovering MongoDB Collections...");
-      const mongoCollections = await listCollections();
-      const mongoSchemaString = await extractMongoSchema(mongoCollections);
-
-      const mongoBlocks = mongoSchemaString
-        .split("\n\n")
-        .filter((block) => block.trim() !== "");
-
-      console.log(
-        `[Server] Found ${mongoBlocks.length} MongoDB collections to embed.`,
-      );
-
-      for (const block of mongoBlocks) {
-        const trimmedBlock = block.trim();
-        if (trimmedBlock.startsWith('COLLECTION: "')) {
-          const collectionName = trimmedBlock
-            .split("\n")[0]
-            .replace('COLLECTION: "', "")
-            .replace('"', "")
-            .trim();
-
-          try {
-            process.stdout.write(
-              `[Server] Training & Embedding collection: ${collectionName}... `,
-            );
+        for (const block of mongoBlocks) {
+          const trimmedBlock = block.trim();
+          if (trimmedBlock.startsWith('COLLECTION: "')) {
+            const collectionName = trimmedBlock
+              .split("\n")[0]
+              .replace('COLLECTION: "', "")
+              .replace('"', "")
+              .trim();
             const summary = await generateSchemaSummary(
               collectionName,
               trimmedBlock,
@@ -150,28 +119,17 @@ app.listen(config.port, async () => {
               summary,
               "mongodb",
             );
-            process.stdout.write("Done.\n");
-          } catch (embedErr) {
-            process.stdout.write("FAILED.\n");
-            console.error(
-              `[Server] Error embedding ${collectionName}:`,
-              embedErr.message,
-            );
           }
         }
+      } catch (mongoErr) {
+        console.warn("[Server] MongoDB discovery skipped.");
       }
 
-      // Save cache after mongo training
       saveCache(knowledgeCache);
-    } catch (mongoErr) {
-      console.warn(
-        "[Server] MongoDB discovery failed or no collections found. Skipping MongoDB indexing.",
-      );
+      saveStore(); // Persist embeddings for next boot
     }
 
-    // 6. Initialize Golden Queries Knowledge Base
     await initializeKnowledgeBase();
-
     console.log(
       "[Server] AI Platform Boot Sequence Complete. Ready for queries.",
     );

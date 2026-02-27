@@ -11,6 +11,9 @@ async function handleAskData(req, res, next) {
     console.time(`TotalRequest_${requestId}`);
     console.log("Received Question:", question);
 
+    const { logProductionQuery } = require("../services/datasetService");
+    logProductionQuery(question, "DYNAMIC", { requestId });
+
     let dbData, analytics;
     let attempt = 0;
     let maxAttempts = 2; // Reduced as Broker handles internal retries if needed

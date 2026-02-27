@@ -1,68 +1,112 @@
-const fs = require("fs");
-const axios = require("axios");
-require("dotenv").config({ path: "./backend/.env" });
-
-const OLLAMA_URL =
-  process.env.OLLAMA_URL || "http://localhost:11434/api/generate";
+const {
+  extractAllTableNames,
+  getAICuratedTables,
+} = require("./src/services/schemaPruner");
+const { extractDatabaseSchema } = require("./src/services/dbService");
+const {
+  generateSchemaSummary,
+  loadCache,
+  saveCache,
+} = require("./src/services/trainingService");
+const { generateEmbedding } = require("./src/services/ollamaService");
+const {
+  addTableEmbedding,
+  saveStore,
+  clearStore,
+} = require("./src/services/vectorStore");
+const { initializeKnowledgeBase } = require("./src/services/knowledgeBase");
 
 async function train() {
-  console.log("[Trainer] Reading Database_Study.md...");
-  const studyPath = "../Database_Study.md";
-  if (!fs.existsSync(studyPath)) {
-    console.error("Database_Study.md not found. Run generateStudy.js first.");
-    return;
-  }
+  console.log("\n[CLI Trainer] Starting full knowledge pre-computation...");
+  console.time("TotalTrainingTime");
 
-  const content = fs.readFileSync(studyPath, "utf8");
-  const tableBlocks = content.split("## Table: ").slice(1);
-  const knowledgeBase = {};
+  try {
+    clearStore();
+    const knowledgeCache = loadCache();
 
-  console.log(`[Trainer] Found ${tableBlocks.length} tables to summarize.`);
+    // 1. SQL Training
+    console.log("\n[1/2] Discovering PostgreSQL Tables...");
+    const rawTables = await extractAllTableNames();
+    const aiCuratedTables = await getAICuratedTables(rawTables);
+    const schemaString = await extractDatabaseSchema(aiCuratedTables);
+    const tableBlocks = schemaString
+      .split("\n\n")
+      .filter((b) => b.trim() !== "");
 
-  for (const block of tableBlocks) {
-    const tableName = block.split("\n")[0].replace(/`/g, "").trim();
-    const tableContext = block.split("---")[0].trim();
-
-    try {
-      process.stdout.write(`[Trainer] Summarizing ${tableName}... `);
-      const prompt = `
-        You are a Database Architect.
-        Summarize the literal PURPOSE of the table below based on its columns and relations.
-        - Table: ${tableName}
-        - Schema:
-        ${tableContext}
-
-        TASK:
-        - Provide a 1-sentence description (max 20 words).
-        - Start with its functional role (e.g. "Stores...", "Maps...", "Logs...").
-        - Use ONLY the provided information.
-        - Return ONLY the sentence.
-
-        SUMMARY:`;
-
-      const response = await axios.post(OLLAMA_URL, {
-        model: "qwen2.5:0.5b",
-        prompt: prompt,
-        stream: false,
-        options: { temperature: 0 },
-      });
-
-      const summary = response.data.response.trim();
-      knowledgeBase[tableName] = summary;
+    for (const block of tableBlocks) {
+      const trimmedBlock = block.trim();
+      const tableName = trimmedBlock
+        .split("\n")[0]
+        .replace("TABLE: ", "")
+        .replace(/^"|"$/g, "")
+        .trim();
+      process.stdout.write(`  > Processing table: ${tableName}... `);
+      const summary = await generateSchemaSummary(
+        tableName,
+        trimmedBlock,
+        "postgres",
+        knowledgeCache,
+      );
+      const embedding = await generateEmbedding(
+        `${trimmedBlock}\nPURPOSE: ${summary}`,
+      );
+      addTableEmbedding(tableName, trimmedBlock, embedding, summary);
       process.stdout.write("Done.\n");
-    } catch (err) {
-      process.stdout.write("FAILED.\n");
-      console.error(`Error summarizing ${tableName}:`, err.message);
     }
-  }
 
-  fs.writeFileSync(
-    "knowledge_base.json",
-    JSON.stringify(knowledgeBase, null, 2),
-  );
-  console.log(
-    "[Trainer] Knowledge injection complete. Saved to backend/knowledge_base.json.",
-  );
+    // 2. Mongo Training
+    console.log("\n[2/2] Discovering MongoDB Collections...");
+    const {
+      listCollections,
+      extractMongoSchema,
+    } = require("./src/services/mongoService");
+    try {
+      const mongoCollections = await listCollections();
+      const mongoSchemaString = await extractMongoSchema(mongoCollections);
+      const mongoBlocks = mongoSchemaString
+        .split("\n\n")
+        .filter((b) => b.trim() !== "");
+
+      for (const block of mongoBlocks) {
+        const trimmedBlock = block.trim();
+        const collectionName = trimmedBlock
+          .split("\n")[0]
+          .replace('COLLECTION: "', "")
+          .replace('"', "")
+          .trim();
+        process.stdout.write(
+          `  > Processing collection: ${collectionName}... `,
+        );
+        const summary = await generateSchemaSummary(
+          collectionName,
+          trimmedBlock,
+          "mongodb",
+          knowledgeCache,
+        );
+        const embedding = await generateEmbedding(
+          `${trimmedBlock}\nPURPOSE: ${summary}`,
+        );
+        addTableEmbedding(
+          collectionName,
+          trimmedBlock,
+          embedding,
+          summary,
+          "mongodb",
+        );
+        process.stdout.write("Done.\n");
+      }
+    } catch (e) {
+      console.warn("  ! MongoDB skipped.");
+    }
+
+    saveCache(knowledgeCache);
+    saveStore();
+
+    console.log("\n[CLI Trainer] Persisted pre-computed artifacts to /config/");
+    console.timeEnd("TotalTrainingTime");
+  } catch (error) {
+    console.error("\n[CLI Trainer] Critical Error:", error.message);
+  }
 }
 
 train();
