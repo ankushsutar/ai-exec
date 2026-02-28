@@ -39,12 +39,6 @@ async function generateSQLFromPrompt(
       "postgres",
     );
 
-    // Filter out "transactionInfo" from topSchemas to prevent hallucination in SQL
-    topSchemas = topSchemas
-      .split("\n\n")
-      .filter((s) => !s.includes('TABLE: "transactionInfo"'))
-      .join("\n\n");
-
     fewShotExample = getBestFewShotExample(questionEmbedding);
 
     if (!topSchemas) {
@@ -85,34 +79,102 @@ async function generateSQLFromPrompt(
         prompt: prompt,
         stream: false,
       },
-      { timeout: 30000 },
-    ); // 30 second timeout
+      { timeout: 60000 },
+    ); // Increased to 60s for Llama 3.2
 
     let rawText = response.data.response;
 
+    // EMERGENCY EXTRACTION: Check if LLM returned a JSON object instead of raw SQL
+    try {
+      const cleanJson = rawText
+        .replace(/```json/gi, "")
+        .replace(/```/g, "")
+        .trim();
+      const parsed = JSON.parse(cleanJson);
+      if (parsed.query) rawText = parsed.query;
+      else if (parsed.sql) rawText = parsed.sql;
+      else if (parsed.SELECT) rawText = parsed.SELECT;
+      else if (typeof parsed === "object") {
+        const keys = Object.keys(parsed);
+        if (keys.length === 1) rawText = parsed[keys[0]];
+      }
+    } catch (e) {
+      // Not JSON, continue with normal extraction
+    }
+
     // Clean up markdown and extract ONLY the SQL block
     let sql = rawText
-      .replace(/\`\`\`sql/gi, "")
-      .replace(/\`\`\`/g, "")
-      .replace(/\`/g, '"')
+      .replace(/```sql/gi, "")
+      .replace(/```/g, "")
       .trim();
 
     // AST VALIDATION LAYER
     try {
-      const ast = parser.astify(sql);
+      // Extract ONLY the SELECT statement part in case of conversational noise
+      const selectOnlyMatch = sql.match(/SELECT[\s\S]*?(?:;|$)/i);
+      if (selectOnlyMatch) {
+        sql = selectOnlyMatch[0].trim();
+      }
+
+      // Configure parser for PostgreSQL
+      const ast = parser.astify(sql, { database: "postgresql" });
       const statement = Array.isArray(ast) ? ast[0] : ast;
 
       if (statement.type !== "select") {
         throw new Error("PROHIBITED_STMT: Only SELECT queries are allowed.");
       }
 
-      // Re-stringify to ensure clean SQL and auto-quoting if parser supports it
-      sql = parser.sqlify(ast);
+      // Re-stringify with PostgreSQL flavor (double quotes)
+      sql = parser.sqlify(ast, { database: "postgresql" });
     } catch (astError) {
       console.warn("[SQL Agent] AST Validation warning:", astError.message);
-      // If it's a parse error, we still try the regex fallback but with caution
+      // If it's a parse error, we still try to clean up the raw string
       if (astError.message.includes("PROHIBITED_STMT")) throw astError;
+
+      // Post-process: Force double quotes on anything that looks like a backticked or bracketed identifier
+      sql = sql.replace(/[`\[\]]/g, '"');
     }
+
+    // Dialect cleanup: Fix multipart identifiers that the LLM quoted together (e.g. "table.column" -> "table"."column")
+    sql = sql.replace(/"([^".\s]+)\.([^"\s]+)"/g, '"$1"."$2"');
+
+    // Dialect cleanup: Fix backticked or bracketed aliases that might remain
+    sql = sql.replace(/`([^`]+)`/g, '"$1"');
+    sql = sql.replace(/\[([^\]]+)\]/g, '"$1"');
+
+    // ALIAS VALIDATION & HALLUCINATION FIX
+    // Extract all defined aliases in the query
+    const aliasMatches = [...sql.matchAll(/AS\s+"([^"]+)"/gi)].map((m) => m[1]);
+    const tableNames = [...sql.matchAll(/FROM\s+"([^"]+)"/gi)].map((m) => m[1]);
+    const joinTableNames = [...sql.matchAll(/JOIN\s+"([^"]+)"/gi)].map(
+      (m) => m[1],
+    );
+    const allValidPrefixes = [
+      ...new Set([...aliasMatches, ...tableNames, ...joinTableNames]),
+    ];
+
+    // Detect undefined prefixes (e.g. "r"."column" where "r" is not an alias)
+    const prefixMatches = [...sql.matchAll(/"([^"]+)"\."([^"]+)"/g)];
+    prefixMatches.forEach((match) => {
+      const prefix = match[1];
+      if (!allValidPrefixes.includes(prefix)) {
+        console.warn(`[SQL Agent] Detected undefined alias prefix: ${prefix}`);
+        // Heuristic fix for common hallucinations
+        if (prefix === "r" || prefix === "relation") {
+          sql = sql.split(`"${prefix}"."`).join('"merchantRelationInfo"."');
+        } else if (prefix === "d" || prefix === "device") {
+          sql = sql.split(`"${prefix}"."`).join('"deviceRelationInfo"."');
+        } else if (prefix === "m" || prefix === "merchant") {
+          sql = sql.split(`"${prefix}"."`).join('"merchantInfo"."');
+        }
+      }
+    });
+
+    // Dialect cleanup: Small LLMs often mix SQLite/MySQL syntax in Postgres
+    sql = sql.replace(
+      /STRFTIME\([^,]+,\s*([^)]+)\)/gi,
+      "TO_CHAR($1, 'YYYY-MM-DD')",
+    );
 
     // Regex fallback/cleanup for small LLMs if AST failed or missed something
     const selectMatch = sql.match(/SELECT[\s\S]*?(?:;|$)/i);
@@ -120,64 +182,13 @@ async function generateSQLFromPrompt(
       sql = selectMatch[0].trim();
     }
 
-    // The small LLM often forgets to quote identifiers. Let's force-quote known tables.
+    // The small LLM often forgets to quote identifiers. Let's force-quote known tables if parser missed them.
     const tableMatches = [...topSchemas.matchAll(/TABLE: "([^"]+)"/g)].map(
       (m) => m[1],
     );
     for (const tbl of tableMatches) {
-      // Replace unquoted case-insensitive occurrences of the table name with the correctly-cased quoted name
-      // Use negative lookbehinds/lookaheads to prevent quoting already-quoted strings if possible
-      const regex = new RegExp(`(?<!")\\b${tbl}\\b(?!")`, "gi");
+      const regex = new RegExp(`(?<!["\\.])\\b${tbl}\\b(?!")`, "gi");
       sql = sql.replace(regex, `"${tbl}"`);
-    }
-
-    // Also auto-quote columns since small LLMs forget those too
-    const columnMatches = [...topSchemas.matchAll(/"([^"]+)" \(/g)].map(
-      (m) => m[1],
-    );
-    let uniqueCols = [...new Set(columnMatches)];
-    // Exclude common SQL keywords from being accidentally quoted
-    const reservedWords = new Set([
-      "select",
-      "from",
-      "where",
-      "order",
-      "by",
-      "group",
-      "limit",
-      "join",
-      "on",
-      "as",
-      "inner",
-      "left",
-      "right",
-      "and",
-      "or",
-      "is",
-      "not",
-      "null",
-      "true",
-      "false",
-      "count",
-      "sum",
-      "avg",
-      "min",
-      "max",
-      "desc",
-      "asc",
-      "t1",
-      "t2",
-      "t3",
-    ]);
-    uniqueCols = uniqueCols.filter(
-      (col) => !reservedWords.has(col.toLowerCase()),
-    );
-
-    // Sort by length descending so we replace longer column names first (e.g. "deviceId" before "id")
-    uniqueCols.sort((a, b) => b.length - a.length);
-    for (const col of uniqueCols) {
-      const regex = new RegExp(`(?<!")\\b${col}\\b(?!")`, "gi");
-      sql = sql.replace(regex, `"${col}"`);
     }
 
     if (sql === "INVALID" || !sql.toUpperCase().includes("SELECT")) {

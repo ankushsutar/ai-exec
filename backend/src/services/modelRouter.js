@@ -38,8 +38,10 @@ function calculateComplexity(question) {
  */
 function routeModel(question) {
   const complexity = calculateComplexity(question);
-  const model =
-    complexity >= COMPLEXITY_THRESHOLD ? "llama3.2:latest" : "qwen2.5:0.5b";
+
+  // FOUNDATION FIX: Use llama3.2 as default for accurate SQL/MQL generation.
+  // We only use the 0.5b model for simple summaries (performance optimization).
+  const model = "llama3.2:latest";
 
   console.log(
     `[Model Router] Complexity: ${complexity} | routing to: ${model}`,

@@ -1,0 +1,61 @@
+[
+    {
+        "question": "Show top 5 merchants by revenue",
+        "type": "hybrid",
+        "context": "Calculates revenue per merchant by joining Postgres metadata with Mongo transactions.",
+        "steps": [
+            "Query SQL for merchant names and deviceIds: SELECT m.\"merchantBusinessName\", dr.\"deviceId\" FROM \"merchantInfo\" m JOIN \"merchantRelationInfo\" mr ON m.\"id\" = mr.\"merchantId\" JOIN \"deviceRelationInfo\" dr ON mr.\"relationId\" = dr.\"relationId\"",
+            "Query Mongo transactionActionHistoryInfo for revenue by deviceId",
+            "Enrich results with names"
+        ]
+    },
+    {
+        "question": "show the transaction with highest amount",
+        "type": "mql",
+        "content": "{ \"collection\": \"transactionActionHistoryInfo\", \"query\": [ { \"$match\": { \"txnAmt\": { \"$exists\": true, \"$ne\": null }, \"actionStatus\": 1 } }, { \"$sort\": { \"txnAmt\": -1 } }, { \"$limit\": 1 } ] }"
+    },
+    {
+        "question": "show transactions",
+        "type": "mql",
+        "content": "{ \"collection\": \"transactionActionHistoryInfo\", \"query\": [ { \"$sort\": { \"createdAt\": -1 } }, { \"$limit\": 50 } ] }"
+    },
+    {
+        "question": "list all merchants",
+        "type": "sql",
+        "content": "SELECT \"merchantBusinessName\", \"merchantId\", \"id\" FROM \"merchantInfo\" LIMIT 10;"
+    },
+    {
+        "question": "find device for merchant Ankush",
+        "type": "sql",
+        "content": "SELECT m.\"merchantBusinessName\", dr.\"deviceId\" FROM \"merchantInfo\" AS m JOIN \"merchantRelationInfo\" AS mr ON m.\"id\" = mr.\"merchantId\" JOIN \"deviceRelationInfo\" AS dr ON mr.\"relationId\" = dr.\"relationId\" WHERE m.\"merchantBusinessName\" ILIKE '%Ankush%';"
+    },
+    {
+        "question": "What is the total revenue for merchant 'Ankush' in the last 30 days?",
+        "type": "hybrid",
+        "context": "Needs merchant ID/Device from SQL and aggregation from Mongo.",
+        "steps": [
+            "SQL: SELECT dr.\"deviceId\" FROM \"merchantInfo\" m JOIN \"merchantRelationInfo\" mr ON m.\"id\" = mr.\"merchantId\" JOIN \"deviceRelationInfo\" dr ON mr.\"relationId\" = dr.\"relationId\" WHERE m.\"merchantBusinessName\" ILIKE '%Ankush%'",
+            "Mongo: [ { \"$match\": { \"deviceId\": { \"$in\": [DEVICE_IDS] }, \"createdAt\": { \"$gt\": \"ISO_DATE_30_DAYS_AGO\" } } }, { \"$group\": { \"_id\": null, \"totalRevenue\": { \"$sum\": \"$amount\" } } } ]"
+        ]
+    },
+    {
+        "question": "Show daily transaction volume for the past week",
+        "type": "mql",
+        "content": "{ \"collection\": \"transactionActionHistoryInfo\", \"query\": [ { \"$match\": { \"createdAt\": { \"$gt\": \"new Date(Date.now() - 7*24*60*60*1000)\" } } }, { \"$group\": { \"_id\": { \"$dateToString\": { \"format\": \"%Y-%m-%d\", \"date\": \"$createdAt\" } }, \"volume\": { \"$sum\": 1 }, \"revenue\": { \"$sum\": \"$amount\" } } }, { \"$sort\": { \"_id\": 1 } } ] }"
+    },
+    {
+        "question": "Which merchants have no devices assigned?",
+        "type": "sql",
+        "content": "SELECT m.\"merchantBusinessName\" FROM \"merchantInfo\" AS m LEFT JOIN \"merchantRelationInfo\" AS mr ON m.\"id\" = mr.\"merchantId\" LEFT JOIN \"deviceRelationInfo\" AS dr ON mr.\"relationId\" = dr.\"relationId\" WHERE dr.\"deviceId\" IS NULL;"
+    },
+    {
+        "question": "Show all successful transactions with amount greater than 1000",
+        "type": "mql",
+        "content": "{ \"collection\": \"transactionActionHistoryInfo\", \"query\": [ { \"$match\": { \"actionStatus\": 1, \"txnAmt\": { \"$gt\": 1000 } } }, { \"$limit\": 100 } ] }"
+    },
+    {
+        "question": "Count total devices per merchant",
+        "type": "sql",
+        "content": "SELECT m.\"merchantBusinessName\", COUNT(dr.\"deviceId\") AS \"deviceCount\" FROM \"merchantInfo\" AS m JOIN \"merchantRelationInfo\" AS mr ON m.\"id\" = mr.\"merchantId\" JOIN \"deviceRelationInfo\" AS dr ON mr.\"relationId\" = dr.\"relationId\" GROUP BY m.\"merchantBusinessName\" ORDER BY \"deviceCount\" DESC;"
+    }
+]

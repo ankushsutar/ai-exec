@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const DATASET_FILE = path.join(__dirname, "../config/dataset_log.json");
+const DATASET_FILE = path.join(__dirname, "../../storage/dataset_log.json");
 
 /**
  * Logs a production query and its outcome for future training.

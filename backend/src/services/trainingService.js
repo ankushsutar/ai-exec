@@ -4,7 +4,7 @@ const path = require("path");
 const crypto = require("crypto");
 const config = require("../config/env");
 
-const CACHE_FILE = path.join(__dirname, "../config/knowledge_cache.json");
+const CACHE_FILE = path.join(__dirname, "../../storage/knowledge_cache.json");
 
 /**
  * Generates a unique fingerprint for a schema string.

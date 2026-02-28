@@ -1,0 +1,524 @@
+{
+  "accessRightsInfo\" [Rows: 58]": {
+    "summary": "This table contains access rights information, with fields such as ID, name, description, active status, creators' IDs, updated by, deleted by, creation and modification timestamps, deletion dates, and more.",
+    "fingerprint": "e8b016715d72c3aa32dcb9f533a0ca01667472b14f87e0bd300d0967911714f5",
+    "dbType": "postgres",
+    "updatedAt": "2026-02-28T13:55:45.728Z"
+  },
+  "advertisementAudioDeviceRelationInfo\" [Rows: 36]": {
+    "summary": "The advertisementAudioDeviceRelationInfo table serves as a key to store information about device types, including their IDs, whether they are default or not in advertisements, and any default ads associated with each type. This data helps in understanding different device types used within advertisements and how they interact with each other.",
+    "fingerprint": "ea3fdbf2682604d03ef25b8f97d2b96cfcde8b60a85336c6f9c3a15a9bc9e808",
+    "dbType": "postgres",
+    "updatedAt": "2026-02-28T13:55:48.484Z"
+  },
+  "advertisementAudioInfo\" [Rows: 110]": {
+    "summary": "The advertisementAudioInfo table serves as a comprehensive database to manage advertising audio information, including names, descriptions, languages, versions, genders, file IDs, statuses (active and verified), creators' IDs, updates, deletions, creation timestamps, and update timestamps. It's specifically designed to store user-profile data related to ads, making it ideal for applications that require detailed ad content management, such as social media platforms or e-commerce websites.",
+    "fingerprint": "105c707889f74b09bc9580952b3b121caf280c70eb007283a89f4c134bbd0dc6",
+    "dbType": "postgres",
+    "updatedAt": "2026-02-28T13:55:51.512Z"
+  },
+  "advertisementInfo\" [Rows: 5305]": {
+    "summary": "The advertisementInfo table stores data related to advertisements, including various fields such as ID, request reference number, device ID, advertisement ID, time of message delivery, expiration date, message received by server, message received from development, audio played count, creation timestamp, message origin type, device availability, and timestamp elapsed. The purpose is to store information about advertisements, their status, and the associated user activities such as message delivery times, audio playback counts, and message-related data.",
+    "fingerprint": "cb7f9c8e2ac514cad96e1816ea50626db328d8aa924c962248f1f07947b9a4ef",
+    "dbType": "postgres",
+    "updatedAt": "2026-02-28T13:55:55.293Z"
+  },
+  "batteryTypeInfo\" [Rows: 0]": {
+    "summary": "The `batteryTypeInfo` table is for storing detailed information about battery types, including their versions, manufacturer names, capacities, ADC configurations, and verification status.",
+    "fingerprint": "5fe945ce455d7254f54e2853d1c8f963934a5dbdea5a2ab72da9531ad4c057d6",
+    "dbType": "postgres",
+    "updatedAt": "2026-02-28T13:55:58.020Z"
+  },
+  "certificateInfo\" [Rows: 2136]": {
+    "summary": "The \"certificateInfo\" table in PostgreSQL serves as a repository for storing various types of certificate-related data, including the \"certName,\" \"keyName,\" \"fetchType,\" \"expiry,\" \"isActive,\" \"updatedCount,\" and \"createdBy.\" This information is crucial for managing user profiles with authentication states, ensuring that users have valid certificates at all times.",
+    "fingerprint": "c86fa6b1db85ea53ca5292043255786c2543b63dfea5617493500692465fb18d",
+    "dbType": "postgres",
+    "updatedAt": "2026-02-28T13:56:00.951Z"
+  },
+  "connectivityHistoryInfo\" [Rows: 3341]": {
+    "summary": "This table contains historical connectivity history data for devices, including their unique identifiers, connectivity status changes, timestamps of creation, and the identity of the user who created it. This information is useful for monitoring device activity patterns over time to identify changes or anomalies in connectivity status.",
+    "fingerprint": "78381bd6171449d9bc5f586f7fc58a417f5de4ddee942de6150d5391d6823386",
+    "dbType": "postgres",
+    "updatedAt": "2026-02-28T13:56:03.648Z"
+  },
+  "deviceAdvertisementRelationInfo\" [Rows: 25357]": {
+    "summary": "This table stores deviceAdvertisementRelationInfo, which contains information about advertisement advertisements and their repeat intervals. It represents a relationship between advertisement IDs in one table and repeat interval values in another table. This data is relevant to applications that track ad campaigns or measure advertisement performance over time.",
+    "fingerprint": "19c40560e402727efb451185bd7a45aa3ed5d585445e3fb02834823d6278d418",
+    "dbType": "postgres",
+    "updatedAt": "2026-02-28T13:56:06.717Z"
+  },
+  "deviceBriefInfo\" [Rows: 12753]": {
+    "summary": "This table stores device-specific data, including basic identification numbers (deviceId), mobile phone identifiers (mobileNo) with various attributes, such as battery level, current RSSI, network type, and transaction history. It helps in tracking user activities and ensuring seamless connectivity to devices through a single source of truth for each individual's details.",
+    "fingerprint": "466b2b3da7ea1c0c5265d1b9cccff2c1b1658435697418b5f949b295b5c9cd2c",
+    "dbType": "postgres",
+    "updatedAt": "2026-02-28T13:56:10.355Z"
+  },
+  "deviceConfigInfo\" [Rows: 12753]": {
+    "summary": "The provided PostgreSQL table stores device configuration information, including devices with their unique identifiers (`deviceId`), types of devices (`deviceTypeId`), brief IDs (`deviceBriefId`), firmware IDs (`firmwareId`), default volumes (`defaultVolume`), enable/disable fallback status (`enableDisableFallback`), MQTT ID (`mqttId`), status updates (`httpStatus`), group information (`groupId`), language audio information (`languageId`), system audio information (`systemAudioId`), login timeouts (`loginTimeout`), statistical metrics (`statFreq`), and various other details.",
+    "fingerprint": "de9e4c28eeb64aa364cb24b2d655d3e5503d3fdf39f013616b93dfa495a39d8c",
+    "dbType": "postgres",
+    "updatedAt": "2026-02-28T13:56:16.235Z"
+  },
+  "deviceIdentInfo\" [Rows: 12753]": {
+    "summary": "The PostgreSQL table `deviceIdentInfo` serves as a central repository for storing device-specific identification data, such as device identifiers (`imei`), terminal IDs, and associated MQTT topics. This table is intended to facilitate communication between different components within an application or system by facilitating tasks like authentication, monitoring, or integrating with other systems through MQTT protocols.",
+    "fingerprint": "6aaef1e2d2c8604828044e0b0f0a671b23867c8712ab2234e1dae49b72103b63",
+    "dbType": "postgres",
+    "updatedAt": "2026-02-28T13:56:22.156Z"
+  },
+  "deviceInfo\" [Rows: 12753]": {
+    "summary": "The provided PostgreSQL table stores device-related information, including IDs, IMEI numbers, types of devices (manufacturer type), and other attributes.",
+    "fingerprint": "f1d44c02916dccf220fc09d2f473d88f36c68181b041f3a3e096e0c51d63f0fd",
+    "dbType": "postgres",
+    "updatedAt": "2026-02-28T13:56:25.380Z"
+  },
+  "deviceRelationInfo\" [Rows: 0]": {
+    "summary": "This table stores device-related data such as relationships, IDs, status changes, creation/deletion timestamps, and other details about devices. It helps in managing authentication states by grouping related information together.",
+    "fingerprint": "16a861fed5c85ad304164ebc4daca4a24bd6c766ed95a410a037cfc99cbe4533",
+    "dbType": "postgres",
+    "updatedAt": "2026-02-28T13:56:28.008Z"
+  },
+  "deviceSimRelationInfo\" [Rows: 0]": {
+    "summary": "The `deviceSimRelationInfo` table stores device-related simulation relationship data, which can help in tracking and managing user-specific device profiles while maintaining authentication state information.",
+    "fingerprint": "67c80bd946a67f7f9c5902a85926b19368dc60af5f7f910ed088340a015a9462",
+    "dbType": "postgres",
+    "updatedAt": "2026-02-28T13:56:30.070Z"
+  },
+  "deviceStatsInfo\" [Rows: 5805500]": {
+    "summary": "This table stores device-related data including device IDs, Uptime status, transactions played and failed to play, volume metrics, network issues, etc., providing insights into a user's usage patterns.",
+    "fingerprint": "0185e7293ebea4984fa0986ab063405c2519bcda4006dd5e04c7ba329f4bdb98",
+    "dbType": "postgres",
+    "updatedAt": "2026-02-28T13:56:33.538Z"
+  },
+  "deviceTypeInfo\" [Rows: 7]": {
+    "summary": "The \"deviceTypeInfo\" table stores device-specific attributes, allowing the system to identify and manage devices, including their identifiers (IDs), network types, form factors, audio types, active status, hardware versions, and manufacturer information. This table is intended for applications that require tracking and categorizing device-specific data, such as in user profile management systems or applications related to specific device categories and functionalities.",
+    "fingerprint": "45502e953a2c459872cb37adc7a5ac5e4b20312bc415b168ce0c57e47bf56d25",
+    "dbType": "postgres",
+    "updatedAt": "2026-02-28T13:56:37.357Z"
+  },
+  "fileInfo\" [Rows: 173]": {
+    "summary": "The PostgreSQL table \"fileInfo\" stores information about files, including their unique identifiers (id), file name, full path, type, extension, checksum, description, and verification status. This data is primarily used to manage user profiles where certain attributes are required but not mandatory for a user's authenticated activity or profile details.",
+    "fingerprint": "975dbe32f2383f81687bd5e4080852e1c816697eef3b70b8e578958282a432ea",
+    "dbType": "postgres",
+    "updatedAt": "2026-02-28T13:56:40.189Z"
+  },
+  "firmwareInfo\" [Rows: 10]": {
+    "summary": "This PostgreSQL table stores information about firmware versions, including their IDs, descriptions, file IDs, active status, verification status, device type IDs, creation and update times, deletion timestamps, and primary keys. It's primarily used to manage and track changes in firmware versions across devices, facilitating updates and maintenance for system components.",
+    "fingerprint": "8618fe12b30ced17c86c9cc2b375c7ad91a400f96e2e75eade8c871313254706",
+    "dbType": "postgres",
+    "updatedAt": "2026-02-28T13:56:43.320Z"
+  },
+  "firmware_info_dbf_keys\" [Rows: 0]": {
+    "summary": "This table stores information about firmware versions, including their ID, version number, description, file IDs, active status, verification status, device type ID, creation and update timestamps, deletion status, and primary keys.",
+    "fingerprint": "086c07607c57dd73e8375c9f425815da6343afd48524a8ad7996bcba106104f9",
+    "dbType": "postgres",
+    "updatedAt": "2026-02-28T13:56:45.979Z"
+  },
+  "groupHierarchyInfo\" [Rows: 11]": {
+    "summary": "The `groupHierarchyInfo` table is designed to track a hierarchical structure of groups, where each group has attributes such as `groupId`, `levelA`, and so on. This information is often used in organizational management systems or database design to represent the hierarchical relationships between different levels within an organization's structure.",
+    "fingerprint": "bb712f56b9b3bc468e68f19f83961c51532d0d58a9bff3e1b5df8e048cf760fb",
+    "dbType": "postgres",
+    "updatedAt": "2026-02-28T13:56:49.213Z"
+  },
+  "groupInfo\" [Rows: 11]": {
+    "summary": "The provided PostgreSQL table represents a user's group information stored in their file system, including:\n- Group ID (integer)\n- Group name (character varying)\n- Group description (character varying)\n- Group level (character varying) [A to D]\n- Image ID (bigint)\n- Is active flag (boolean)\n- Created by (bigint) [range: 1 to 45]\n- Updated by (bigint) [range: 0 to 2]\n- Deleted by (bigint) [range: 0 to 0] (empty values means deleted)\n- Created at (timestamp with time zone)\n- Modified at (timestamp with time zone)\n- Deletion timestamp (timestamp with time zone)\n\nThis table is specifically designed for storing and retrieving user group information from their file system.",
+    "fingerprint": "6e66e5bd698a66e2d29373e07da4466efaf59a2b0f6465a615689b27ea41c878",
+    "dbType": "postgres",
+    "updatedAt": "2026-02-28T13:56:53.744Z"
+  },
+  "languageAudioDeviceRelationInfo\" [Rows: 55]": {
+    "summary": "The \"languageAudioDeviceRelationInfo\" table in PostgreSQL stores user profiles associated with audio devices, such as language-specific information about audio devices.",
+    "fingerprint": "03a7972858bcdf1d2ba330139228d3fd64099b096d5b3f957e2bd9893d371dd8",
+    "dbType": "postgres",
+    "updatedAt": "2026-02-28T13:56:56.343Z"
+  },
+  "languageAudioInfo\" [Rows: 36]": {
+    "summary": "This table stores information about audio files, including their languages, descriptions, versions, genders, file IDs, whether they are active or verified, and timestamps of creation and update. The purpose of this store is to facilitate user profile management by storing detailed metadata about audio files, such as language, description, version, gender, and timestamps of creation and updates.",
+    "fingerprint": "cf00e6247a4924d367271ef16e42cb416f38deb22698863943f6cfd32cef3688",
+    "dbType": "postgres",
+    "updatedAt": "2026-02-28T13:56:59.145Z"
+  },
+  "manufacturerTypeInfo\" [Rows: 1]": {
+    "summary": "This table contains information about manufacturers, including their name, address details, email addresses, mobile numbers, and other authentication-related fields. It serves as a foundation for user profile management and identity verification within an online store system.",
+    "fingerprint": "c6c98de3a77b18ec96577f596c9acb651c53723a805c605173d6400327528a64",
+    "dbType": "postgres",
+    "updatedAt": "2026-02-28T13:57:01.928Z"
+  },
+  "merchantAuthInfo\" [Rows: 0]": {
+    "summary": "This table stores user profile information and authentication states related to merchants, including merchant ID, their active status (e.g., `isActive`), OTP tokens used (e.g., `otpUsed`), OTP verification details, MPIN (merchant password identification number) status, account lockout timestamps, and more.",
+    "fingerprint": "9d64378dbed278f07e55f3ad0e54290d38957941b803bce56aaf7907b49ccc9d",
+    "dbType": "postgres",
+    "updatedAt": "2026-02-28T13:57:04.845Z"
+  },
+  "merchantDeviceRelationInfo\" [Rows: 0]": {
+    "summary": "The provided postgres table, `merchantDeviceRelationInfo`, has two fields: `id` and `terminalId`. These appear to represent some sort of unique identifier or key that maps device-related information between a user's account. Without more context about what \"device\" specifically refers to in the context of this particular database schema, I can't determine its exact purpose. However, based on typical use cases:\n\n- **Purpose 1**: Users may store and manage their devices.\n- **Purpose 2**: It could be used for logging or tracking specific device-related data (e.g., usage details).\n\nTo provide a more accurate description of the table's business purpose, we'd need additional context about how this information fits into the overall structure of the database.",
+    "fingerprint": "be80970f377d4916fda0fa524b4d940053860ac433e5e25b9d221ff637688a42",
+    "dbType": "postgres",
+    "updatedAt": "2026-02-28T13:57:08.208Z"
+  },
+  "merchantInfo\" [Rows: 6]": {
+    "summary": "The provided `merchantInfo` table serves as a repository for storing information about merchant profiles, including their ID numbers, transaction data, user attributes, and authentication states. This table is essential for applications that require tracking and processing of user information related to specific merchant accounts, such as in e-commerce platforms or financial services where merchant identity information is critical.",
+    "fingerprint": "686e8a4f3a70bcb036e228060f408702fa0878cb6b22727cde5efee4a719a739",
+    "dbType": "postgres",
+    "updatedAt": "2026-02-28T13:57:11.661Z"
+  },
+  "merchantRelationInfo\" [Rows: 6]": {
+    "summary": "This table stores merchant relationship information, allowing us to track and manage multiple merchants' relationships with a specific merchant ID.",
+    "fingerprint": "691b806a00a9441f4888602311028730b4cfaa097c4cf4923167bcf9d91c68b2",
+    "dbType": "postgres",
+    "updatedAt": "2026-02-28T13:57:14.986Z"
+  },
+  "monthlyActiveDevicesInfo\" [Rows: 104624]": {
+    "summary": "The `monthlyActiveDevicesInfo` table serves as a primary storage for user activity records, specifically focusing on user active devices and their activities. It tracks data such as unique device IDs (IDs), timestamps of when these events occurred, and user-specific information related to each event. This database is essential for administrators who need detailed insights into user behavior patterns over time to enhance app performance or optimize certain features in a user-friendly manner.",
+    "fingerprint": "587bcbde0c4bb32cdf6079fe7301450372e21b21fd4e71b2ad9e09670fbb2d60",
+    "dbType": "postgres",
+    "updatedAt": "2026-02-28T13:57:17.795Z"
+  },
+  "mqttBrokerInfo\" [Rows: 1]": {
+    "summary": "The MQTT Broker Information store serves as a repository to manage the status and connectivity of connected devices, enabling administrators to monitor the availability and performance of the MQTT broker over time.",
+    "fingerprint": "2303758dc75149eda5f80ae8709cb3bc9407cfdc66a7b0f07fa6cfca18d4d84e",
+    "dbType": "postgres",
+    "updatedAt": "2026-02-28T13:57:20.292Z"
+  },
+  "mqttUserInfo\" [Rows: 12753]": {
+    "summary": "This PostgreSQL table stores user profiles, including their device identification (mqttBrokerId), subscription topics (mqttSubTopic), publication topics (mqttPubTopic), connectivity status (isConnected), message transmission status (mqttTranStatus), and last seen time (lastSeen). It also maintains the device's configuration (`deviceConfigInfo`) and authentication state. The purpose is to manage user profiles and their associated data in a centralized fashion, providing insights into user behavior through MQTT communication.",
+    "fingerprint": "874a4b4ec23eb3446573a5a4430c4ab150b4ae01aacd53263defcb1cdb3fd93b",
+    "dbType": "postgres",
+    "updatedAt": "2026-02-28T13:57:23.714Z"
+  },
+  "qrInfo\" [Rows: 0]": {
+    "summary": "The provided `qrInfo` table represents a simple structure for storing user information, including their merchant verification status (QR code type), authentication status, and timestamps. It's designed to provide a comprehensive overview of user data, making it easy for applications or systems that require access to user profile details to do so without needing to know the specific columns' names or mappings.",
+    "fingerprint": "f6c42caaaa24bbd9afb6605855f3cb004f636ed7b65b787eab348c159b534f7f",
+    "dbType": "postgres",
+    "updatedAt": "2026-02-28T13:57:26.771Z"
+  },
+  "qrRelationInfo\" [Rows: 0]": {
+    "summary": "This table stores user profile information and authentication states, which helps in maintaining a comprehensive user record with associated verification status.",
+    "fingerprint": "e03076fdb1d462e6613da42b914a3258c26f7b1f53480de7794898855682735f",
+    "dbType": "postgres",
+    "updatedAt": "2026-02-28T13:57:28.703Z"
+  },
+  "roleInfo\" [Rows: 8]": {
+    "summary": "The `roleInfo` table serves as a central repository for storing user roles, their associated data (such as role names, descriptions, and identities), and authentication states.",
+    "fingerprint": "cbd6be3b77912fab9ab608db862d223319955fae7ae7a86f2cbd7d3a5decd59a",
+    "dbType": "postgres",
+    "updatedAt": "2026-02-28T13:57:30.944Z"
+  },
+  "rolesAccessRightsInfo\" [Rows: 144]": {
+    "summary": "This table stores roles, access rights, and their respective information related to users. It helps in tracking and managing user profiles' permissions and associated data securely.",
+    "fingerprint": "bb12297f3b5b737c5c6d2754046ce46aa6e891f156c52a353a5bbd7e9929a0b3",
+    "dbType": "postgres",
+    "updatedAt": "2026-02-28T13:57:33.510Z"
+  },
+  "serverInfo\" [Rows: 2]": {
+    "summary": "The `serverInfo` table serves as a central repository for storing various server-related information such as hostname, port number, keepalive interval, authentication type, MQTT QoS level, active status, verified status, server type, default server status, creation timestamp, update timestamp, deletion timestamps, and other details related to server configurations.",
+    "fingerprint": "86de5806abd42c7b6b71581e6f61ef403e3dfceccd10a14322c0d92682271032",
+    "dbType": "postgres",
+    "updatedAt": "2026-02-28T13:57:36.836Z"
+  },
+  "simInfo\" [Rows: 0]": {
+    "summary": "This table stores SIM card usage data, including activation date, expiration date, type of data used (SMS or other), device ID, status, creation timestamp, and deletion timestamps. It's intended to help administrators track user profiles' usage patterns and manage their authentication states effectively.",
+    "fingerprint": "dd061312fdb0ae02e950557dc3d7458a0e3c1bd9814643b75fb36cb839c157bb",
+    "dbType": "postgres",
+    "updatedAt": "2026-02-28T13:57:39.724Z"
+  },
+  "simOperatorInfo\" [Rows: 4]": {
+    "summary": "This table stores user profiles and authentication states, providing a comprehensive view of user roles, permissions, and their associated data.",
+    "fingerprint": "3681e596d91160830f4b67b74c5d47ae1757ff57632e9b7c9f0bfdea49625739",
+    "dbType": "postgres",
+    "updatedAt": "2026-02-28T13:57:42.043Z"
+  },
+  "simProfileInfo\" [Rows: 0]": {
+    "summary": "The \"simProfileInfo\" table stores user profiles associated with specific ICSI operators, including their IMSI numbers, mobile phone identifiers (imsi), SIM card IDs (msisdn), and operator-specific data. It represents users' profile information, which is critical for managing and tracking user identity and usage activities.",
+    "fingerprint": "e4d9fb18e053c02b9c7986cbee8e471d818f431c0461ed7cb5e7496a3bd5934e",
+    "dbType": "postgres",
+    "updatedAt": "2026-02-28T13:57:45.095Z"
+  },
+  "systemAudioDeviceRelationInfo\" [Rows: 7]": {
+    "summary": "This PostgreSQL table represents a system audio device management database, where each row contains relevant information about different audio devices such as their IDs, types, and default settings. This information helps in organizing user profiles and authentication states related to audio devices effectively.",
+    "fingerprint": "0eb7a86fac0406b0bdf0ff960e5edd0e1ef1ac145331f84893ec432c50069597",
+    "dbType": "postgres",
+    "updatedAt": "2026-02-28T13:57:47.876Z"
+  },
+  "systemAudioInfo\" [Rows: 4]": {
+    "summary": "The `systemAudioInfo` table stores user profile information and authentication states related to audio content, including system audio name, description, version, gender, file ID, active status, verification status, creation time, last update time, deletion time, and deleted time. This table is primarily used for storing and managing metadata about audio files and their associated metadata, making it useful for applications that deal with audio files such as music streaming services or audio editing software.",
+    "fingerprint": "773752b684d37eeaf1d6d2a166a8178de23432d9b234bc4a2006581cfad9b353",
+    "dbType": "postgres",
+    "updatedAt": "2026-02-28T13:57:50.990Z"
+  },
+  "terminalInfo\" [Rows: 6]": {
+    "summary": "The \"terminalInfo\" table in PostgreSQL is primarily used to store information about terminal devices, such as their IDs, identifiers, active status (whether they are active or not), creation timestamps, and deletion statuses. This table serves as a foundation for managing user profiles and authentication states related to terminals, allowing administrators to track the usage of these devices.",
+    "fingerprint": "0a7a66d74f6653eea082c5665eb0af4f3001df7777effd574b59fb46abf307ec",
+    "dbType": "postgres",
+    "updatedAt": "2026-02-28T13:57:54.043Z"
+  },
+  "terminalRelationInfo\" [Rows: 6]": {
+    "summary": "The `terminalRelationInfo` table stores user profile information and authentication states, with fields related to terminal IDs (e.g., `relationId`, `terminalId`, `isVerified`, etc.).",
+    "fingerprint": "70d43af84e82ccdc7d446626dc7a190fdfbad1070ca16ea6988f4072dbdea2b6",
+    "dbType": "postgres",
+    "updatedAt": "2026-02-28T13:57:56.916Z"
+  },
+  "userAPIKeysInfo\" [Rows: 5]": {
+    "summary": "This PostgreSQL table stores user-specific API keys, including their active status and creation/deletion timestamps. It helps in managing and verifying user login credentials securely.",
+    "fingerprint": "89aa33b6da9012f408edbeb0505f224c1afe18c85bf237b5814cc9e756efac63",
+    "dbType": "postgres",
+    "updatedAt": "2026-02-28T13:57:59.820Z"
+  },
+  "userGroupInfo\" [Rows: 20]": {
+    "summary": "The provided PostgreSQL table `userGroupInfo` serves as a storage container for storing various user-related information, including group memberships. Users can be identified by their unique identifier (userId), which is then linked to other tables such as `userInfo` and `groupInfo`. This structure helps maintain the association between users and their respective groups, making it easier to manage and query information about users' group membership.",
+    "fingerprint": "c8a57dd455cc8f5bb81c50624c9372ab2b6381fed23deb80e305e20a15d2f540",
+    "dbType": "postgres",
+    "updatedAt": "2026-02-28T13:58:03.077Z"
+  },
+  "userInfo\" [Rows: 20]": {
+    "summary": "This table stores user profiles with their personal identifiers, including a unique identifier (`id`), first name, last name, location, country code, mobile number, email address, password, role ID, image ID, auto-reset password status, and other authentication details. It helps in managing and storing these profile attributes for user identity management.",
+    "fingerprint": "157e30c0d1fd51897b45c3e85475412a834b635d2f1796f0ee6140ecf7722b8f",
+    "dbType": "postgres",
+    "updatedAt": "2026-02-28T13:58:06.560Z"
+  },
+  "userOTPInfo\" [Rows: 17]": {
+    "summary": "The `userOTPInfo` table stores user OTP information, including the ID of the user, their current password (Otp), expiration time, usage status, and creation and update times. This table serves to store and manage user authentication details for better security and reliability.",
+    "fingerprint": "dabc1041019889a1c959d68572acbce987e4b11b1e003da6efdd0dfbfaa55bc7",
+    "dbType": "postgres",
+    "updatedAt": "2026-02-28T13:58:09.671Z"
+  },
+  "merchantStagewiseReportInfo (Empty)": {
+    "summary": "The \"merchantStagewiseReportInfo\" collection in MongoDB serves as a central hub for storing user's merchant-specific report information and their respective authentication states, providing users with access to comprehensive financial data about their merchant accounts.",
+    "fingerprint": "c2edb3475ec20dd4519a38a52f1ac36f35fd30ed60a91060df4b27165ff5985c",
+    "dbType": "mongodb",
+    "updatedAt": "2026-02-28T13:58:11.938Z"
+  },
+  "transactionHistoryInfo": {
+    "summary": "The given MongoDB collection stores transaction history data, including timestamps, device IDs, message receipts, transaction modes, recipient messages, creation times, updates, expiration times, and more. This information can help users understand the chronological flow of transactions across different devices and scenarios.",
+    "fingerprint": "0e2c0a14efd9acbe16d2e28bb2040f87a80c091688932d91ef03334c8a4038b8",
+    "dbType": "mongodb",
+    "updatedAt": "2026-02-28T13:58:15.627Z"
+  },
+  "transactionActionHistoryInfo": {
+    "summary": "The transactionActionHistoryInfo collection in MongoDB serves as a centralized database for tracking and managing various actions, messages, transactions, and related data. This information can help users understand the flow of business processes, track user interactions, and maintain security measures by storing relevant metadata about each interaction.",
+    "fingerprint": "7df87b212d6a2da5ff83632e9648453aad8861f3cdb1215bae2fa4fb85deb47d",
+    "dbType": "mongodb",
+    "updatedAt": "2026-02-28T13:58:20.426Z"
+  },
+  "deviceNetworkInfo": {
+    "summary": "The MongoDB collection \"deviceNetworkInfo\" stores information about network devices, including their IDs, group memberships, network identifiers (IMSI), mobile phone numbers, cell carrier codes (CSCS/MCC/MSI), current signal strengths, received signals (RSRPs), RSSIs, RRSRs, and signal-to-noise ratios. It is specifically designed for tracking and analyzing data related to various types of network devices in a telecom environment.",
+    "fingerprint": "00213d46aa536623a4aecdcd751a9921169e03a6870721d403fa419d9e3a2e47",
+    "dbType": "mongodb",
+    "updatedAt": "2026-02-28T13:58:25.483Z"
+  },
+  "deviceStatsHistoryInfo (Empty)": {
+    "summary": "The `deviceStatsHistoryInfo` collection in MongoDB serves as a place to store and manage detailed statistics related to device usage, including user profiles and authentication states. This information can be useful for monitoring performance metrics, analyzing device behavior over time, and identifying potential issues or trends within user engagement patterns.",
+    "fingerprint": "6f8bbcb05abb96a1b77151fd11c204d54d8d3ffc56763eec1e990e199bed9a28",
+    "dbType": "mongodb",
+    "updatedAt": "2026-02-28T13:58:29.077Z"
+  },
+  "deviceCommonActionInfo": {
+    "summary": "The provided MongoDB collection contains timestamps (`createdAt`, `actionData`, etc.) along with additional metadata and status information, which suggests it serves as a database for managing and querying actions or actions related to devices, providing insights into when these actions occurred.",
+    "fingerprint": "69243d0c0564f0050767e7895892697b74310b915523c05fcd3206bf5c35153e",
+    "dbType": "mongodb",
+    "updatedAt": "2026-02-28T13:58:32.338Z"
+  },
+  "deviceConfigHistoryInfo": {
+    "summary": "The `deviceConfigHistoryInfo` collection in MongoDB serves as a comprehensive storage for historical device configuration data, enabling administrators to monitor changes over time and analyze user interactions. This information is crucial for troubleshooting issues, identifying trends, and ensuring that users' settings are aligned with intended functionality.",
+    "fingerprint": "c9ce3e2170d95b242d56e0ad4d7330aaa9959b2806a2b7f57df072c51304a2d5",
+    "dbType": "mongodb",
+    "updatedAt": "2026-02-28T13:58:36.452Z"
+  },
+  "deviceTerminatedSessionSummaryInfo (Empty)": {
+    "summary": "The MongoDB collection `deviceTerminatedSessionSummaryInfo` stores session-related data such as terminated sessions, device IDs, and timestamps. This information helps in tracking and analyzing session termination events across devices, which can be useful for applications like user activity analysis, network monitoring, or security auditing.",
+    "fingerprint": "74a887123a36ea7014cef4316d272490a4cc7ff0dfc7dd60e305a08f050062ce",
+    "dbType": "mongodb",
+    "updatedAt": "2026-02-28T13:58:39.562Z"
+  },
+  "deviceConnectivityMonthlyInfo": {
+    "summary": "The MongoDB collection `deviceConnectivityMonthlyInfo` stores device connectivity data, with fields related to user activity such as device status (0-1), HTTP status (true/false), MQTT status (true/false), and whether the device is active. It also includes timestamps for creation and updates, indicating when each record was added or modified. This collection is specifically designed to store and analyze information about a specific group of devices connected to a monthly data stream, providing insights into user interactions with connected devices during that period.",
+    "fingerprint": "5ee6144d9d773419de65cabe9b61fb2dc711470c89de75768e3b8e3e07ed7e4c",
+    "dbType": "mongodb",
+    "updatedAt": "2026-02-28T13:58:42.979Z"
+  },
+  "deliveryTrackingInfo (Empty)": {
+    "summary": "Store data, specifically delivery tracking information and authentication states.",
+    "fingerprint": "f95bb94802a664feec5e53d425e5a162ea75b7cd3f9655d2ed83041a72421830",
+    "dbType": "mongodb",
+    "updatedAt": "2026-02-28T13:58:45.268Z"
+  },
+  "certificateInfo": {
+    "summary": "Stores user profile information and authentication states.",
+    "fingerprint": "2e259ff51dc084698ead31bfd9ff1983cf59a1ee12c7e8d2a4abbe831c56a2c7",
+    "dbType": "mongodb",
+    "updatedAt": "2026-02-28T13:59:03.587Z"
+  },
+  "deviceStageHistoryInfo (Empty)": {
+    "summary": "The `deviceStageHistoryInfo` collection in MongoDB serves to store detailed information about device stages, including their history and associated authentication states. This collection provides a comprehensive view of user activity over time within a single instance of an application or system, making it ideal for applications that require tracking user interactions across multiple stages within a single dataset.",
+    "fingerprint": "a6f993b8889ec6dc66237dc3939616b21a0e5a283f4e776b35b80af21b3170e2",
+    "dbType": "mongodb",
+    "updatedAt": "2026-02-28T13:59:22.680Z"
+  },
+  "merchantsToDispatchReportInfo (Empty)": {
+    "summary": "The MongoDB collection `merchantsToDispatchReportInfo` serves as a storage mechanism for tracking user-related data associated with merchant dispatch operations. This information includes user profiles and authentication states, making it an essential part of customer management systems where users' interactions related to merchant deliveries are tracked.",
+    "fingerprint": "73614b463cf49a408872f5326e82921918c260f9dea1934565241d63ba0de83e",
+    "dbType": "mongodb",
+    "updatedAt": "2026-02-28T13:59:24.581Z"
+  },
+  "deviceBriefHistoryInfo": {
+    "summary": "The MongoDB collection `deviceBriefHistoryInfo` stores basic device brief information, including creation date, mobile number, IMSI, current firmware version, MCC (Mobile Country Code), total transactions, and IMSI-CIDC (Cell ID, Mobile Network Code) for each device. This data is useful for tracking the lifecycle of devices, managing transactions, or performing certain operations related to the device's status.",
+    "fingerprint": "3798291e2d1ad08da625268108f507aacc3f8c0dddcd5728f4f8f526d5fcff28",
+    "dbType": "mongodb",
+    "updatedAt": "2026-02-28T13:59:27.455Z"
+  },
+  "actionSummaryInfo": {
+    "summary": "This collection stores action summary information related to users, including publishing actions, failed attempts, group IDs, device identifiers, application status (expiry time), and creation/last updated timestamps. It provides a structured way to manage user actions and provide relevant statistics about their usage patterns over time.",
+    "fingerprint": "fdb61b8e8eef5297896acefa02bbd287c391fbb8d934bee8cc45d7739437ffe0",
+    "dbType": "mongodb",
+    "updatedAt": "2026-02-28T13:59:30.723Z"
+  },
+  "batteryHistoryInfo (Empty)": {
+    "summary": "The MongoDB collection `batteryHistoryInfo` is designed to store user-specific data related to battery health and performance, such as device models, usage hours, temperature readings, voltage levels, and other relevant details. This information is crucial for applications like battery monitoring systems, charging stations, or even personal devices that track their battery health over time.",
+    "fingerprint": "2be0d0b1624ce6d10132d2cfcae78e6e796ecc3566ad4be3baed39ffdb2a0a5c",
+    "dbType": "mongodb",
+    "updatedAt": "2026-02-28T13:59:33.548Z"
+  },
+  "merchantEventLogHistoryInfo (Empty)": {
+    "summary": "This collection stores detailed information about merchant events, such as timestamps, user IDs, event types, and action logs, facilitating insights into a store's operational flow and transaction history.",
+    "fingerprint": "ad7f4e591939ddacb07fc6bf546c5981a8bb27bc4cb1525632fb9dba3044836e",
+    "dbType": "mongodb",
+    "updatedAt": "2026-02-28T13:59:35.486Z"
+  },
+  "webEventLogHistoryInfo": {
+    "summary": "This MongoDB collection is primarily used to store data related to web event logs, including timestamps of creation, identifiers (eventIds), user groups, IP addresses, users, their activities on Soundbox pages, and status information. It serves as a platform for managing and analyzing user interaction with Soundbox pages, providing insights into the visitor's journey through the site.",
+    "fingerprint": "51209def8fef5544bfb0f8d9546dcb8fab0d8107bbd7f08ed21df5f3a1d3649f",
+    "dbType": "mongodb",
+    "updatedAt": "2026-02-28T13:59:38.976Z"
+  },
+  "jobHistoryInfo (Empty)": {
+    "summary": "The jobHistoryInfo collection in MongoDB serves to store user profiles and authentication states, making it useful for tracking or managing various aspects related to user information and authentication processes.",
+    "fingerprint": "3f956eb57afbe47aaafb275cc12f3e1463137c821b04b5cafc1fd29f53603a23",
+    "dbType": "mongodb",
+    "updatedAt": "2026-02-28T13:59:42.090Z"
+  },
+  "deliveryTrackingHistoryInfo (Empty)": {
+    "summary": "The MongoDB collection \"deliveryTrackingHistoryInfo\" is designed to store and manage detailed information about delivery tracking records, including timestamped data such as arrival times, destinations, carriers, and any additional metadata associated with each delivery. This type of record can be crucial for various purposes within an e-commerce platform or logistics system, enabling users to track the movement of items throughout the distribution process and analyze patterns and discrepancies in deliveries.",
+    "fingerprint": "6d3d9306ad5992bfc3f1948a675d7a4219eb97acf2ef38c723bf931362ffb05b",
+    "dbType": "mongodb",
+    "updatedAt": "2026-02-28T13:59:44.537Z"
+  },
+  "systemSummaryInfo": {
+    "summary": "This collection is used to track various aspects of a specific application, such as total transactions received, successful transactions, advertisements received, and more. This data can help users understand the overall performance metrics and business insights related to user activity on this particular platform or service.",
+    "fingerprint": "df7b7ef49162571f42fdedc44500c123adbdb8a3bade82a18efa0e9d6e292b6a",
+    "dbType": "mongodb",
+    "updatedAt": "2026-02-28T13:59:46.940Z"
+  },
+  "merchantStageHistoryInfo (Empty)": {
+    "summary": "The MongoDB collection \"merchantStageHistoryInfo\" is intended to store and manage user profiles, including stages in a merchant's operations. This information helps in tracking user activities, authentication states, or any relevant data related to the merchant stage process.",
+    "fingerprint": "b0cf9fa8b59dae8b9300bb8158f7e493933b340acdc6de56118eda658cbb645d",
+    "dbType": "mongodb",
+    "updatedAt": "2026-02-28T13:59:49.289Z"
+  },
+  "advertisementHistoryInfo (Empty)": {
+    "summary": "The collection \"advertisementHistoryInfo\" serves as a storage mechanism for storing and retrieving detailed records of user advertisements, such as the advertisement's status (e.g., active, deleted), date of creation, location, duration, and any associated data points.",
+    "fingerprint": "04f20d6004bd5a9dacf0d306ab33a2ef7d653a988dd46b46f2cb9c961e1dee62",
+    "dbType": "mongodb",
+    "updatedAt": "2026-02-28T13:59:51.367Z"
+  },
+  "advertisementActionHistoryInfo": {
+    "summary": "The collection \"advertisementActionHistoryInfo\" stores user-specific advertisement action history data, where:\n\n- `createdAt`: The time when an advertisement was added to or fetched from the system.\n- `deviceId`, `addId`, and `actionStatus`: Fields indicate the device ID (device number), additional IDs (created by), and actions performed (status).\n- `actionErrCode`: Indicates the error code of a particular action performed.\n- `reqRefNo`: A unique identifier for each advertisement action, including an internal reference number (`f58d13fd-b2fe-4396-b09f-6ad7bd848d3a`).\n\nThis collection is intended to provide users with detailed information about when, where, and what they did during their ads interactions.",
+    "fingerprint": "c529bda31af66d9ee4c8e1df81e7e9fff70593c6374c05a4b87c5f3d1a70f9b6",
+    "dbType": "mongodb",
+    "updatedAt": "2026-02-28T13:59:56.032Z"
+  },
+  "deviceModeHistoryInfo": {
+    "summary": "The MongoDB collection \"deviceModeHistoryInfo\" is specifically designed to store detailed data about device modes, such as their creation timestamps, devices they affect, and months of use. This makes it ideal for tracking user actions related to the mode of operation or maintenance of certain equipment.",
+    "fingerprint": "6663ce0e8716cd49f125dbfb11a2b1b154a276e15dbab7be521e7589c84cdd52",
+    "dbType": "mongodb",
+    "updatedAt": "2026-02-28T14:00:00.067Z"
+  },
+  "simControlClientHistoryInfo": {
+    "summary": "This MongoDB collection stores information about server logs, including timestamps, metadata, status, device ID, IP address, username, agent version, HTTP user agents, and more. It primarily serves to log and analyze network activity over time, aiding in security monitoring, performance insights, and system health evaluation purposes.",
+    "fingerprint": "834137ae546a697c5f63b7ddd67171100bbdeb24fc009b73f0672da1992bdf91",
+    "dbType": "mongodb",
+    "updatedAt": "2026-02-28T14:00:03.282Z"
+  },
+  "deviceConnectivityMonthlyHistoryInfo": {
+    "summary": "This collection stores detailed historical connectivity data related to device connections, such as when they started connecting (createdAt), their status changes (mqttStatus, httpStatus, deviceStatus), and any metadata associated with each connection (metadata). It helps in tracking and analyzing how devices have interacted with the system over time.",
+    "fingerprint": "173ae3d6ec60e68a0055d3cc14ca72514118154c5f02f870eda110f93806ca85",
+    "dbType": "mongodb",
+    "updatedAt": "2026-02-28T14:00:06.806Z"
+  },
+  "deviceSessionSummaryInfo": {
+    "summary": "The deviceSessionSummaryInfo collection in MongoDB serves as a central repository for tracking user activity across different devices and APIs. It stores detailed session information, including device IDs, group IDs, device types, HTTP status, MQTT/HTTPS status, battery level, transaction history, and more. This information is crucial for various business applications that need to understand user interactions on multiple platforms.",
+    "fingerprint": "a8bac819269895f354c9db0442605c5a2fcfc980ed321c9daa6f99774b1df817",
+    "dbType": "mongodb",
+    "updatedAt": "2026-02-28T14:00:12.819Z"
+  },
+  "deviceSummaryInfo (Empty)": {
+    "summary": "The \"deviceSummaryInfo\" collection stores user device information, including data such as devices connected to a user's computer (users), operating systems used on the device, IP addresses, and other details. This information can help in analyzing user behavior, identifying usage patterns, or assessing the user experience of their device.",
+    "fingerprint": "54603f502dad3de0a82dfe3d43ffe9d828ef3bba9440f1f77c677505597fe61e",
+    "dbType": "mongodb",
+    "updatedAt": "2026-02-28T14:00:18.732Z"
+  },
+  "systemDailySummaryInfo": {
+    "summary": "The given MongoDB collection represents daily summary information for a business, which includes timestamps, time zones, transaction counts, advertisements received, successful transactions, and advertisement count. This data is valuable for analyzing user behavior across different days of the week, tracking performance metrics, and understanding market trends over time.",
+    "fingerprint": "616ba7bffe9900c4c6bce2936d20a0ba95a2320f93ced579c8d9f28c8fd37e60",
+    "dbType": "mongodb",
+    "updatedAt": "2026-02-28T14:00:23.148Z"
+  },
+  "deviceEventLogHistoryInfo": {
+    "summary": "The given collection, `deviceEventLogHistoryInfo`, serves as a record store for user actions, including login requests, event responses, message updates, and device status changes. It captures detailed information about each interaction that occurs within an application or system.",
+    "fingerprint": "a519b11da999335072952b9bcbc21d3b9da41d10442c0468c211054cbd9c838c",
+    "dbType": "mongodb",
+    "updatedAt": "2026-02-28T14:00:29.180Z"
+  },
+  "merchantSummaryInfo": {
+    "summary": "The `merchantSummaryInfo` collection in MongoDB serves as a centralized storage for merchant-specific data, enabling administrators to manage and track user profiles related to various merchant activities. This includes information about merchants' IDs (e.g., `1000`, `1001`, etc.), their terminal identifiers (e.g., `terminalId`), details of the current merchant stage being executed (`merchantStageObject`), a brief summary of previous stages (`lastMerchantStageObjectBrief`), and any additional relevant fields.",
+    "fingerprint": "6321116cdecb2cdcdcee51674675f0224b508300dd0f3739511baf99fd931871",
+    "dbType": "mongodb",
+    "updatedAt": "2026-02-28T14:00:33.413Z"
+  },
+  "deviceStatHistoryInfo": {
+    "summary": "This MongoDB collection stores device-specific statistics such as reset counts, USB plugin counts since power-on, transmission data, battery status, uptime, and more. It's primarily used to manage device-level information during a specific period.",
+    "fingerprint": "87467bdefa742a84f1415474b3282f6b6cecb4034dff191698f94bf160886e00",
+    "dbType": "mongodb",
+    "updatedAt": "2026-02-28T14:00:39.850Z"
+  },
+  "deviceConnectivityHistoryInfo": {
+    "summary": "The MongoDB collection \"deviceConnectivityHistoryInfo\" stores detailed information about device connectivity events, including timestamps, IDs, status changes (status change boolean), creation times, months of activity, and specific identifiers. This collection serves as a repository for tracking user interactions with IoT devices over time to monitor system performance and maintain accurate records.",
+    "fingerprint": "39e14d2da794c73b890fc8f3de8aaa2c5dedf2c0d5d6f0ac3fc6f905bde492e2",
+    "dbType": "mongodb",
+    "updatedAt": "2026-02-28T14:00:46.548Z"
+  },
+  "simControlClientInfo": {
+    "summary": "The MongoDB collection \"simControlClientInfo\" serves to store various attributes of SIM card clients, including their unique identifiers (imsi), device IDs, status of safe custody and temporary disconnection, total update counts, IP addresses, user agents, creation and update timestamps, as well as the latest push notifications from security administrators.",
+    "fingerprint": "b8d28213137ff4c4f94b4f13643551d475972dad335525cc9d90436fcabd2392",
+    "dbType": "mongodb",
+    "updatedAt": "2026-02-28T14:00:51.614Z"
+  },
+  "userSummaryInfo": {
+    "summary": "This MongoDB collection stores user summary information along with various attributes such as login times, events, and authentication status. It helps in managing user profiles and their activities over time.",
+    "fingerprint": "bc32ad0f5700aa54d69d32bc200ded0bb9a2a4820711e9f0c0aa1cb18cc3dbe9",
+    "dbType": "mongodb",
+    "updatedAt": "2026-02-28T14:01:03.269Z"
+  },
+  "simUpdateHistoryInfo (Empty)": {
+    "summary": "The `simUpdateHistoryInfo` collection stores user-specific update history data, which includes both user profile information and any changes or updates made to their authentication states.",
+    "fingerprint": "fd2444087d23916b6e235401d8df64f3742f5ed69ab156565ca6d97418a26cb5",
+    "dbType": "mongodb",
+    "updatedAt": "2026-02-28T14:01:12.511Z"
+  },
+  "jobInfo (Empty)": {
+    "summary": "The \"jobInfo\" collection in MongoDB serves as a central repository for storing user profile information and any authentication states related to those profiles. It acts as a common storage location where users can upload their details, including job titles, positions, responsibilities, skills, experience, education, and contact information.\n\nThis store is crucial for managing employee records, ensuring consistency across different departments or divisions within an organization, and facilitating communication between employees regarding work-related updates.",
+    "fingerprint": "a36143507eeb885b45de5c57410f16c2c40f4c3adfb6bc322c09ae3e87166479",
+    "dbType": "mongodb",
+    "updatedAt": "2026-02-28T14:01:14.683Z"
+  },
+  "deviceHealthHistoryInfo (Empty)": {
+    "summary": "The 'deviceHealthHistoryInfo' collection serves to store user device health history data, which is crucial for tracking medical conditions, performance metrics, and other relevant health information. It allows users to access detailed historical health records from their devices in a centralized database format. This information is essential for healthcare providers to monitor and manage patient health while also enabling analytics and decision-making processes related to medical research and treatment strategies.",
+    "fingerprint": "8076ccb603cf82ba430479a8426bec8467ff46b0b0b9c4ffa9fe3c42861269fc",
+    "dbType": "mongodb",
+    "updatedAt": "2026-02-28T14:01:16.975Z"
+  },
+  "mqttEventLogHistoryInfo": {
+    "summary": "The MongoDB collection stores historical event logs related to MQTT broker status changes, such as when a broker's status became active or disconnected.",
+    "fingerprint": "e5153b18101ae662ace0fdb411b9fa0222723909d2a9a25f4b20eb75db393f28",
+    "dbType": "mongodb",
+    "updatedAt": "2026-02-28T14:01:20.334Z"
+  }
+}

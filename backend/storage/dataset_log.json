@@ -1,0 +1,122 @@
+[
+  {
+    "timestamp": "2026-02-27T15:17:58.877Z",
+    "question": "Show top 5 merchants by revenue volume",
+    "intent": "DYNAMIC",
+    "requestId": "8876"
+  },
+  {
+    "timestamp": "2026-02-27T15:51:29.461Z",
+    "question": "How many transactions are in transactionHistoryInfo?",
+    "intent": "DYNAMIC",
+    "requestId": "9461"
+  },
+  {
+    "timestamp": "2026-02-27T15:56:43.954Z",
+    "question": "show last 5 transactions",
+    "intent": "DYNAMIC",
+    "requestId": "3954"
+  },
+  {
+    "timestamp": "2026-02-27T16:00:46.603Z",
+    "question": "show last 5 transactions",
+    "intent": "DYNAMIC",
+    "requestId": "6602"
+  },
+  {
+    "timestamp": "2026-02-28T08:54:00.739Z",
+    "question": "How many devices are currently inactive?",
+    "intent": "DYNAMIC",
+    "requestId": "0738"
+  },
+  {
+    "timestamp": "2026-02-28T09:01:31.613Z",
+    "question": "Which merchants have no devices assigned",
+    "intent": "DYNAMIC",
+    "requestId": "1612"
+  },
+  {
+    "timestamp": "2026-02-28T09:20:49.004Z",
+    "question": "show top 5 users",
+    "intent": "DYNAMIC",
+    "requestId": "9004"
+  },
+  {
+    "timestamp": "2026-02-28T09:25:46.768Z",
+    "question": "Show revenue trend for the last 7 days",
+    "intent": "DYNAMIC",
+    "requestId": "6768"
+  },
+  {
+    "timestamp": "2026-02-28T09:59:19.524Z",
+    "question": "Show revenue trend for the last 7 days",
+    "intent": "DYNAMIC",
+    "requestId": "9524"
+  },
+  {
+    "timestamp": "2026-02-28T10:24:02.319Z",
+    "question": "show transactions",
+    "intent": "DYNAMIC",
+    "requestId": "2319"
+  },
+  {
+    "timestamp": "2026-02-28T10:27:29.237Z",
+    "question": "show transactions",
+    "intent": "DYNAMIC",
+    "requestId": "9236"
+  },
+  {
+    "timestamp": "2026-02-28T10:30:28.235Z",
+    "question": "show transactions",
+    "intent": "DYNAMIC",
+    "requestId": "8235"
+  },
+  {
+    "timestamp": "2026-02-28T10:31:58.941Z",
+    "question": "show the devices with battery level above 50 ",
+    "intent": "DYNAMIC",
+    "requestId": "8940"
+  },
+  {
+    "timestamp": "2026-02-28T13:46:09.101Z",
+    "question": "show the transaction with highest amount",
+    "intent": "DYNAMIC",
+    "requestId": "9101"
+  },
+  {
+    "timestamp": "2026-02-28T13:47:23.555Z",
+    "question": "Show revenue trend for the last 7 days",
+    "intent": "DYNAMIC",
+    "requestId": "3555"
+  },
+  {
+    "timestamp": "2026-02-28T14:01:51.956Z",
+    "question": "show the transaction with highest amount",
+    "intent": "DYNAMIC",
+    "requestId": "1955"
+  },
+  {
+    "timestamp": "2026-02-28T14:04:01.954Z",
+    "question": "what is the highest amount in the transactions",
+    "intent": "DYNAMIC",
+    "requestId": "1954"
+  },
+  {
+    "timestamp": "2026-02-28T14:04:54.388Z",
+    "question": "which deviceId has the highest transactions",
+    "intent": "DYNAMIC",
+    "requestId": "4388"
+  },
+  {
+    "timestamp": "2026-02-28T14:06:10.684Z",
+    "question": "what is the count of transactions",
+    "intent": "DYNAMIC",
+    "requestId": "0684"
+  },
+  {
+    "timestamp": "2026-02-28T14:08:05.018Z",
+    "question": "show last 3 transactions",
+    "intent": "DYNAMIC",
+    "requestId": "5018"
+  }
+]

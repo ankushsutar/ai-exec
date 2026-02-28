@@ -9,13 +9,12 @@
     ],
     "aliases": {
         "terminalId": "deviceId",
-        "revenue": "transactionHistoryInfo.amount",
-        "volume": "transactionHistoryInfo.amount"
+        "revenue": "transactionActionHistoryInfo.amount",
+        "volume": "transactionActionHistoryInfo.amount"
     },
     "guardrails": {
         "sql": {
             "avoid": [
-                "transactionInfo",
                 "deviceIdentInfo"
             ],
             "must_use": [
@@ -24,10 +23,9 @@
             ]
         },
         "mongo": {
-            "primary_transactions": "transactionHistoryInfo",
+            "primary_transactions": "transactionActionHistoryInfo",
             "avoid": [
-                "merchantSummaryInfo",
-                "transactionInfo"
+                "merchantSummaryInfo"
             ]
         }
     }

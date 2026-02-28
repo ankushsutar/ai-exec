@@ -1,6 +1,9 @@
 const fs = require("fs");
 const path = require("path");
-const STORE_FILE = path.join(__dirname, "../config/knowledge_embeddings.json");
+const STORE_FILE = path.join(
+  __dirname,
+  "../../storage/knowledge_embeddings.json",
+);
 
 let memoryStore = [];
 const embeddingCache = new Map();
@@ -172,8 +175,71 @@ function searchSimilarTables(
   return scoredTables.slice(0, limit);
 }
 
+function getHighProbabilityTables(questionText) {
+  const lowerQ = questionText.toLowerCase();
+  const foundationalTables = [];
+
+  // MERCHANT ENTITY TRIAD (SQL)
+  if (
+    lowerQ.includes("merchant") ||
+    lowerQ.includes("business") ||
+    lowerQ.includes("vendor")
+  ) {
+    foundationalTables.push(
+      "merchantInfo",
+      "merchantRelationInfo",
+      "deviceRelationInfo",
+    );
+  }
+
+  // TRANSACTION & REVENUE ENTITY (Mongo + SQL Bridge)
+  if (
+    lowerQ.includes("transaction") ||
+    lowerQ.includes("revenue") ||
+    lowerQ.includes("volume") ||
+    lowerQ.includes("sale") ||
+    lowerQ.includes("payment") ||
+    lowerQ.includes("amount") ||
+    lowerQ.includes("trend")
+  ) {
+    // GROUNDING: Force include the core transaction collection in Mongo
+    // AND the linking table in SQL
+    foundationalTables.push(
+      "transactionActionHistoryInfo",
+      "deviceRelationInfo",
+      "merchantInfo",
+    );
+  }
+
+  // USER ENTITY
+  if (
+    lowerQ.includes("user") ||
+    lowerQ.includes("owner") ||
+    lowerQ.includes("admin")
+  ) {
+    foundationalTables.push("userInfo", "userGroupInfo");
+  }
+
+  // DEVICE ENTITY
+  if (
+    lowerQ.includes("device") ||
+    lowerQ.includes("pauay") ||
+    lowerQ.includes("terminal") ||
+    lowerQ.includes("iccid")
+  ) {
+    foundationalTables.push(
+      "deviceInfo",
+      "deviceRelationInfo",
+      "deviceBriefInfo",
+    );
+  }
+
+  return [...new Set(foundationalTables)];
+}
+
 /**
- * Returns the raw string containing only the top 5 schemas joined together.
+ * Returns the raw string containing the most relevant schemas.
+ * Combines High-Probability (Hard) Grounding with Vector (Soft) Grounding.
  */
 function getTopSchemasString(
   questionEmbedding,
@@ -181,6 +247,10 @@ function getTopSchemasString(
   limit = 5,
   dbType = null,
 ) {
+  // 1. Get Hard-Grounded Tables based on Keywords
+  const hardGroundedNames = getHighProbabilityTables(questionText);
+
+  // 2. Get Soft-Grounded Tables based on Vector Similarity
   const topMatches = searchSimilarTables(
     questionEmbedding,
     questionText,
@@ -188,19 +258,55 @@ function getTopSchemasString(
     dbType,
   );
 
-  let combinedSchema = "";
+  // 3. Logic to combine and de-duplicate
+  const finalMatches = [];
+  const seenTableNames = new Set();
+
+  // Prioritize Hard Grounding if dbType matches
+  for (const hardName of hardGroundedNames) {
+    const tableObj = memoryStore.find(
+      (t) => t.tableName === hardName && (!dbType || t.dbType === dbType),
+    );
+    if (tableObj && !seenTableNames.has(hardName)) {
+      finalMatches.push({ ...tableObj, score: 1.0, isHardGrounded: true });
+      seenTableNames.add(hardName);
+    }
+  }
+
+  // Backfill with Vector Matches
   for (const match of topMatches) {
-    combinedSchema += `SOURCE: ${match.dbType}\n`;
+    if (!seenTableNames.has(match.tableName)) {
+      finalMatches.push(match);
+      seenTableNames.add(match.tableName);
+    }
+  }
+
+  let combinedSchema = "";
+  for (const match of finalMatches.slice(0, 6)) {
+    // Reduced from limit+2 to fixed small number
+    combinedSchema += `SOURCE: ${match.dbType}${match.isHardGrounded ? " (Foundation Table)" : ""}\n`;
     if (match.summary) {
       combinedSchema += `PURPOSE: ${match.summary}\n`;
     }
-    combinedSchema += match.schemaText + "\n\n";
+
+    // OPTIMIZATION: If the schema is too long, we only send the first 15 columns to prevent timeout
+    let schemaLines = match.schemaText.split("\n");
+    if (schemaLines.length > 20) {
+      combinedSchema +=
+        schemaLines.slice(0, 15).join("\n") +
+        "\n... (additional columns omitted for brevity)\n\n";
+    } else {
+      combinedSchema += match.schemaText + "\n\n";
+    }
   }
 
-  const matchedNames = topMatches
-    .map((m) => `${m.tableName} (${(m.score * 100).toFixed(1)}%)`)
+  const matchedNames = finalMatches
+    .map((m) => `${m.tableName}${m.isHardGrounded ? "*" : ""}`)
+    .slice(0, 6)
     .join(", ");
-  console.log(`[Vector Store] Top hybrid matches: ${matchedNames}`);
+  console.log(
+    `[Vector Store] Grounded schema context (Optimized): ${matchedNames}`,
+  );
 
   return combinedSchema.trim();
 }

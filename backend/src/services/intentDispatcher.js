@@ -2,35 +2,48 @@ const axios = require("axios");
 const config = require("../config/env");
 
 /**
- * Uses the LLM to intelligently determine the query intent: SQL, MongoDB, or Hybrid.
+ * Uses a combination of entity-based heuristics and LLM analysis to determine intent.
  */
 async function dispatchIntent(question) {
   const lowercaseQ = question.toLowerCase();
 
-  // HARDCODE BYPASS: Small LLM often hallucinates SQL for transactions.
-  // If the user asks for transactions/revenue/volume, FORCE it to Mongo or Hybrid.
-  if (
-    lowercaseQ.includes("transaction") ||
-    lowercaseQ.includes("revenue") ||
-    lowercaseQ.includes("volume")
-  ) {
-    if (
-      lowercaseQ.includes("merchant") ||
-      lowercaseQ.includes("user") ||
-      lowercaseQ.includes("name")
-    ) {
+  // 1. DEFINED ENTITY KEYWORDS
+  const TRANSACTIONAL_KEYWORDS = [
+    "transaction",
+    "revenue",
+    "volume",
+    "amount",
+    "sales",
+    "total",
+    "top",
+    "best",
+    "least",
+  ];
+  const METADATA_KEYWORDS = ["merchant", "user", "name", "business", "device"];
+
+  const hasTransactional = TRANSACTIONAL_KEYWORDS.some((kw) =>
+    lowercaseQ.includes(kw),
+  );
+  const hasMetadata = METADATA_KEYWORDS.some((kw) => lowercaseQ.includes(kw));
+
+  // 2. HEURISTIC OVERRIDE (FAST PATH)
+  if (hasTransactional) {
+    if (hasMetadata) {
       console.log(
-        "[Intent Dispatcher] Heuristic: Forcing HYBRID for transactional request with naming context.",
+        "[Intent Dispatcher] Heuristic: Identified HYBRID (Metadata + Metrics).",
       );
       return "HYBRID";
     }
     console.log(
-      "[Intent Dispatcher] Heuristic: Forcing MONGODB for pure transactional request.",
+      "[Intent Dispatcher] Heuristic: Identified MONGODB (Pure Metrics).",
     );
     return "MONGODB";
   }
 
-  console.log(`[Intent Dispatcher] Analyzing intent for: "${question}"`);
+  // 3. LLM ANALYSIS (DECISION PATH)
+  console.log(
+    `[Intent Dispatcher] Analyzing intent via LLM for: "${question}"`,
+  );
 
   const prompt = `
 You are AI-Exec, an enterprise-grade data intelligence engine.
@@ -54,9 +67,7 @@ QUESTION: "${question}"
 
 OUTPUT RULES:
 - Return ONLY the category name: "SQL", "MONGODB", or "HYBRID".
-- Do not explain.
-- Do not add markdown.
-- Do not add commentary.
+- Do not explain or add markdown.
   `;
 
   try {
@@ -67,26 +78,21 @@ OUTPUT RULES:
         prompt: prompt,
         stream: false,
       },
-      { timeout: 10000 },
+      { timeout: 15000 },
     );
 
     const rawResponse = response.data.response.toUpperCase().trim();
-    let intent = "SQL";
+    if (rawResponse.includes("HYBRID")) return "HYBRID";
+    if (rawResponse.includes("MONGODB")) return "MONGODB";
+    if (rawResponse.includes("SQL")) return "SQL";
 
-    if (rawResponse.includes("HYBRID")) intent = "HYBRID";
-    else if (rawResponse.includes("MONGODB")) intent = "MONGODB";
-    else if (rawResponse.includes("SQL")) intent = "SQL";
-
-    console.log(`[Intent Dispatcher] Llama Parsed Intent: ${intent}`);
-    return intent;
-
-    return "SQL"; // Default fallback
+    return "SQL"; // Default if response is ambiguous
   } catch (error) {
     console.warn(
-      `[Intent Dispatcher] Analysis failed, falling back to heuristic.`,
+      `[Intent Dispatcher] LLM Analysis failed. Falling back to SQL default.`,
       error.message,
     );
-    return null; // Signals to use heuristic fallback
+    return "SQL";
   }
 }
 

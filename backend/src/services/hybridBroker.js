@@ -54,14 +54,22 @@ async function orchestrateHybridQuery(question, requestId) {
   const startTime = Date.now();
 
   // STEP 2: Query Postgres to get IDs/Context
-  const contextPrompt = `Find the "id" and "deviceId" for any merchants or users mentioned here: "${question}". 
-  HINT: You likely need to JOIN "merchantInfo", "merchantRelationInfo", and "deviceIdentInfo" to find the "id" that maps to a MongoDB "deviceId". 
-  Return a simple table with the result.`;
+  const contextPrompt = `
+  Find the "id" and "deviceId" for any merchants or users mentioned in the ORIGINAL question. 
+  
+  ORIGINAL QUESTION: "${question}"
+  
+  REQUIRED OUTPUT:
+  - You must use JOINs between "merchantInfo", "merchantRelationInfo", and "deviceRelationInfo".
+  - Return the merchantBusinessName and corresponding deviceId.
+  - Return ONLY a valid SELECT query.
+  `;
 
   const sqlAgent = require("./sqlAgent");
   const metadataSql = await sqlAgent.generateSQLFromPrompt(
     contextPrompt,
     question,
+    requestId,
   );
 
   const pgStart = Date.now();

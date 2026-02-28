@@ -7,9 +7,11 @@ const OLLAMA_URL =
 
 async function train() {
   console.log("[Trainer] Reading Database_Study.md...");
-  const studyPath = "Database_Study.md";
+  const studyPath = "../Database_Study.md";
   if (!fs.existsSync(studyPath)) {
-    console.error("Database_Study.md not found. Run generateStudy.js first.");
+    console.error(
+      `Database_Study.md not found at ${studyPath}. Run generateStudy.js first.`,
+    );
     return;
   }
 
@@ -57,7 +59,7 @@ async function train() {
   }
 
   fs.writeFileSync(
-    "backend/knowledge_base.json",
+    "knowledge_base.json",
     JSON.stringify(knowledgeBase, null, 2),
   );
   console.log(

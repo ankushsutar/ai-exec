@@ -110,7 +110,7 @@ async function extractDatabaseSchema(allowedTables = null) {
         } catch (e) {}
       }
 
-      // EXTRA INTELLIGENCE: Numerical Statistics (Price, Salary, Amount, etc.)
+      // EXTRA INTELLIGENCE: Numerical Statistics & KPI Metadata
       const numericKeywords = [
         "price",
         "salary",
@@ -119,6 +119,9 @@ async function extractDatabaseSchema(allowedTables = null) {
         "rating",
         "level",
         "temperature",
+        "revenue",
+        "volume",
+        "cost",
       ];
       if (
         numericKeywords.some((kw) => colNameLower.includes(kw)) ||
@@ -132,6 +135,19 @@ async function extractDatabaseSchema(allowedTables = null) {
           );
           if (res.rows[0].min_val !== null) {
             colDef += ` [Range: ${res.rows[0].min_val} to ${res.rows[0].max_val}]`;
+          }
+
+          // KPI Hints
+          if (
+            colNameLower.includes("revenue") ||
+            colNameLower.includes("amount")
+          ) {
+            colDef += ` [KPI: Potential Revenue Metric]`;
+          } else if (
+            colNameLower.includes("volume") ||
+            colNameLower.includes("count")
+          ) {
+            colDef += ` [KPI: Potential Volume Metric]`;
           }
         } catch (e) {}
       }
@@ -159,7 +175,7 @@ async function extractDatabaseSchema(allowedTables = null) {
 
       if (fks[row.table_name] && fks[row.table_name][row.column_name]) {
         const fk = fks[row.table_name][row.column_name];
-        colDef += ` [FOREIGN KEY pointing to "${fk.table}"."${fk.column}"]`;
+        colDef += ` [RELATIONSHIP: Joins with "${fk.table}" on "${fk.column}"]`;
       }
 
       tables[row.table_name].columns.push(colDef);

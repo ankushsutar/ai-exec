@@ -1,5 +1,6 @@
-require('dotenv').config();
-const { Pool } = require('pg');
+const path = require("path");
+require("dotenv").config({ path: path.join(__dirname, "../.env") });
+const { Pool } = require("pg");
 
 const pool = new Pool({
   host: process.env.DB_HOST,
@@ -10,11 +11,11 @@ const pool = new Pool({
 });
 
 async function seed() {
-  console.log('Connecting to database...');
+  console.log("Connecting to database...");
   try {
     const client = await pool.connect();
 
-    console.log('Creating tables...');
+    console.log("Creating tables...");
     await client.query(`
       DROP TABLE IF EXISTS transactions;
       DROP TABLE IF EXISTS merchants;
@@ -74,7 +75,7 @@ async function seed() {
       );
     `);
 
-    console.log('Inserting merchants...');
+    console.log("Inserting merchants...");
     await client.query(`
       INSERT INTO merchants (name, country, industry, contact_email, rating, established_year) VALUES
       ('TechNova Retail', 'US', 'Electronics', 'contact@technova.com', 4.8, 2010),
@@ -84,7 +85,7 @@ async function seed() {
       ('Quantum Commerce', 'US', 'Software', 'partners@quantumcommerce.com', 4.7, 2020);
     `);
 
-    console.log('Inserting products...');
+    console.log("Inserting products...");
     await client.query(`
       INSERT INTO products (name, category, price, stock_quantity) VALUES
       ('Quantum Server X1', 'Hardware', 4500.00, 50),
@@ -94,7 +95,7 @@ async function seed() {
       ('Security Appliance', 'Networking', 2500.00, 75);
     `);
 
-    console.log('Inserting employees...');
+    console.log("Inserting employees...");
     await client.query(`
       INSERT INTO employees (name, department, salary, hire_date) VALUES
       ('Alice Smith', 'Engineering', 125000.00, '2020-05-15'),
@@ -106,7 +107,7 @@ async function seed() {
       ('George Harris', 'Executive', 250000.00, '2018-01-01');
     `);
 
-    console.log('Inserting transactions...');
+    console.log("Inserting transactions...");
     await client.query(`
       INSERT INTO transactions (merchant_id, product_id, amount, tax, discount, region, status, payment_method, currency) VALUES
       (1, 1, 13500.00, 1350.00, 500.00, 'North America', 'COMPLETED', 'CREDIT_CARD', 'USD'),
@@ -121,7 +122,7 @@ async function seed() {
       (5, 3, 600.00, 60.00, 0.00, 'Asia Pacific', 'FAILED', 'CREDIT_CARD', 'AUD');
     `);
 
-    console.log('Inserting device health logs...');
+    console.log("Inserting device health logs...");
     await client.query(`
       INSERT INTO device_health (firmware_version, status, battery_level, temperature, location, last_maintenance_date) VALUES
       ('v1.0.4', 'OK', 95, 36.5, 'Warehouse A', '2023-01-15 10:00:00'),
@@ -138,10 +139,10 @@ async function seed() {
       ('v1.1.0-beta', 'FAILED', 10, 65.0, 'Beta Site', '2023-05-20 09:30:00');
     `);
 
-    console.log('Database seeded successfully!');
+    console.log("Database seeded successfully!");
     client.release();
   } catch (err) {
-    console.error('Error seeding database:', err);
+    console.error("Error seeding database:", err);
   } finally {
     await pool.end();
   }
