@@ -11,15 +11,82 @@ function processAnalytics(data) {
     "cvv",
     "key",
   ];
+  // BEAUTIFICATION HELPERS
+  const formatValue = (key, val, row) => {
+    if (val === null || val === undefined) return "N/A";
+
+    // 1. DATE FORMATTING
+    if (
+      key.toLowerCase().includes("time") ||
+      key.toLowerCase().includes("createdat") ||
+      key.toLowerCase().includes("updatedat")
+    ) {
+      try {
+        const d = new Date(
+          !isNaN(Number(val)) && typeof val !== "string"
+            ? Number(val) * (val > 10000000000 ? 1 : 1000)
+            : val,
+        );
+        if (!isNaN(d.getTime())) {
+          return d.toLocaleString("en-IN", {
+            day: "2-digit",
+            month: "short",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+          });
+        }
+      } catch (e) {}
+    }
+
+    // 2. CURRENCY FORMATTING (txnAmt, amount, etc)
+    if (
+      key.toLowerCase().includes("amt") ||
+      key.toLowerCase().includes("amount") ||
+      key.toLowerCase().includes("revenue")
+    ) {
+      const num = parseFloat(val);
+      if (!isNaN(num)) {
+        const currency = row.currency || "INR";
+        return new Intl.NumberFormat("en-IN", {
+          style: "currency",
+          currency: currency,
+          maximumFractionDigits: 0,
+        }).format(num);
+      }
+    }
+
+    // 3. STATUS MAPPING
+    if (key === "actionStatus") {
+      const statusMap = {
+        0: "PENDING",
+        1: "SUCCESS",
+        2: "FAILED",
+        10: "INITIATED",
+      };
+      return statusMap[val] || `CODE_${val}`;
+    }
+
+    return val;
+  };
+
   data = data.map((row) => {
-    const safeRow = { ...row };
-    Object.keys(safeRow).forEach((key) => {
+    const beautifiedRow = { ...row };
+    Object.keys(beautifiedRow).forEach((key) => {
       const lowerKey = key.toLowerCase();
+      // Masking first
       if (sensitiveKeywords.some((keyword) => lowerKey.includes(keyword))) {
-        safeRow[key] = "[MASKED]";
+        beautifiedRow[key] = "[MASKED]";
+        return;
+      }
+
+      // Add formatted variant for UI
+      const formatted = formatValue(key, row[key], row);
+      if (formatted !== row[key]) {
+        beautifiedRow[`_${key}_formatted`] = formatted;
       }
     });
-    return safeRow;
+    return beautifiedRow;
   });
 
   let totalSum = 0;
@@ -75,9 +142,11 @@ function processAnalytics(data) {
     if (valueKey.toLowerCase().includes("id")) {
       kpis.push({ name: "Total count", value: data.length });
     } else {
+      const rawKPI = parseFloat(totalSum.toFixed(2));
+      const formattedKPI = formatValue(valueKey, rawKPI, data[0]);
       kpis.push({
         name: `Total ${valueKey.replace("_", " ")}`,
-        value: parseFloat(totalSum.toFixed(2)),
+        value: formattedKPI !== rawKPI ? formattedKPI : rawKPI,
       });
     }
 
@@ -85,11 +154,15 @@ function processAnalytics(data) {
     if (!valueKey.toLowerCase().includes("id") && totalSum !== data.length) {
       kpis.push({
         name: `Highest by ${valueKey.replace("_", " ")}`,
-        value: highest ? highest.label : "N/A",
+        value: highest
+          ? formatValue(labelKey, highest.label, {}) || highest.label
+          : "N/A",
       });
       kpis.push({
         name: `Lowest by ${valueKey.replace("_", " ")}`,
-        value: lowest ? lowest.label : "N/A",
+        value: lowest
+          ? formatValue(labelKey, lowest.label, {}) || lowest.label
+          : "N/A",
       });
     }
   }

@@ -34,14 +34,14 @@
         "type": "hybrid",
         "context": "Needs merchant ID/Device from SQL and aggregation from Mongo.",
         "steps": [
-            "SQL: SELECT dr.\"deviceId\" FROM \"merchantInfo\" m JOIN \"merchantRelationInfo\" mr ON m.\"id\" = mr.\"merchantId\" JOIN \"deviceRelationInfo\" dr ON mr.\"relationId\" = dr.\"relationId\" WHERE m.\"merchantBusinessName\" ILIKE '%Ankush%'",
-            "Mongo: [ { \"$match\": { \"deviceId\": { \"$in\": [DEVICE_IDS] }, \"createdAt\": { \"$gt\": \"ISO_DATE_30_DAYS_AGO\" } } }, { \"$group\": { \"_id\": null, \"totalRevenue\": { \"$sum\": \"$amount\" } } } ]"
+            "SQL: SELECT dr.\"deviceId\" FROM \"merchantInfo\" m JOIN \"merchantRelationInfo\" mr ON m.\"merchantId\" = mr.\"merchantId\" JOIN \"deviceRelationInfo\" dr ON mr.\"relationId\" = dr.\"relationId\" WHERE m.\"merchantBusinessName\" ILIKE '%Ankush%'",
+            "Mongo: [ { \"$match\": { \"deviceId\": { \"$in\": [DEVICE_IDS] }, \"actionStatus\": 1, \"createdAt\": { \"$gt\": \"ISO_DATE_30_DAYS_AGO\" } } }, { \"$group\": { \"_id\": null, \"totalRevenue\": { \"$sum\": \"$txnAmt\" } } } ]"
         ]
     },
     {
         "question": "Show daily transaction volume for the past week",
         "type": "mql",
-        "content": "{ \"collection\": \"transactionActionHistoryInfo\", \"query\": [ { \"$match\": { \"createdAt\": { \"$gt\": \"new Date(Date.now() - 7*24*60*60*1000)\" } } }, { \"$group\": { \"_id\": { \"$dateToString\": { \"format\": \"%Y-%m-%d\", \"date\": \"$createdAt\" } }, \"volume\": { \"$sum\": 1 }, \"revenue\": { \"$sum\": \"$amount\" } } }, { \"$sort\": { \"_id\": 1 } } ] }"
+        "content": "{ \"collection\": \"transactionActionHistoryInfo\", \"query\": [ { \"$match\": { \"actionStatus\": 1, \"createdAt\": { \"$gt\": \"new Date(Date.now() - 7*24*60*60*1000)\" } } }, { \"$group\": { \"_id\": { \"day\": { \"$dateToString\": { \"format\": \"%Y-%m-%d\", \"date\": \"$createdAt\" } } }, \"volume\": { \"$sum\": 1 }, \"revenue\": { \"$sum\": \"$txnAmt\" } } }, { \"$sort\": { \"_id.day\": 1 } } ] }"
     },
     {
         "question": "Which merchants have no devices assigned?",

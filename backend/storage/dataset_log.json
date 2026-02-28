@@ -118,5 +118,29 @@
     "question": "show last 3 transactions",
     "intent": "DYNAMIC",
     "requestId": "5018"
+  },
+  {
+    "timestamp": "2026-02-28T14:15:05.211Z",
+    "question": "Show revenue trend for the last 7 days",
+    "intent": "DYNAMIC",
+    "requestId": "5211"
+  },
+  {
+    "timestamp": "2026-02-28T14:20:56.064Z",
+    "question": "show revenue trend for the last 7 days",
+    "intent": "DYNAMIC",
+    "requestId": "6063"
+  },
+  {
+    "timestamp": "2026-02-28T14:27:13.876Z",
+    "question": "Show revenue trend for the last 7 days",
+    "intent": "DYNAMIC",
+    "requestId": "3875"
+  },
+  {
+    "timestamp": "2026-02-28T14:31:36.360Z",
+    "question": "Show revenue trend for the last 7 days",
+    "intent": "DYNAMIC",
+    "requestId": "6359"
   }
 ]

@@ -8,8 +8,8 @@ Database Schema (PostgreSQL):
 ${schema}
 
 CORE RELATIONSHIPS (STRICT JOIN PATTERNS):
-- "merchantInfo"."id" -> "merchantRelationInfo"."merchantId"
-- "merchantRelationInfo"."relationId" -> "deviceRelationInfo"."relationId"
+- "merchantInfo"."merchantId" -> "merchantRelationInfo"."merchantId" (Both are VARCHAR. DO NOT join on "merchantInfo"."id" which is a BIGINT).
+- "merchantRelationInfo"."relationId" -> "deviceRelationInfo"."relationId" (Both are BIGINT).
 - ALWAYS JOIN these three to link Merchants to Devices.
 
 User Question:

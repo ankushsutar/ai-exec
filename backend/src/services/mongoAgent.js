@@ -33,10 +33,15 @@ async function generateMQLFromPrompt(
   const { getMongoPrompt } = require("../prompts/mongoPrompt");
   const { routeModel } = require("./modelRouter");
 
-  const { model } = routeModel(question);
+  // Routing with options:
+  // - If we have a very weak few-shot, we might want a stronger model.
+  const { model } = routeModel(question, {
+    forceLlama: !fewShotExample || fewShotExample.score < 0.6,
+    engine: "mongodb",
+  });
 
-  // GOLDEN EXAMPLE BYPASS: If we have an exact match (score > 0.98), use it directly
-  if (fewShotExample && fewShotExample.score > 0.98) {
+  // GOLDEN EXAMPLE BYPASS: If we have an exact match (score > 0.9), use it directly
+  if (fewShotExample && fewShotExample.score > 0.9) {
     console.log(
       `[Mongo Agent] High-Confidence Golden Match found (${(fewShotExample.score * 100).toFixed(1)}%). Bypassing LLM.`,
     );
@@ -89,16 +94,38 @@ async function generateMQLFromPrompt(
     }
 
     // STRUCTURAL HARDENING: Ensure all stages are objects
-    result.query = result.query.map((stage) => {
-      if (typeof stage === "string") {
-        console.warn(`[Mongo Agent] Fixing string stage: "${stage}"`);
-        if (stage.startsWith("$")) {
-          return { [stage]: {} };
+    // FIX: Smarter pipeline repair
+    const fixedQuery = [];
+    for (let i = 0; i < result.query.length; i++) {
+      let stage = result.query[i];
+
+      if (typeof stage === "string" && stage.startsWith("$")) {
+        // If the next element is an object that DOES NOT start with $, merge it
+        const next = result.query[i + 1];
+        if (
+          next &&
+          typeof next === "object" &&
+          !Object.keys(next).some((k) => k.startsWith("$"))
+        ) {
+          fixedQuery.push({ [stage]: next });
+          i++; // Skip the next one as we merged it
+          continue;
+        } else {
+          // Empty stage case
+          fixedQuery.push({ [stage]: {} });
         }
-        return { $match: { [stage]: { $exists: true } } };
+      } else if (typeof stage === "object") {
+        // Ensure it's a valid stage object (has a $ key)
+        if (!Object.keys(stage).some((k) => k.startsWith("$"))) {
+          // If it's a naked object, wrap it in $match by default
+          fixedQuery.push({ $match: stage });
+        } else {
+          fixedQuery.push(stage);
+        }
       }
-      return stage;
-    });
+      // Ignore naked numbers/invalid types unless they match the previous stage logic
+    }
+    result.query = fixedQuery;
 
     // Auto-add $limit 50 if no limit stage exists
     const hasLimit = result.query.some((stage) => stage.$limit);

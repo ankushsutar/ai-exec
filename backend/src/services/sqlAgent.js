@@ -65,7 +65,16 @@ async function generateSQLFromPrompt(
   const { getPostgresPrompt } = require("../prompts/postgresPrompt");
   const { routeModel } = require("./modelRouter");
 
-  const { model, complexity } = routeModel(question);
+  // Routing with options:
+  // - If we have a very weak few-shot or no schemas, we might want a stronger model.
+  const { model, complexity } = routeModel(question, {
+    forceLlama:
+      !fewShotExample ||
+      fewShotExample.score < 0.6 ||
+      !topSchemas ||
+      question.toLowerCase().includes("transaction"),
+    engine: "sql",
+  });
   const prompt = getPostgresPrompt(question, topSchemas);
 
   const { Parser } = require("node-sql-parser");
