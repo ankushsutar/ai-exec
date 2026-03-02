@@ -96,6 +96,39 @@ async function generateMQLFromPrompt(
       }
     }
 
+    // Numeric & Temporal Guard: Prevent bypass if the numbers differ (e.g., 7 vs 30)
+    // or if the time periods differ (e.g., week vs month)
+    const qNums = (question.match(/\d+/g) || []).join(",");
+    const gNums = (fewShotExample.question.match(/\d+/g) || []).join(",");
+
+    let bypassNumbers = qNums === gNums;
+    // Allow equivalence for week/7, month/30
+    if (qNums === "7" && fewShotExample.question.toLowerCase().includes("week"))
+      bypassNumbers = true;
+    if (
+      qNums === "30" &&
+      fewShotExample.question.toLowerCase().includes("month")
+    )
+      bypassNumbers = true;
+
+    if (!bypassNumbers) {
+      isOpposite = true;
+    }
+
+    const tempWords = ["day", "week", "month", "year", "today", "yesterday"];
+    const qTemps = tempWords.filter((w) => question.toLowerCase().includes(w));
+    const gTemps = tempWords.filter((w) =>
+      fewShotExample.question.toLowerCase().includes(w),
+    );
+
+    let bypassTemps = qTemps.join(",") === gTemps.join(",");
+    if (qNums === "7" && gTemps.includes("week")) bypassTemps = true;
+    if (qNums === "30" && gTemps.includes("month")) bypassTemps = true;
+
+    if (!bypassTemps) {
+      isOpposite = true;
+    }
+
     if (!isOpposite) {
       console.log(
         `[Mongo Agent] High-Confidence Golden Match found (${(fewShotExample.score * 100).toFixed(1)}%). Bypassing LLM.`,
@@ -139,6 +172,11 @@ async function generateMQLFromPrompt(
         prompt: prompt,
         stream: false,
         format: "json",
+        options: {
+          temperature: 0,
+          top_k: 1,
+          top_p: 0.1,
+        },
       },
       { timeout: 60000 },
     ); // Increased to 60s for Llama 3.2

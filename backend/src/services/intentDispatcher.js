@@ -20,6 +20,9 @@ async function dispatchIntent(question) {
     "daily",
     "stat",
     "health",
+    "active",
+    "inactive",
+    "summary",
   ];
   const METADATA_KEYWORDS = ["merchant", "user", "name", "business"];
 
@@ -52,13 +55,13 @@ You are AI-Exec, an enterprise-grade data intelligence engine.
 Goal: Categorize the user question into "SQL", "MONGODB", or "HYBRID".
 
 ARCHITECTURAL RULES:
-1. SQL (Postgres): Role is RELATION MAPPING ONLY. Use for finding merchants/device associations.
-2. MONGODB: Role is METRICS & STATS. Use for transactions (transactionActionHistoryInfo) and device health (deviceStatHistoryInfo).
+5. SQL (Postgres): Role is RELATION MAPPING ONLY. Use for finding merchants/device associations.
+6. MONGODB: Role is METRICS & STATS. Use for transactions, system summaries, and device states (active/inactive).
 3. HYBRID: Use when mapping a merchant (Postgres) to their transactions/stats (Mongo).
 
 CATEGORIES:
-- SQL: "list all merchants", "which merchants have no devices"
-- MONGODB: "show transactions", "average device health", "total system revenue"
+- SQL: "list all merchants", "which merchants have no devices", "find device for merchant Ankush"
+- MONGODB: "show transactions", "average device health", "total system revenue", "how many devices are currently inactive"
 - HYBRID: "revenue for merchant X", "transactions for merchant Y"
 
 QUESTION: "${question}"

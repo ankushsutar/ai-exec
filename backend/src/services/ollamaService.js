@@ -22,6 +22,11 @@ async function getLLMSummaryStream(analyticsData, res, question = "") {
         model: "qwen2.5:0.5b", // Summaries remain on the fastest model
         prompt: prompt,
         stream: true,
+        options: {
+          temperature: 0,
+          top_k: 1,
+          top_p: 0.1,
+        },
         keep_alive: 0,
         timeout: 30000, // 30 second timeout
       },

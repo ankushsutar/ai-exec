@@ -62,5 +62,15 @@
         "question": "Count total devices per merchant",
         "type": "sql",
         "content": "SELECT m.\"merchantBusinessName\", COUNT(dr.\"deviceId\") AS \"deviceCount\" FROM \"merchantInfo\" AS m JOIN \"merchantRelationInfo\" AS mr ON m.\"merchantId\" = mr.\"merchantId\" JOIN \"deviceRelationInfo\" AS dr ON mr.\"relationId\" = dr.\"relationId\" GROUP BY m.\"merchantBusinessName\" ORDER BY \"deviceCount\" DESC;"
+    },
+    {
+        "question": "How many devices are currently inactive?",
+        "type": "mql",
+        "content": "{ \"collection\": \"systemDailySummaryInfo\", \"query\": [ { \"$sort\": { \"date\": -1 } }, { \"$limit\": 1 }, { \"$project\": { \"_id\": 0, \"inactiveDevices\": { \"$subtract\": [ \"$totalDevicesAdded\", \"$totalActiveDevicesCount\" ] } } } ] }"
+    },
+    {
+        "question": "Show system summary for today",
+        "type": "mql",
+        "content": "{ \"collection\": \"systemDailySummaryInfo\", \"query\": [ { \"$sort\": { \"date\": -1 } }, { \"$limit\": 1 }, { \"$project\": { \"_id\": 0, \"totalActiveDevicesCount\": 1, \"totalDevicesAdded\": 1, \"totalTransactionsCount\": 1, \"totalTransactionAmount\": 1 } } ] }"
     }
 ]

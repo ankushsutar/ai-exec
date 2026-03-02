@@ -87,6 +87,11 @@ async function generateSQLFromPrompt(
         model: model,
         prompt: prompt,
         stream: false,
+        options: {
+          temperature: 0,
+          top_k: 1,
+          top_p: 0.1,
+        },
       },
       { timeout: 60000 },
     ); // Increased to 60s for Llama 3.2

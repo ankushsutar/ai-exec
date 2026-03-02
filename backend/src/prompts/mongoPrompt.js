@@ -22,7 +22,8 @@ ${question}
 
 Instructions:
 - Generate a valid MongoDB aggregation pipeline array.
-- **CRITICAL: For REVENUE or VOLUME queries, always use the "transactionActionHistoryInfo" collection.**
+- **CRITICAL: For SYSTEM SUMMARY or counts of active/inactive devices/users/logins, use the "systemDailySummaryInfo" collection.**
+- **CRITICAL: For REVENUE or VOLUME queries over time, use the "transactionActionHistoryInfo" collection.**
 - **CRITICAL: Revenue is the sum of the transaction amount field "txnAmt". DO NOT use "amount" or "totalRevenue".**
 - **CRITICAL: When sorting/finding by "txnAmt", always add a $match stage first: { "txnAmt": { "$exists": true, "$ne": null } }.**
 - **CRITICAL: For "highest" or "top" queries, sort by "txnAmt": -1. For "lowest" or "bottom" queries, sort by "txnAmt": 1. If a specific record or "the transaction" (singular) is asked, DO NOT use $group or $sum, simply use $sort and $limit: 1.**

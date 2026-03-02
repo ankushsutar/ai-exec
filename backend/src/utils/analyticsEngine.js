@@ -89,14 +89,65 @@ function processAnalytics(data) {
     return beautifiedRow;
   });
 
+  const chartData = [];
+  const kpis = [];
+
+  // 1. Analyze the structure of the first row
+  const firstRow = data[0];
+  const keys = Object.keys(firstRow).filter(
+    (k) => !k.startsWith("_") && !k.endsWith("_formatted"),
+  );
+
+  // --- WIDE SINGLE-ROW SUMMARY DETECTION ---
+  // If we only have 1 row, but it has many distinct numeric stats or arrays, treat it as a Summary Object.
+  const hasArrays = keys.some((k) => Array.isArray(firstRow[k]));
+  const numericKeysCount = keys.filter(
+    (k) => typeof firstRow[k] === "number",
+  ).length;
+
+  if (data.length === 1 && (hasArrays || numericKeysCount > 1)) {
+    keys.forEach((key) => {
+      const rawVal = firstRow[key];
+      // Convert numeric arrays (like hourly counts) into Time-Series Chart Data
+      if (
+        Array.isArray(rawVal) &&
+        rawVal.length > 0 &&
+        typeof rawVal[0] === "number"
+      ) {
+        if (chartData.length === 0) {
+          // Only bind the first array found to the primary chart
+          rawVal.forEach((val, i) => {
+            chartData.push({
+              label: `${String(i).padStart(2, "0")}:00`,
+              value: val,
+            });
+          });
+        }
+      }
+      // Convert all flat numbers into distinct KPIs
+      else if (
+        typeof rawVal === "number" &&
+        !key.toLowerCase().includes("time") &&
+        key !== "__v"
+      ) {
+        const formattedVal = formatValue(key, rawVal, firstRow);
+        // Clean camelCase into Title Case (e.g. "totalTransactionAmount" -> "Total Transaction Amount")
+        let name = key.replace(/([A-Z])/g, " $1").trim();
+        name = name.charAt(0).toUpperCase() + name.slice(1);
+
+        kpis.push({
+          name: name,
+          value: formattedVal !== rawVal ? formattedVal : rawVal,
+        });
+      }
+    });
+    return { kpis, chartData, tableData: data, columns: Object.keys(data[0]) };
+  }
+
+  // --- STANDARD MULTI-ROW / AGGREGATION LOGIC ---
   let totalSum = 0;
   let highest = null;
   let lowest = null;
-  const chartData = [];
-
-  // 1. Analyze the structure of the first row to determine categories vs series
-  const firstRow = data[0];
-  const keys = Object.keys(firstRow);
 
   let labelKey = null;
   let valueKey = null;
@@ -131,8 +182,6 @@ function processAnalytics(data) {
     if (!highest || val > highest.value) highest = { label: label, value: val };
     if (!lowest || val < lowest.value) lowest = { label: label, value: val };
   });
-
-  const kpis = [];
 
   // Generate dynamic KPIs based on the shape of the data
   if (data.length === 1 && keys.length === 1) {
@@ -170,7 +219,12 @@ function processAnalytics(data) {
   // Clear meaningless chart data if the value being plotted is just an identity sequence
   const finalChartData = valueKey.toLowerCase().includes("id") ? [] : chartData;
 
-  return { kpis, chartData: finalChartData, tableData: data, columns: keys };
+  return {
+    kpis,
+    chartData: finalChartData,
+    tableData: data,
+    columns: Object.keys(data[0]),
+  };
 }
 
 module.exports = { processAnalytics };

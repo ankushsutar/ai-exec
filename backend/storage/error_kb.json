@@ -4,5 +4,11 @@
     "content": "SELECT COUNT(*) AS \\\"deviceIds\\\" FROM \\\"monthlyActiveDevicesInfo\\\" WHERE deviceId NOT IN (SELECT id FROM \\\"systemAudioDeviceRelationInfo\\\" WHERE DEFAULT_SYSTEM_AUDIO = 'true')\",\n    \"limit\": 50\n}",
     "type": "error",
     "createdAt": "2026-02-28T15:48:10.019Z"
+  },
+  {
+    "question": "List all users in the 'Admin' group",
+    "content": "SELECT\": {\n        \"FROM\": [\n            {\"table\": \"userGroupInfo\", \"alias\": \"t2\"},\n            {\"table\": \"userOTPInfo\", \"alias\": \"t1\"}\n        ],\n        \"JOIN\": [\n            {\"joinType\": \"INNER JOIN\", \"table\": \"groupHierarchyInfo\", \"alias\": \"t3\", \"onCondition\": \"t2.groupId = t3.id\"},\n            {\"joinType\": \"LEFT JOIN\", \"table\": \"userOTPInfo\", \"alias\": \"t1\", \"onCondition\": \"t1.userId = t2.userId\"}\n        ],\n        \"WHERE\": [\n            {\"column\": \"groupLevel\", \"value\": \"A\"},\n            {\"column\": \"groupLevel\", \"value\": \"B\"}\n        ]\n    },\n    \"DISTINCT\": true,\n    \"ORDER BY\": null,\n    \"LIMIT\": 50\n}",
+    "type": "error",
+    "createdAt": "2026-03-02T13:59:44.848Z"
   }
 ]
