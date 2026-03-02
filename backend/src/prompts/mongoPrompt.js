@@ -25,13 +25,13 @@ Instructions:
 - **CRITICAL: For REVENUE or VOLUME queries, always use the "transactionActionHistoryInfo" collection.**
 - **CRITICAL: Revenue is the sum of the transaction amount field "txnAmt". DO NOT use "amount" or "totalRevenue".**
 - **CRITICAL: When sorting/finding by "txnAmt", always add a $match stage first: { "txnAmt": { "$exists": true, "$ne": null } }.**
-- **CRITICAL: For "highest" or "top" queries, sort by "txnAmt": -1. If "the transaction" (singular) is asked, use $limit: 1.**
+- **CRITICAL: For "highest" or "top" queries, sort by "txnAmt": -1. For "lowest" or "bottom" queries, sort by "txnAmt": 1. If a specific record or "the transaction" (singular) is asked, DO NOT use $group or $sum, simply use $sort and $limit: 1.**
 - **CRITICAL: For "Trend" or daily grouping, use a $group stage with _id: { day: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } } }.**
 - **CRITICAL: For "last X days" or relative time filters, YOU MUST include a $match stage with { "createdAt": { "$gt": "new Date(Date.now() - X*24*60*60*1000)" } }.**
 - **CRITICAL: Heuristic: Unless otherwise specified, filter for "actionStatus": 1 to ensure only successful/valid records are considered.**
 
 NEGATIVE CONSTRAINTS:
-- **DO NOT** assume the existence of a "revenue" field. Sum "txnAmt" instead.
+- **DO NOT** assume the existence of a "revenue" field. Sum "txnAmt" instead (ONLY if asked for total revenue).
 - **DO NOT** ignore time constraints (like "last 7 days"). They MUST be the first $match stage.
 - **DO NOT** use "transactionHistoryInfo" - it is deprecated.
 - **CRITICAL: Never mix 0 (exclusion) and 1 (inclusion) in a $project stage.**

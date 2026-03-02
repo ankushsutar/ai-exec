@@ -55,14 +55,15 @@ async function orchestrateHybridQuery(question, requestId) {
 
   // STEP 2: Query Postgres to get IDs/Context
   const contextPrompt = `
-  Find the "id" and "deviceId" for any merchants or users mentioned in the ORIGINAL question. 
+  Find the "deviceId" and "merchantBusinessName" for any merchants mentioned in the ORIGINAL question. 
   
   ORIGINAL QUESTION: "${question}"
   
-  REQUIRED OUTPUT:
-  - You must use JOINs between "merchantInfo", "merchantRelationInfo", and "deviceRelationInfo".
-  - Return the merchantBusinessName and corresponding deviceId.
-  - Return ONLY a valid SELECT query.
+  STRICT ARCHITECTURAL RULES:
+  1. Use ONLY "merchantInfo", "merchantRelationInfo", and "deviceRelationInfo".
+  2. JOIN Pattern: "merchantInfo"."merchantId" -> "merchantRelationInfo"."merchantId" -> "deviceRelationInfo"."relationId".
+  3. Return "deviceId" (BIGINT) and "merchantBusinessName" (VARCHAR).
+  4. Return ONLY a valid SELECT query.
   `;
 
   const sqlAgent = require("./sqlAgent");
@@ -84,9 +85,7 @@ async function orchestrateHybridQuery(question, requestId) {
   }
 
   // Extract IDs to filter Mongo
-  const deviceIds = metadataResults
-    .map((r) => r.deviceId || r.id)
-    .filter((id) => id);
+  const deviceIds = metadataResults.map((r) => r.deviceId).filter((id) => id);
   console.log(
     `[Hybrid Broker] Retrieved ${deviceIds.length} IDs from Postgres: ${deviceIds.join(", ")}`,
   );

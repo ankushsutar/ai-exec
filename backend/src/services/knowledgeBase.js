@@ -72,10 +72,14 @@ function getBestFewShotExample(
     console.log(
       `[Knowledge Base] Found matching ${label} (Score: ${(highestScore * 100).toFixed(1)}%) -> ${bestMatch.question}`,
     );
-    return `EXAMPLE TO FOLLOW (${label}):\nUser: "${bestMatch.question}"\n${type === "error" ? "FIXED SQL" : type.toUpperCase()}:\n${bestMatch.content}\n`;
+    return {
+      ...bestMatch,
+      score: highestScore,
+      formatted: `EXAMPLE TO FOLLOW (${label}):\nUser: "${bestMatch.question}"\n${type === "error" ? "FIXED SQL" : type.toUpperCase()}:\n${bestMatch.content}\n`,
+    };
   }
 
-  return "";
+  return null;
 }
 
 /**

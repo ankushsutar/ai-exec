@@ -1,1 +1,8 @@
-[]
+[
+  {
+    "question": "How many devices are currently inactive?",
+    "content": "SELECT COUNT(*) AS \\\"deviceIds\\\" FROM \\\"monthlyActiveDevicesInfo\\\" WHERE deviceId NOT IN (SELECT id FROM \\\"systemAudioDeviceRelationInfo\\\" WHERE DEFAULT_SYSTEM_AUDIO = 'true')\",\n    \"limit\": 50\n}",
+    "type": "error",
+    "createdAt": "2026-02-28T15:48:10.019Z"
+  }
+]

@@ -16,10 +16,12 @@ async function dispatchIntent(question) {
     "sales",
     "total",
     "top",
-    "best",
-    "least",
+    "trend",
+    "daily",
+    "stat",
+    "health",
   ];
-  const METADATA_KEYWORDS = ["merchant", "user", "name", "business", "device"];
+  const METADATA_KEYWORDS = ["merchant", "user", "name", "business"];
 
   const hasTransactional = TRANSACTIONAL_KEYWORDS.some((kw) =>
     lowercaseQ.includes(kw),
@@ -47,27 +49,21 @@ async function dispatchIntent(question) {
 
   const prompt = `
 You are AI-Exec, an enterprise-grade data intelligence engine.
-Goal: Categorize the user question into "SQL", "MONGODB", or "HYBRID" to route it to the correct engine.
+Goal: Categorize the user question into "SQL", "MONGODB", or "HYBRID".
 
-DATABASES:
-- SQL (PostgreSQL): Contains metadata, merchant info, device relations.
-- MONGODB: Contains transaction history, revenue, volume.
+ARCHITECTURAL RULES:
+1. SQL (Postgres): Role is RELATION MAPPING ONLY. Use for finding merchants/device associations.
+2. MONGODB: Role is METRICS & STATS. Use for transactions (transactionActionHistoryInfo) and device health (deviceStatHistoryInfo).
+3. HYBRID: Use when mapping a merchant (Postgres) to their transactions/stats (Mongo).
 
 CATEGORIES:
-- SQL: Use for finding metadata, listing merchants/users, checking status.
-- MONGODB: Use for direct transaction searches or system-wide metrics.
-- HYBRID: Use when filtering by metadata (Postgres) but needing metrics/transactions (Mongo).
-
-FEW-SHOT:
-- "top 5 merchants by revenue" -> HYBRID
-- "show transactions" -> MONGODB
-- "list all merchants" -> SQL
+- SQL: "list all merchants", "which merchants have no devices"
+- MONGODB: "show transactions", "average device health", "total system revenue"
+- HYBRID: "revenue for merchant X", "transactions for merchant Y"
 
 QUESTION: "${question}"
 
-OUTPUT RULES:
-- Return ONLY the category name: "SQL", "MONGODB", or "HYBRID".
-- Do not explain or add markdown.
+OUTPUT: Return ONLY "SQL", "MONGODB", or "HYBRID".
   `;
 
   try {

@@ -2,11 +2,11 @@
     {
         "question": "Show top 5 merchants by revenue",
         "type": "hybrid",
-        "context": "Calculates revenue per merchant by joining Postgres metadata with Mongo transactions.",
+        "context": "Relational mapping in Postgres, metrics in Mongo.",
         "steps": [
-            "Query SQL for merchant names and deviceIds: SELECT m.\"merchantBusinessName\", dr.\"deviceId\" FROM \"merchantInfo\" m JOIN \"merchantRelationInfo\" mr ON m.\"id\" = mr.\"merchantId\" JOIN \"deviceRelationInfo\" dr ON mr.\"relationId\" = dr.\"relationId\"",
-            "Query Mongo transactionActionHistoryInfo for revenue by deviceId",
-            "Enrich results with names"
+            "SQL: SELECT m.\"merchantBusinessName\", dr.\"deviceId\" FROM \"merchantInfo\" m JOIN \"merchantRelationInfo\" mr ON m.\"merchantId\" = mr.\"merchantId\" JOIN \"deviceRelationInfo\" dr ON mr.\"relationId\" = dr.\"relationId\"",
+            "Mongo: [ { \"$match\": { \"actionStatus\": 1 } }, { \"$group\": { \"_id\": \"$deviceId\", \"totalRevenue\": { \"$sum\": \"$txnAmt\" } } }, { \"$sort\": { \"totalRevenue\": -1 } }, { \"$limit\": 5 } ]",
+            "Merge and return Top 5."
         ]
     },
     {
@@ -15,47 +15,52 @@
         "content": "{ \"collection\": \"transactionActionHistoryInfo\", \"query\": [ { \"$match\": { \"txnAmt\": { \"$exists\": true, \"$ne\": null }, \"actionStatus\": 1 } }, { \"$sort\": { \"txnAmt\": -1 } }, { \"$limit\": 1 } ] }"
     },
     {
+        "question": "show the transaction with lowest amount",
+        "type": "mql",
+        "content": "{ \"collection\": \"transactionActionHistoryInfo\", \"query\": [ { \"$match\": { \"txnAmt\": { \"$exists\": true, \"$ne\": null }, \"actionStatus\": 1 } }, { \"$sort\": { \"txnAmt\": 1 } }, { \"$limit\": 1 } ] }"
+    },
+    {
         "question": "show transactions",
         "type": "mql",
-        "content": "{ \"collection\": \"transactionActionHistoryInfo\", \"query\": [ { \"$sort\": { \"createdAt\": -1 } }, { \"$limit\": 50 } ] }"
+        "content": "{ \"collection\": \"transactionActionHistoryInfo\", \"query\": [ { \"$match\": {} }, { \"$sort\": { \"createdAt\": -1 } }, { \"$limit\": 50 } ] }"
     },
     {
         "question": "list all merchants",
         "type": "sql",
-        "content": "SELECT \"merchantBusinessName\", \"merchantId\", \"id\" FROM \"merchantInfo\" LIMIT 10;"
+        "content": "SELECT \"merchantBusinessName\", \"merchantId\" FROM \"merchantInfo\" LIMIT 10;"
     },
     {
         "question": "find device for merchant Ankush",
         "type": "sql",
-        "content": "SELECT m.\"merchantBusinessName\", dr.\"deviceId\" FROM \"merchantInfo\" AS m JOIN \"merchantRelationInfo\" AS mr ON m.\"id\" = mr.\"merchantId\" JOIN \"deviceRelationInfo\" AS dr ON mr.\"relationId\" = dr.\"relationId\" WHERE m.\"merchantBusinessName\" ILIKE '%Ankush%';"
+        "content": "SELECT m.\"merchantBusinessName\", dr.\"deviceId\" FROM \"merchantInfo\" AS m JOIN \"merchantRelationInfo\" AS mr ON m.\"merchantId\" = mr.\"merchantId\" JOIN \"deviceRelationInfo\" AS dr ON mr.\"relationId\" = dr.\"relationId\" WHERE m.\"merchantBusinessName\" ILIKE '%Ankush%';"
     },
     {
         "question": "What is the total revenue for merchant 'Ankush' in the last 30 days?",
         "type": "hybrid",
-        "context": "Needs merchant ID/Device from SQL and aggregation from Mongo.",
+        "context": "Needs merchant mapping from SQL and aggregation from Mongo.",
         "steps": [
             "SQL: SELECT dr.\"deviceId\" FROM \"merchantInfo\" m JOIN \"merchantRelationInfo\" mr ON m.\"merchantId\" = mr.\"merchantId\" JOIN \"deviceRelationInfo\" dr ON mr.\"relationId\" = dr.\"relationId\" WHERE m.\"merchantBusinessName\" ILIKE '%Ankush%'",
-            "Mongo: [ { \"$match\": { \"deviceId\": { \"$in\": [DEVICE_IDS] }, \"actionStatus\": 1, \"createdAt\": { \"$gt\": \"ISO_DATE_30_DAYS_AGO\" } } }, { \"$group\": { \"_id\": null, \"totalRevenue\": { \"$sum\": \"$txnAmt\" } } } ]"
+            "Mongo: [ { \"$match\": { \"deviceId\": { \"$in\": [DEVICE_IDS] }, \"actionStatus\": 1, \"createdAt\": { \"$gt\": \"new Date(Date.now() - 30*24*60*60*1000)\" } } }, { \"$group\": { \"_id\": null, \"totalRevenue\": { \"$sum\": \"$txnAmt\" } } } ]"
         ]
     },
     {
         "question": "Show daily transaction volume for the past week",
         "type": "mql",
-        "content": "{ \"collection\": \"transactionActionHistoryInfo\", \"query\": [ { \"$match\": { \"actionStatus\": 1, \"createdAt\": { \"$gt\": \"new Date(Date.now() - 7*24*60*60*1000)\" } } }, { \"$group\": { \"_id\": { \"day\": { \"$dateToString\": { \"format\": \"%Y-%m-%d\", \"date\": \"$createdAt\" } } }, \"volume\": { \"$sum\": 1 }, \"revenue\": { \"$sum\": \"$txnAmt\" } } }, { \"$sort\": { \"_id.day\": 1 } } ] }"
+        "content": "{ \"collection\": \"transactionActionHistoryInfo\", \"query\": [ { \"$match\": { \"actionStatus\": 1, \"createdAt\": { \"$gt\": \"new Date(Date.now() - 7*24*60*60*1000)\" } } }, { \"$group\": { \"_id\": { \"day\": { \"$dateToString\": { \"format\": \"%Y-%m-%d\", \"date\": \"$createdAt\" } } }, \"volume\": { \"$sum\": 1 }, \"totalRevenue\": { \"$sum\": \"$txnAmt\" } } }, { \"$sort\": { \"_id.day\": 1 } }, { \"$limit\": 50 } ] }"
     },
     {
         "question": "Which merchants have no devices assigned?",
         "type": "sql",
-        "content": "SELECT m.\"merchantBusinessName\" FROM \"merchantInfo\" AS m LEFT JOIN \"merchantRelationInfo\" AS mr ON m.\"id\" = mr.\"merchantId\" LEFT JOIN \"deviceRelationInfo\" AS dr ON mr.\"relationId\" = dr.\"relationId\" WHERE dr.\"deviceId\" IS NULL;"
+        "content": "SELECT m.\"merchantBusinessName\" FROM \"merchantInfo\" AS m LEFT JOIN \"merchantRelationInfo\" AS mr ON m.\"merchantId\" = mr.\"merchantId\" LEFT JOIN \"deviceRelationInfo\" AS dr ON mr.\"relationId\" = dr.\"relationId\" WHERE dr.\"deviceId\" IS NULL;"
     },
     {
         "question": "Show all successful transactions with amount greater than 1000",
         "type": "mql",
-        "content": "{ \"collection\": \"transactionActionHistoryInfo\", \"query\": [ { \"$match\": { \"actionStatus\": 1, \"txnAmt\": { \"$gt\": 1000 } } }, { \"$limit\": 100 } ] }"
+        "content": "{ \"collection\": \"transactionActionHistoryInfo\", \"query\": [ { \"$match\": { \"actionStatus\": 1, \"txnAmt\": { \"$gt\": 1000 } } }, { \"$sort\": { \"createdAt\": -1 } }, { \"$limit\": 50 } ] }"
     },
     {
         "question": "Count total devices per merchant",
         "type": "sql",
-        "content": "SELECT m.\"merchantBusinessName\", COUNT(dr.\"deviceId\") AS \"deviceCount\" FROM \"merchantInfo\" AS m JOIN \"merchantRelationInfo\" AS mr ON m.\"id\" = mr.\"merchantId\" JOIN \"deviceRelationInfo\" AS dr ON mr.\"relationId\" = dr.\"relationId\" GROUP BY m.\"merchantBusinessName\" ORDER BY \"deviceCount\" DESC;"
+        "content": "SELECT m.\"merchantBusinessName\", COUNT(dr.\"deviceId\") AS \"deviceCount\" FROM \"merchantInfo\" AS m JOIN \"merchantRelationInfo\" AS mr ON m.\"merchantId\" = mr.\"merchantId\" JOIN \"deviceRelationInfo\" AS dr ON mr.\"relationId\" = dr.\"relationId\" GROUP BY m.\"merchantBusinessName\" ORDER BY \"deviceCount\" DESC;"
     }
 ]

@@ -16,14 +16,21 @@ User Question:
 ${question}
 
 Instructions:
-- **NEGATIVE CONSTRAINT: Never use the "transactionInfo", "transactions", or "payments" tables.** These only exist in MongoDB.
-- **NEGATIVE CONSTRAINT: Do not guess columns like "revenue", "amount", or "pnl" in SQL.** These metrics are in MongoDB.
-- Generate a syntactically correct PostgreSQL SELECT query.
-- Quote ALL table and column identifiers using double quotes (e.g., "tableName"."columnName").
-- **CRITICAL: Always use short, explicit aliases for tables (e.g., FROM "merchantInfo" AS m) and prefix ALL columns with that alias (e.g., m."id").**
-- Use ILIKE for case-insensitive searches.
-- Use TO_CHAR(column, 'YYYY-MM-DD') for date formatting.
-${COMMON_RULES}
+- **ARCHITECTURAL ROLE: RELATIONAL MAPPING ONLY.**
+- **Rule 1: Use SQL ONLY for mapping Merchants to Devices.**
+- **Rule 2: SELECT only columns from "merchantInfo", "merchantRelationInfo", and "deviceRelationInfo".**
+- **Rule 3: NEVER attempt to calculate revenue, sum transaction amounts, or count transactions in SQL.** These belong in MongoDB.
+- **Rule 4: Quote ALL table and column identifiers using double quotes.** (e.g., "tableName"."columnName").
+- **Rule 5: ALWAYS use aliases (e.g., FROM "merchantInfo" AS m) and prefix columns with aliases.**
+- **Rule 6: Use ILIKE for case-insensitive searches.**
+
+POSITIVE MAPPING PATTERN:
+To find deviceIds for a merchant:
+SELECT dr."deviceId" 
+FROM "merchantInfo" m 
+JOIN "merchantRelationInfo" mr ON m."merchantId" = mr."merchantId" 
+JOIN "deviceRelationInfo" dr ON mr."relationId" = dr."relationId"
+WHERE m."merchantBusinessName" ILIKE '%...%'
 
 Return ONLY the SQL query.
 `;

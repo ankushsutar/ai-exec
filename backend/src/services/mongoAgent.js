@@ -4,6 +4,40 @@ const { generateEmbedding } = require("./ollamaService");
 const { getTopSchemasString } = require("./vectorStore");
 const { getBestFewShotExample } = require("./knowledgeBase");
 
+// DYNAMIC DATE EVALUATION
+// Recursively walk the query object and convert "new Date(...)" strings to real Date objects
+const evaluateDates = (obj) => {
+  if (Array.isArray(obj)) {
+    return obj.map(evaluateDates);
+  } else if (obj !== null && typeof obj === "object") {
+    const newObj = {};
+    for (const [key, value] of Object.entries(obj)) {
+      newObj[key] = evaluateDates(value);
+    }
+    return newObj;
+  } else if (typeof obj === "string") {
+    // Match "new Date(...)" or "ISODate(...)"
+    const dateMatch = obj.match(/^(new Date|ISODate)\((.*)\)$/i);
+    if (dateMatch) {
+      try {
+        // Safe evaluation of the date expression
+        const expr = dateMatch[2].replace(/['"]/g, "");
+        if (expr === "") return new Date();
+        // Handle math expressions like Date.now() - ...
+        if (expr.includes("Date.now()")) {
+          const ms = eval(expr.replace("Date.now()", Date.now()));
+          return new Date(ms);
+        }
+        return new Date(expr);
+      } catch (e) {
+        console.warn("[Mongo Agent] Date eval failed for:", obj);
+        return obj;
+      }
+    }
+  }
+  return obj;
+};
+
 /**
  * Generates an MQL (MongoDB Aggregation Pipeline or find query) from a natural language prompt.
  * Optimized for high-volume transaction retrieval.
@@ -40,28 +74,53 @@ async function generateMQLFromPrompt(
     engine: "mongodb",
   });
 
-  // GOLDEN EXAMPLE BYPASS: If we have an exact match (score > 0.9), use it directly
-  if (fewShotExample && fewShotExample.score > 0.9) {
-    console.log(
-      `[Mongo Agent] High-Confidence Golden Match found (${(fewShotExample.score * 100).toFixed(1)}%). Bypassing LLM.`,
-    );
-    try {
-      let result = JSON.parse(fewShotExample.content);
-
-      // If we have filterContext (e.g. deviceIds), merge them into the first $match stage
-      if (Object.keys(filterContext).length > 0) {
-        if (result.query[0] && result.query[0].$match) {
-          Object.assign(result.query[0].$match, filterContext);
-        } else {
-          result.query.unshift({ $match: filterContext });
-        }
+  // GOLDEN EXAMPLE BYPASS: If we have an exact match (score > 0.85), use it directly
+  if (fewShotExample && fewShotExample.score > 0.85) {
+    // Prevent false positives on opposite semantic words (lowest vs highest) due to high embedding similarity
+    const opposites = [
+      ["highest", "lowest"],
+      ["top", "bottom"],
+      ["max", "min"],
+      ["maximum", "minimum"],
+    ];
+    let isOpposite = false;
+    for (const [pos, neg] of opposites) {
+      if (
+        (question.toLowerCase().includes(pos) &&
+          fewShotExample.question.toLowerCase().includes(neg)) ||
+        (question.toLowerCase().includes(neg) &&
+          fewShotExample.question.toLowerCase().includes(pos))
+      ) {
+        isOpposite = true;
+        break;
       }
+    }
 
-      return result;
-    } catch (e) {
-      console.warn(
-        "[Mongo Agent] Failed to parse Golden Example, falling back to LLM.",
+    if (!isOpposite) {
+      console.log(
+        `[Mongo Agent] High-Confidence Golden Match found (${(fewShotExample.score * 100).toFixed(1)}%). Bypassing LLM.`,
       );
+      try {
+        let result = JSON.parse(fewShotExample.content);
+
+        // If we have filterContext (e.g. deviceIds), merge them into the first $match stage
+        if (Object.keys(filterContext).length > 0) {
+          if (result.query[0] && result.query[0].$match) {
+            Object.assign(result.query[0].$match, filterContext);
+          } else {
+            result.query.unshift({ $match: filterContext });
+          }
+        }
+
+        // Evaluate dates in the golden example
+        result.query = evaluateDates(result.query);
+
+        return result;
+      } catch (e) {
+        console.warn(
+          "[Mongo Agent] Failed to parse Golden Example, falling back to LLM.",
+        );
+      }
     }
   }
 
@@ -154,40 +213,6 @@ async function generateMQLFromPrompt(
     queryStr = queryStr.replace(/"now\(\)"/gi, '"$$$NOW"');
 
     result.query = JSON.parse(queryStr);
-
-    // DYNAMIC DATE EVALUATION
-    // Recursively walk the query object and convert "new Date(...)" strings to real Date objects
-    const evaluateDates = (obj) => {
-      if (Array.isArray(obj)) {
-        return obj.map(evaluateDates);
-      } else if (obj !== null && typeof obj === "object") {
-        const newObj = {};
-        for (const [key, value] of Object.entries(obj)) {
-          newObj[key] = evaluateDates(value);
-        }
-        return newObj;
-      } else if (typeof obj === "string") {
-        // Match "new Date(...)" or "ISODate(...)"
-        const dateMatch = obj.match(/^(new Date|ISODate)\((.*)\)$/i);
-        if (dateMatch) {
-          try {
-            // Safe evaluation of the date expression
-            const expr = dateMatch[2].replace(/['"]/g, "");
-            if (expr === "") return new Date();
-            // Handle math expressions like Date.now() - ...
-            if (expr.includes("Date.now()")) {
-              const ms = eval(expr.replace("Date.now()", Date.now()));
-              return new Date(ms);
-            }
-            return new Date(expr);
-          } catch (e) {
-            console.warn("[Mongo Agent] Date eval failed for:", obj);
-            return obj;
-          }
-        }
-      }
-      return obj;
-    };
 
     result.query = evaluateDates(result.query);
 
