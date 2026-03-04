@@ -22,7 +22,7 @@
     {
         "question": "show transactions",
         "type": "mql",
-        "content": "{ \"collection\": \"transactionActionHistoryInfo\", \"query\": [ { \"$match\": {} }, { \"$sort\": { \"createdAt\": -1 } }, { \"$limit\": 50 } ] }"
+        "content": "{ \"collection\": \"transactionActionHistoryInfo\", \"query\": [ { \"$match\": { \"actionStatus\": 1 } }, { \"$sort\": { \"createdAt\": -1 } }, { \"$limit\": 50 } ] }"
     },
     {
         "question": "list all merchants",
@@ -46,7 +46,12 @@
     {
         "question": "Show daily transaction volume for the past week",
         "type": "mql",
-        "content": "{ \"collection\": \"transactionActionHistoryInfo\", \"query\": [ { \"$match\": { \"actionStatus\": 1, \"createdAt\": { \"$gt\": \"new Date(Date.now() - 7*24*60*60*1000)\" } } }, { \"$group\": { \"_id\": { \"day\": { \"$dateToString\": { \"format\": \"%Y-%m-%d\", \"date\": \"$createdAt\" } } }, \"volume\": { \"$sum\": 1 }, \"totalRevenue\": { \"$sum\": \"$txnAmt\" } } }, { \"$sort\": { \"_id.day\": 1 } }, { \"$limit\": 50 } ] }"
+        "content": "{ \"collection\": \"transactionActionHistoryInfo\", \"query\": [ { \"$match\": { \"actionStatus\": 1, \"createdAt\": { \"$gt\": \"new Date(Date.now() - 7*24*60*60*1000)\" } } }, { \"$group\": { \"_id\": { \"day\": { \"$dateToString\": { \"format\": \"%Y-%m-%d\", \"date\": \"$createdAt\" } } }, \"volume\": { \"$sum\": 1 } } }, { \"$sort\": { \"_id.day\": 1 } }, { \"$limit\": 30 } ] }"
+    },
+    {
+        "question": "Show revenue trend for the last 7 days",
+        "type": "mql",
+        "content": "{ \"collection\": \"transactionActionHistoryInfo\", \"query\": [ { \"$match\": { \"actionStatus\": 1, \"createdAt\": { \"$gt\": \"new Date(Date.now() - 7*24*60*60*1000)\" } } }, { \"$group\": { \"_id\": { \"day\": { \"$dateToString\": { \"format\": \"%Y-%m-%d\", \"date\": \"$createdAt\" } } }, \"totalRevenue\": { \"$sum\": \"$txnAmt\" } } }, { \"$sort\": { \"_id.day\": 1 } }, { \"$limit\": 30 } ] }"
     },
     {
         "question": "Which merchants have no devices assigned?",
@@ -72,5 +77,45 @@
         "question": "Show system summary for today",
         "type": "mql",
         "content": "{ \"collection\": \"systemDailySummaryInfo\", \"query\": [ { \"$sort\": { \"date\": -1 } }, { \"$limit\": 1 }, { \"$project\": { \"_id\": 0, \"totalActiveDevicesCount\": 1, \"totalDevicesAdded\": 1, \"totalTransactionsCount\": 1, \"totalTransactionAmount\": 1 } } ] }"
+    },
+    {
+        "question": "show all the transctions on day 2026-02-16",
+        "type": "mql",
+        "content": "{ \"collection\": \"transactionActionHistoryInfo\", \"query\": [ { \"$match\": { \"actionStatus\": 1, \"createdAt\": { \"$gte\": \"new Date('2026-02-16T00:00:00.000Z')\", \"$lt\": \"new Date('2026-02-17T00:00:00.000Z')\" } } }, { \"$limit\": 50 } ] }"
+    },
+    {
+        "question": "list successful transactions in the last 24 hours",
+        "type": "mql",
+        "content": "{ \"collection\": \"transactionActionHistoryInfo\", \"query\": [ { \"$match\": { \"actionStatus\": 1, \"createdAt\": { \"$gt\": \"new Date(Date.now() - 24*60*60*1000)\" } } }, { \"$sort\": { \"createdAt\": -1 } }, { \"$limit\": 50 } ] }"
+    },
+    {
+        "question": "show transactions with amount greater than 5000",
+        "type": "mql",
+        "content": "{ \"collection\": \"transactionActionHistoryInfo\", \"query\": [ { \"$match\": { \"txnAmt\": { \"$gt\": 5000 } } }, { \"$sort\": { \"txnAmt\": -1 } }, { \"$limit\": 50 } ] }"
+    },
+    {
+        "question": "show UPI transactions",
+        "type": "mql",
+        "content": "{ \"collection\": \"transactionActionHistoryInfo\", \"query\": [ { \"$match\": { \"actionStatus\": 1, \"transactionMode\": \"UPI\" } }, { \"$limit\": 50 } ] }"
+    },
+    {
+        "question": "total revenue for today",
+        "type": "mql",
+        "content": "{ \"collection\": \"systemDailySummaryInfo\", \"query\": [ { \"$sort\": { \"date\": -1 } }, { \"$limit\": 1 }, { \"$project\": { \"_id\": 0, \"totalTransactionAmount\": 1 } } ] }"
+    },
+    {
+        "question": "show last 10 failed transactions",
+        "type": "mql",
+        "content": "{ \"collection\": \"transactionActionHistoryInfo\", \"query\": [ { \"$match\": { \"actionStatus\": { \"$ne\": 1 } } }, { \"$sort\": { \"createdAt\": -1 } }, { \"$limit\": 10 } ] }"
+    },
+    {
+        "question": "overall system summary",
+        "type": "mql",
+        "content": "{ \"collection\": \"systemSummaryInfo\", \"query\": [ { \"$limit\": 1 }, { \"$project\": { \"_id\": 0, \"totalTransactionsCount\": 1, \"totalSuccessfulTransactionsCount\": 1, \"totalTransactionAmount\": 1, \"maxTransactionAmount\": 1, \"minTransactionAmount\": 1 } } ] }"
+    },
+    {
+        "question": "total successful transactions life-time",
+        "type": "mql",
+        "content": "{ \"collection\": \"systemSummaryInfo\", \"query\": [ { \"$limit\": 1 }, { \"$project\": { \"_id\": 0, \"totalSuccessfulTransactionsCount\": 1 } } ] }"
     }
 ]

@@ -772,5 +772,149 @@
     "question": "What is the total transaction amount for today?",
     "intent": "DYNAMIC",
     "requestId": "9830"
+  },
+  {
+    "timestamp": "2026-03-04T06:23:34.311Z",
+    "question": "What is the total transaction amount for the last 7 days?",
+    "intent": "DYNAMIC",
+    "requestId": "4311"
+  },
+  {
+    "timestamp": "2026-03-04T06:25:04.848Z",
+    "question": "Show revenue trend for the last 30 days",
+    "intent": "DYNAMIC",
+    "requestId": "4848"
+  },
+  {
+    "timestamp": "2026-03-04T06:31:26.738Z",
+    "question": "Show revenue trend for the last 30 days",
+    "intent": "DYNAMIC",
+    "requestId": "6737"
+  },
+  {
+    "timestamp": "2026-03-04T06:33:06.804Z",
+    "question": "show all the transctions on day 2026-02-16",
+    "intent": "DYNAMIC",
+    "requestId": "6804"
+  },
+  {
+    "timestamp": "2026-03-04T06:40:24.752Z",
+    "question": "show all the transctions on day 2026-02-16",
+    "intent": "DYNAMIC",
+    "requestId": "4751"
+  },
+  {
+    "timestamp": "2026-03-04T06:45:54.325Z",
+    "question": "show all the transctions on day 2026-02-16",
+    "intent": "DYNAMIC",
+    "requestId": "4325"
+  },
+  {
+    "timestamp": "2026-03-04T06:46:35.600Z",
+    "question": "show all the transctions on day 2026-02-18",
+    "intent": "DYNAMIC",
+    "requestId": "5599"
+  },
+  {
+    "timestamp": "2026-03-04T06:54:40.808Z",
+    "question": "show all the transctions on day 2026-02-18",
+    "intent": "DYNAMIC",
+    "requestId": "0808"
+  },
+  {
+    "timestamp": "2026-03-04T06:54:57.730Z",
+    "question": "show all the transctions on day 2026-02-19",
+    "intent": "DYNAMIC",
+    "requestId": "7728"
+  },
+  {
+    "timestamp": "2026-03-04T07:19:00.534Z",
+    "question": "show all the transctions on day 2026-02-19",
+    "intent": "DYNAMIC",
+    "requestId": "0533"
+  },
+  {
+    "timestamp": "2026-03-04T07:19:30.915Z",
+    "question": "How many devices are currently active vs inactive?",
+    "intent": "DYNAMIC",
+    "requestId": "0915"
+  },
+  {
+    "timestamp": "2026-03-04T07:19:39.253Z",
+    "question": "Show system daily summary for today",
+    "intent": "DYNAMIC",
+    "requestId": "9253"
+  },
+  {
+    "timestamp": "2026-03-04T07:24:40.337Z",
+    "question": "show overall system summary",
+    "intent": "DYNAMIC",
+    "requestId": "0336"
+  },
+  {
+    "timestamp": "2026-03-04T07:25:53.561Z",
+    "question": "show system summary for today",
+    "intent": "DYNAMIC",
+    "requestId": "3561"
+  },
+  {
+    "timestamp": "2026-03-04T07:27:07.894Z",
+    "question": "system summary for today only",
+    "intent": "DYNAMIC",
+    "requestId": "7894"
+  },
+  {
+    "timestamp": "2026-03-04T07:27:22.347Z",
+    "question": "Show system daily summary for today",
+    "intent": "DYNAMIC",
+    "requestId": "2347"
+  },
+  {
+    "timestamp": "2026-03-04T07:27:38.363Z",
+    "question": "Show revenue trend for the last 30 days",
+    "intent": "DYNAMIC",
+    "requestId": "8363"
+  },
+  {
+    "timestamp": "2026-03-04T07:28:09.679Z",
+    "question": "Show revenue trend for the last 7 days",
+    "intent": "DYNAMIC",
+    "requestId": "9679"
+  },
+  {
+    "timestamp": "2026-03-04T07:36:50.692Z",
+    "question": "show UPI transactions",
+    "intent": "DYNAMIC",
+    "requestId": "0691"
+  },
+  {
+    "timestamp": "2026-03-04T07:36:58.341Z",
+    "question": "show all the transctions on day 2026-02-18",
+    "intent": "DYNAMIC",
+    "requestId": "8341"
+  },
+  {
+    "timestamp": "2026-03-04T07:37:24.494Z",
+    "question": "Show revenue trend for the last 7 days",
+    "intent": "DYNAMIC",
+    "requestId": "4494"
+  },
+  {
+    "timestamp": "2026-03-04T07:37:50.188Z",
+    "question": "Show volume trend for the last 7 days",
+    "intent": "DYNAMIC",
+    "requestId": "0188"
+  },
+  {
+    "timestamp": "2026-03-04T07:39:07.136Z",
+    "question": "show transction volume trend",
+    "intent": "DYNAMIC",
+    "requestId": "7136"
+  },
+  {
+    "timestamp": "2026-03-04T08:16:55.084Z",
+    "question": "Show overall system summary",
+    "intent": "DYNAMIC",
+    "requestId": "5084"
   }
 ]

@@ -16,27 +16,108 @@ const evaluateDates = (obj) => {
     }
     return newObj;
   } else if (typeof obj === "string") {
-    // Match "new Date(...)" or "ISODate(...)"
+    // 1. Match "new Date(...)" or "ISODate(...)"
     const dateMatch = obj.match(/^(new Date|ISODate)\((.*)\)$/i);
     if (dateMatch) {
       try {
-        // Safe evaluation of the date expression
         const expr = dateMatch[2].replace(/['"]/g, "");
         if (expr === "") return new Date();
-        // Handle math expressions like Date.now() - ...
         if (expr.includes("Date.now()")) {
           const ms = eval(expr.replace("Date.now()", Date.now()));
           return new Date(ms);
         }
         return new Date(expr);
       } catch (e) {
-        console.warn("[Mongo Agent] Date eval failed for:", obj);
         return obj;
       }
+    }
+
+    // 2. Auto-detect ISO Date Strings (e.g. 2026-02-16T00:00:00.000Z)
+    const isoRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z$/;
+    if (isoRegex.test(obj)) {
+      const d = new Date(obj);
+      if (!isNaN(d.getTime())) return d;
     }
   }
   return obj;
 };
+
+/**
+ * Adaptive Parameter Mapping: Uses a fast LLM call to map user parameters (dates, limits, filters)
+ * into a Golden Example's optimized structure.
+ */
+async function dynamicizeMQL(userQuestion, goldenExample) {
+  const { routeModel } = require("./modelRouter");
+  const { model } = routeModel(userQuestion, { forceSmall: true }); // Always use fastest model for mapping
+
+  const mappingPrompt = `
+You are a Data Logic Mapper. 
+Goal: Take a "Golden MQL Template" and update its SPECIFIC VALUES to match a "New Question".
+
+GOLDEN QUESTION: "${goldenExample.question}"
+GOLDEN MQL:
+${goldenExample.content}
+
+NEW USER QUESTION: "${userQuestion}"
+
+INSTRUCTIONS:
+1. Preserve the structure (stages, keys, operators) from the GOLDEN MQL.
+2. Update ONLY the values to match the NEW USER QUESTION:
+   - If a date (YYYY-MM-DD or relative like "today") is mentioned, update the $match dates.
+   - If a number (like "10", "100") is mentioned in the context of a count or limit, update the $limit stage.
+   - For example, if Golden Question has "last 7 days" and New Question has "last 30 days", update the subtraction math.
+3. Return ONLY the JSON for the updated MQL.
+
+UPDATED MQL JSON:`;
+
+  try {
+    const response = await axios.post(
+      config.ollamaUrl,
+      {
+        model: model,
+        prompt: mappingPrompt,
+        stream: false,
+        format: "json",
+        options: { temperature: 0 },
+      },
+      { timeout: 10000 },
+    );
+
+    return JSON.parse(response.data.response);
+  } catch (e) {
+    console.warn(
+      "[Mongo Agent] Dynamic parameter mapping failed, using raw golden content.",
+      e.message,
+    );
+    return JSON.parse(goldenExample.content);
+  }
+}
+
+/**
+ * Programmatic Safeguards: Ensures mandatory business rules (like actionStatus: 1)
+ * are applied regardless of LLM output.
+ */
+function applyMandatorySafeguards(result) {
+  if (!result.query || !Array.isArray(result.query)) return result;
+
+  // 1. Force actionStatus: 1 for ALL transaction queries
+  if (result.collection === "transactionActionHistoryInfo") {
+    const matchStage = result.query.find((s) => s.$match);
+    if (matchStage) {
+      matchStage.$match.actionStatus = 1;
+    } else {
+      result.query.unshift({ $match: { actionStatus: 1 } });
+    }
+  }
+
+  // 2. Auto-add $limit if missing (already in main flow, but good here)
+  const hasLimit = result.query.some((stage) => stage.$limit);
+  if (!hasLimit) {
+    result.query.push({ $limit: 50 });
+  }
+
+  return result;
+}
 
 /**
  * Generates an MQL (MongoDB Aggregation Pipeline or find query) from a natural language prompt.
@@ -62,21 +143,12 @@ async function generateMQLFromPrompt(
     topSchemas = "Unknown Collection Schema";
   }
 
-  const concepts = require("../config/concepts.json");
-
   const { getMongoPrompt } = require("../prompts/mongoPrompt");
   const { routeModel } = require("./modelRouter");
 
-  // Routing with options:
-  // - If we have a very weak few-shot, we might want a stronger model.
-  const { model } = routeModel(question, {
-    forceLlama: !fewShotExample || fewShotExample.score < 0.6,
-    engine: "mongodb",
-  });
-
   // GOLDEN EXAMPLE BYPASS: If we have an exact match (score > 0.85), use it directly
   if (fewShotExample && fewShotExample.score > 0.85) {
-    // Prevent false positives on opposite semantic words (lowest vs highest) due to high embedding similarity
+    // 1. Semantic Antonym Guard (Still needed to prevent highest vs lowest confusion)
     const opposites = [
       ["highest", "lowest"],
       ["top", "bottom"],
@@ -96,45 +168,13 @@ async function generateMQLFromPrompt(
       }
     }
 
-    // Numeric & Temporal Guard: Prevent bypass if the numbers differ (e.g., 7 vs 30)
-    // or if the time periods differ (e.g., week vs month)
-    const qNums = (question.match(/\d+/g) || []).join(",");
-    const gNums = (fewShotExample.question.match(/\d+/g) || []).join(",");
-
-    let bypassNumbers = qNums === gNums;
-    // Allow equivalence for week/7, month/30
-    if (qNums === "7" && fewShotExample.question.toLowerCase().includes("week"))
-      bypassNumbers = true;
-    if (
-      qNums === "30" &&
-      fewShotExample.question.toLowerCase().includes("month")
-    )
-      bypassNumbers = true;
-
-    if (!bypassNumbers) {
-      isOpposite = true;
-    }
-
-    const tempWords = ["day", "week", "month", "year", "today", "yesterday"];
-    const qTemps = tempWords.filter((w) => question.toLowerCase().includes(w));
-    const gTemps = tempWords.filter((w) =>
-      fewShotExample.question.toLowerCase().includes(w),
-    );
-
-    let bypassTemps = qTemps.join(",") === gTemps.join(",");
-    if (qNums === "7" && gTemps.includes("week")) bypassTemps = true;
-    if (qNums === "30" && gTemps.includes("month")) bypassTemps = true;
-
-    if (!bypassTemps) {
-      isOpposite = true;
-    }
-
     if (!isOpposite) {
       console.log(
-        `[Mongo Agent] High-Confidence Golden Match found (${(fewShotExample.score * 100).toFixed(1)}%). Bypassing LLM.`,
+        `[Mongo Agent] High-Confidence Golden Match found (${(fewShotExample.score * 100).toFixed(1)}%). Performing dynamic parameter mapping.`,
       );
       try {
-        let result = JSON.parse(fewShotExample.content);
+        // DYNAMIC ADAPTATION: Map user dates/numbers into the golden template
+        let result = await dynamicizeMQL(question, fewShotExample);
 
         // If we have filterContext (e.g. deviceIds), merge them into the first $match stage
         if (Object.keys(filterContext).length > 0) {
@@ -145,17 +185,28 @@ async function generateMQLFromPrompt(
           }
         }
 
-        // Evaluate dates in the golden example
+        result = applyMandatorySafeguards(result);
+        // Evaluate dates in the dynamically mapped MQL
         result.query = evaluateDates(result.query);
 
+        console.log(
+          `[Mongo Agent] Dynamic Bypass Success. Collection: ${result.collection}`,
+        );
         return result;
       } catch (e) {
         console.warn(
-          "[Mongo Agent] Failed to parse Golden Example, falling back to LLM.",
+          "[Mongo Agent] Dynamic mapping failed, falling back to LLM.",
+          e.message,
         );
       }
     }
   }
+
+  // Routing for full LLM generation
+  const { model } = routeModel(question, {
+    forceLlama: !fewShotExample || fewShotExample.score < 0.6,
+    engine: "mongodb",
+  });
 
   const prompt = getMongoPrompt(
     question,
@@ -251,6 +302,8 @@ async function generateMQLFromPrompt(
     queryStr = queryStr.replace(/"now\(\)"/gi, '"$$$NOW"');
 
     result.query = JSON.parse(queryStr);
+
+    result = applyMandatorySafeguards(result);
 
     result.query = evaluateDates(result.query);
 

@@ -165,15 +165,17 @@ function processAnalytics(data) {
   let lowest = null;
 
   // A simple heuristic: find the first string-like column for labels, and prioritized number column for values
-  const prioritizedKeywords = [
-    "revenue",
-    "amount",
-    "amt",
-    "total",
-    "sum",
-    "price",
+  const PRIORITIES = [
+    { regex: /revenue/i, score: 100 },
+    { regex: /txnAmt/i, score: 90 },
+    { regex: /amount/i, score: 80 },
+    { regex: /amt/i, score: 75 },
+    { regex: /total/i, score: 50 },
+    { regex: /sum/i, score: 40 },
+    { regex: /volume/i, score: 10 },
+    { regex: /count/i, score: 5 },
+    { regex: /id/i, score: 1 },
   ];
-  const dePrioritizedKeywords = ["id", "count", "volume", "index"];
 
   let labelKey = null;
   let valueKey = null;
@@ -190,9 +192,13 @@ function processAnalytics(data) {
 
     // Value detection with priority scoring
     if (!isNaN(Number(val)) || typeof val === "number") {
-      let score = 5; // Default score
-      if (prioritizedKeywords.some((kw) => lowerKey.includes(kw))) score = 10;
-      if (dePrioritizedKeywords.some((kw) => lowerKey.includes(kw))) score = 1;
+      let score = 20; // Default base score for any numeric field
+      for (const p of PRIORITIES) {
+        if (p.regex.test(key)) {
+          score = p.score;
+          break;
+        }
+      }
 
       if (score > bestValueScore) {
         bestValueScore = score;
@@ -240,17 +246,28 @@ function processAnalytics(data) {
 
     // Prevent generating nonsense max/min KPIs when the numeric value is just an ID or uniform (all 1s)
     if (!valueKey.toLowerCase().includes("id") && totalSum !== data.length) {
+      const highestLabel =
+        formatValue(labelKey, highest.label, {}) || highest.label;
+      const highestValue = formatValue(
+        valueKey,
+        highest.value,
+        data.find((r) => r[labelKey] === highest.label) || {},
+      );
       kpis.push({
         name: `Highest by ${valueKey.replace("_", " ")}`,
-        value: highest
-          ? formatValue(labelKey, highest.label, {}) || highest.label
-          : "N/A",
+        value: highest ? `${highestLabel} (${highestValue})` : "N/A",
       });
+
+      const lowestLabel =
+        formatValue(labelKey, lowest.label, {}) || lowest.label;
+      const lowestValue = formatValue(
+        valueKey,
+        lowest.value,
+        data.find((r) => r[labelKey] === lowest.label) || {},
+      );
       kpis.push({
         name: `Lowest by ${valueKey.replace("_", " ")}`,
-        value: lowest
-          ? formatValue(labelKey, lowest.label, {}) || lowest.label
-          : "N/A",
+        value: lowest ? `${lowestLabel} (${lowestValue})` : "N/A",
       });
     }
   }
@@ -263,6 +280,7 @@ function processAnalytics(data) {
     chartData: finalChartData,
     tableData: data,
     columns: Object.keys(data[0]),
+    valueKey: valueKey,
   };
 }
 

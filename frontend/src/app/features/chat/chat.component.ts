@@ -40,11 +40,10 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     }
 
     suggestions = [
-        "What is the total transaction amount for today?",
-        "Show top 5 merchants by revenue volume",
-        "How many devices are currently inactive?",
-        "List all users in the 'Admin' group",
-        "Show revenue trend for the last 7 days"
+        "Show overall system summary",
+        "Show revenue trend for the last 7 days",
+        "show all the transctions on day 2026-02-18",
+        "Show top 5 merchants by revenue"
     ];
 
     ngOnInit(): void {

@@ -58,6 +58,16 @@ Once the precise numbers are locked in and the charts are displayed, the system 
 - **Exceptional User Experience:** By streaming the text word-by-word alongside visually stunning charts, the user isn't forced to stare at empty loading screens. The application feels incredibly fast, intuitive, and wildly intelligent.
 - **Self-Healing AI:** If the AI makes a mistake generating a new database query, it incorporates its own error output into a retry loop. If it successfully fixes the error, it explicitly saves the fix in the Knowledge Base to ensure it never makes that mistake again.
 
+### 5. Intent Intelligence & Heuristic Shields (The "Resilient Interface")
+
+**What it does:**
+Enterprise users often type quickly, leading to misspellings (e.g., _"show transctions"_). Our system doesn't break. We've implemented **Fuzzy Regex Logic** that recognizes abbreviations and errors (txn, transction, rev) and correctly routes them to the high-performance MongoDB engine.
+
+**Why it matters to the CEO:**
+
+- **Reduced User Frustration:** The system feels "natural" and forgiving, behaving more like a senior human assistant than a rigid computer program.
+- **Continuous Learning:** Every time the system successfully self-corrects a query, it indexes that fix in the **Golden Knowledge Base**, progressively becoming more intelligent and faster with every single use.
+
 ---
 
 ### Summary Pitch for Presentation:

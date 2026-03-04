@@ -22,15 +22,17 @@ ${question}
 
 Instructions:
 - Generate a valid MongoDB aggregation pipeline array.
-- **CRITICAL: For SYSTEM SUMMARY or counts of active/inactive devices/users/logins, use the "systemDailySummaryInfo" collection.**
+- **CRITICAL: For SYSTEM SUMMARY on a specific day OR daily trends, use the "systemDailySummaryInfo" collection.**
+- **CRITICAL: For OVERALL or LIFE-TIME SYSTEM SUMMARY (not filtered by date), use the "systemSummaryInfo" collection.**
 - **CRITICAL: For REVENUE or VOLUME queries over time, use the "transactionActionHistoryInfo" collection.**
 - **CRITICAL: When grouping by day, always add a final $project stage to flatten technical _id fields (e.g., { "$project": { "_id": 0, "date": "$_id.day", "revenue": "$revenue" } }) to ensure dates are visible in the UI table.**
 - **CRITICAL: Revenue is the sum of the transaction amount field "txnAmt". DO NOT use "amount" or "totalRevenue".**
 - **CRITICAL: When sorting/finding by "txnAmt", always add a $match stage first: { "txnAmt": { "$exists": true, "$ne": null } }.**
 - **CRITICAL: For "highest" or "top" queries, sort by "txnAmt": -1. For "lowest" or "bottom" queries, sort by "txnAmt": 1. If a specific record or "the transaction" (singular) is asked, DO NOT use $group or $sum, simply use $sort and $limit: 1.**
 - **CRITICAL: For "Trend" or daily grouping, use a $group stage with _id: { day: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } } }.**
-- **CRITICAL: For "last X days" or relative time filters, YOU MUST include a $match stage with { "createdAt": { "$gt": "new Date(Date.now() - X*24*60*60*1000)" } }.**
-- **CRITICAL: Heuristic: Unless otherwise specified, filter for "actionStatus": 1 to ensure only successful/valid records are considered.**
+- **CRITICAL: For ALL date/time filters (relative or absolute), YOU MUST wrap values in new Date(), e.g., { "createdAt": { "$gte": "new Date('2026-02-16T00:00:00.000Z')" } } or "new Date(Date.now() - ...)".**
+- **CRITICAL: MANDATORY FILTER: For ALL queries on "transactionActionHistoryInfo", YOU MUST include "actionStatus": 1 in the first $match stage. No exceptions.**
+- **CRITICAL: Heuristic: Even if the user says "all transactions", secretly filter for "actionStatus": 1.**
 
 NEGATIVE CONSTRAINTS:
 - **DO NOT** assume the existence of a "revenue" field. Sum "txnAmt" instead (ONLY if asked for total revenue).

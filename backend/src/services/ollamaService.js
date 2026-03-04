@@ -11,6 +11,7 @@ async function getLLMSummaryStream(analyticsData, res, question = "") {
     const sanitizedData = {
       kpis: analyticsData?.kpis || [],
       chartData: analyticsData?.chartData || [],
+      metricName: analyticsData?.valueKey || "value",
     };
 
     const { getSummaryPrompt } = require("../prompts/summaryPrompt");
