@@ -22,5 +22,17 @@
     "content": "SELECT deviceIds FROM \"deviceStatsInfo\" WHERE createdAt >= '2026-02-16' AND createdAt < '2026-02-17' LIMIT 50",
     "type": "error",
     "createdAt": "2026-03-04T06:33:30.786Z"
+  },
+  {
+    "question": "show actice device count",
+    "content": "SELECT\": \"deviceTypeId\",\n  \"FROM\": \"deviceTypeInfo\",\n  \"WHERE\": {\n    \"manufacturerTypeId\": {\n      \"$eq\": 1\n    }\n  },\n  \"JOIN\": null,\n  \"GROUP BY\": null,\n  \"HAVING\": null,\n  \"ORDER BY\": null,\n  \"LIMIT\": 50\n}",
+    "type": "error",
+    "createdAt": "2026-03-04T10:56:02.652Z"
+  },
+  {
+    "question": "show actice device count",
+    "content": "SELECT COUNT(*) FROM \"deviceTypeInfo\" WHERE manufacturerTypeId = 1 LIMIT 50",
+    "type": "error",
+    "createdAt": "2026-03-04T10:56:13.761Z"
   }
 ]

@@ -33,6 +33,7 @@ Instructions:
 - **CRITICAL: For ALL date/time filters (relative or absolute), YOU MUST wrap values in new Date(), e.g., { "createdAt": { "$gte": "new Date('2026-02-16T00:00:00.000Z')" } } or "new Date(Date.now() - ...)".**
 - **CRITICAL: MANDATORY FILTER: For ALL queries on "transactionActionHistoryInfo", YOU MUST include "actionStatus": 1 in the first $match stage. No exceptions.**
 - **CRITICAL: Heuristic: Even if the user says "all transactions", secretly filter for "actionStatus": 1.**
+${filterContext._targetCollection ? `- **CRITICAL: YOU MUST USE THE COLLECTION "${filterContext._targetCollection}" for this query.**` : ""}
 
 NEGATIVE CONSTRAINTS:
 - **DO NOT** assume the existence of a "revenue" field. Sum "txnAmt" instead (ONLY if asked for total revenue).

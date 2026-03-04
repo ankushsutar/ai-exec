@@ -42,9 +42,19 @@ async function orchestrateHybridQuery(question, requestId) {
     }
   }
 
-  if (intent === "MONGODB") {
-    console.log("[Hybrid Broker] MongoDB primary intent detected.");
-    return await executeDirectMongoQuery(question);
+  if (
+    intent === "MONGODB_TXN" ||
+    intent === "MONGODB_STATS" ||
+    intent === "MONGODB"
+  ) {
+    console.log(`[Hybrid Broker] MongoDB primary intent detected: ${intent}`);
+    const filterContext =
+      intent === "MONGODB_TXN"
+        ? { _targetCollection: "transactionActionHistoryInfo" }
+        : intent === "MONGODB_STATS"
+          ? { _targetCollection: "deviceStatHistoryInfo" }
+          : {};
+    return await executeDirectMongoQuery(question, filterContext);
   }
 
   console.log(
@@ -134,9 +144,12 @@ async function executeDirectMongoQuery(question, filterContext = {}) {
     return await collection.aggregate(query).toArray();
   } else {
     // If it's a find query, we merge the filterContext into it if it's not already there
-    let finalQuery = query;
+    // Remove internal flags before passing to Mongo
+    let finalQuery = { ...query };
     if (filterContext && Object.keys(filterContext).length > 0) {
-      finalQuery = { ...query, ...filterContext };
+      const cleanFilter = { ...filterContext };
+      delete cleanFilter._targetCollection;
+      finalQuery = { ...finalQuery, ...cleanFilter };
     }
     return await collection.find(finalQuery).limit(50).toArray();
   }

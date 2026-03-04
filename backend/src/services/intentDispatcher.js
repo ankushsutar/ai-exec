@@ -8,43 +8,54 @@ async function dispatchIntent(question) {
   const lowercaseQ = question.toLowerCase();
 
   // 1. DEFINED ENTITY PATTERNS (REGEX for robustness)
-  const TRANSACTIONAL_PATTERNS = [
-    /trans/i, // trans, transactions, transctions
-    /txn/i, // txn, txns
-    /rev/i, // revenue, rev
-    /vol/i, // volume, vol
-    /amt/i, // amount, amt
-    /sale/i, // sales
-    /total/i,
-    /trend/i,
-    /daily/i,
-    /stat/i,
-    /health/i,
-    /active/i,
-    /inactive/i,
-    /summary/i,
-    /sum/i,
+  const MONGODB_TXN_PATTERNS = [
+    /\btransaction\b/i,
+    /\brevenue\b/i,
+    /\bpayment\b/i,
+    /\btxn\b/i,
+    /\bamount\b/i,
   ];
 
-  const METADATA_PATTERNS = [/merchant/i, /user/i, /name/i, /business/i];
+  const MONGODB_STATS_PATTERNS = [
+    /\bdevice stats\b/i,
+    /\bsignal\b/i,
+    /\bnetwork\b/i,
+    /\bbattery\b/i,
+    /\bdevice uptime\b/i,
+  ];
 
-  const hasTransactional = TRANSACTIONAL_PATTERNS.some((regex) =>
+  const HYBRID_PATTERNS = [
+    /\bmerchant\b/i,
+    /\bmerchant revenue\b/i,
+    /\bmerchant devices\b/i,
+  ];
+
+  const hasHybrid = HYBRID_PATTERNS.some((regex) => regex.test(lowercaseQ));
+  const hasTxn = MONGODB_TXN_PATTERNS.some((regex) => regex.test(lowercaseQ));
+  const hasStats = MONGODB_STATS_PATTERNS.some((regex) =>
     regex.test(lowercaseQ),
   );
-  const hasMetadata = METADATA_PATTERNS.some((regex) => regex.test(lowercaseQ));
 
   // 2. HEURISTIC OVERRIDE (FAST PATH)
-  if (hasTransactional) {
-    if (hasMetadata) {
-      console.log(
-        "[Intent Dispatcher] Heuristic: Identified HYBRID (Metadata + Metrics).",
-      );
-      return "HYBRID";
-    }
+  if (hasHybrid) {
     console.log(
-      "[Intent Dispatcher] Heuristic: Identified MONGODB (Pure Metrics).",
+      "[Intent Dispatcher] Heuristic: Identified HYBRID (Metadata + Metrics).",
     );
-    return "MONGODB";
+    return "HYBRID";
+  }
+
+  if (hasTxn) {
+    console.log(
+      "[Intent Dispatcher] Heuristic: Identified MONGODB_TXN (Transaction Metrics).",
+    );
+    return "MONGODB_TXN";
+  }
+
+  if (hasStats) {
+    console.log(
+      "[Intent Dispatcher] Heuristic: Identified MONGODB_STATS (Device Stats).",
+    );
+    return "MONGODB_STATS";
   }
 
   // 3. LLM ANALYSIS (DECISION PATH)
@@ -89,7 +100,9 @@ OUTPUT: Return ONLY "SQL", "MONGODB", or "HYBRID".
 
     const rawResponse = response.data.response.toUpperCase().trim();
     if (rawResponse.includes("HYBRID")) return "HYBRID";
-    if (rawResponse.includes("MONGODB")) return "MONGODB";
+    if (rawResponse.includes("MONGODB_TXN") || rawResponse.includes("MONGODB"))
+      return "MONGODB_TXN";
+    if (rawResponse.includes("MONGODB_STATS")) return "MONGODB_STATS";
     if (rawResponse.includes("SQL")) return "SQL";
 
     return "SQL"; // Default if response is ambiguous
