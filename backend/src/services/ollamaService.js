@@ -10,7 +10,7 @@ async function getLLMSummaryStream(analyticsData, res, question = "") {
     // Strip out the massive tableData payload to prevent LLM context overload and hallucination
     const sanitizedData = {
       kpis: analyticsData?.kpis || [],
-      chartDataLength: analyticsData?.chartData?.length || 0,
+      chartData: analyticsData?.chartData || [],
     };
 
     const { getSummaryPrompt } = require("../prompts/summaryPrompt");

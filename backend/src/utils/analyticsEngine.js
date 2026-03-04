@@ -11,6 +11,20 @@ function processAnalytics(data) {
     "cvv",
     "key",
   ];
+
+  // Helper to flatten nested objects (specifically for Mongo _id structures)
+  const flattenRow = (row) => {
+    const flat = {};
+    Object.keys(row).forEach((key) => {
+      if (key === "_id" && typeof row[key] === "object" && row[key] !== null) {
+        Object.assign(flat, row[key]);
+      } else {
+        flat[key] = row[key];
+      }
+    });
+    return flat;
+  };
+
   // BEAUTIFICATION HELPERS
   const formatValue = (key, val, row) => {
     if (val === null || val === undefined) return "N/A";
@@ -47,7 +61,7 @@ function processAnalytics(data) {
     ) {
       const num = parseFloat(val);
       if (!isNaN(num)) {
-        const currency = row.currency || "INR";
+        const currency = row.currency || row._currency || "INR";
         return new Intl.NumberFormat("en-IN", {
           style: "currency",
           currency: currency,
@@ -71,7 +85,8 @@ function processAnalytics(data) {
   };
 
   data = data.map((row) => {
-    const beautifiedRow = { ...row };
+    const flattened = flattenRow(row);
+    const beautifiedRow = { ...flattened };
     Object.keys(beautifiedRow).forEach((key) => {
       const lowerKey = key.toLowerCase();
       // Masking first
@@ -81,8 +96,8 @@ function processAnalytics(data) {
       }
 
       // Add formatted variant for UI
-      const formatted = formatValue(key, row[key], row);
-      if (formatted !== row[key]) {
+      const formatted = formatValue(key, flattened[key], flattened);
+      if (formatted !== flattened[key]) {
         beautifiedRow[`_${key}_formatted`] = formatted;
       }
     });
@@ -144,21 +159,45 @@ function processAnalytics(data) {
     return { kpis, chartData, tableData: data, columns: Object.keys(data[0]) };
   }
 
-  // --- STANDARD MULTI-ROW / AGGREGATION LOGIC ---
+  // STANDARD MULTI-ROW / AGGREGATION LOGIC ---
   let totalSum = 0;
   let highest = null;
   let lowest = null;
 
+  // A simple heuristic: find the first string-like column for labels, and prioritized number column for values
+  const prioritizedKeywords = [
+    "revenue",
+    "amount",
+    "amt",
+    "total",
+    "sum",
+    "price",
+  ];
+  const dePrioritizedKeywords = ["id", "count", "volume", "index"];
+
   let labelKey = null;
   let valueKey = null;
+  let bestValueScore = -1;
 
-  // A simple heuristic: find the first string-like column for labels, and first number column for values
   for (const key of keys) {
     const val = firstRow[key];
+    const lowerKey = key.toLowerCase();
+
+    // Label detection
     if (!labelKey && typeof val === "string" && isNaN(Number(val))) {
       labelKey = key;
-    } else if (!valueKey && (!isNaN(Number(val)) || typeof val === "number")) {
-      valueKey = key;
+    }
+
+    // Value detection with priority scoring
+    if (!isNaN(Number(val)) || typeof val === "number") {
+      let score = 5; // Default score
+      if (prioritizedKeywords.some((kw) => lowerKey.includes(kw))) score = 10;
+      if (dePrioritizedKeywords.some((kw) => lowerKey.includes(kw))) score = 1;
+
+      if (score > bestValueScore) {
+        bestValueScore = score;
+        valueKey = key;
+      }
     }
   }
 

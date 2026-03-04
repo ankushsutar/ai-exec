@@ -1,7 +1,7 @@
 function getSummaryPrompt(question, analyticsData) {
   const sanitizedData = {
     kpis: analyticsData?.kpis || [],
-    chartDataLength: analyticsData?.chartData?.length || 0,
+    trendData: analyticsData?.chartData || [],
   };
 
   return `You are an expert Data Analyst summarizing key metrics for an executive dashboard.
@@ -14,9 +14,11 @@ ${JSON.stringify(sanitizedData, null, 2)}
 
 INSTRUCTIONS:
 1. Write EXACTLY ONE concise paragraph summarizing the metrics above.
-2. DO NOT write any headings, lists, or introductory phrases (like "Here is a summary" or "Task:"). Just the text.
-3. DO NOT hallucinate any information not present in the Data Provided.
-4. Keep the summary under 80 words.
+2. **CRITICAL: Always use Indian Currency (INR or ₹) for any monetary values.**
+3. **CRITICAL: If dates or time periods are visible in the data, explicitly mention them in your summary.**
+4. DO NOT write any headings, lists, or introductory phrases (like "Here is a summary" or "Task:"). Just the text.
+5. DO NOT hallucinate any information not present in the Data Provided.
+6. Keep the summary under 80 words.
 
 SUMMARY:`;
 }

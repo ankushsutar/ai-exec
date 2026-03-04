@@ -718,5 +718,59 @@
     "question": "What is the total transaction amount for today?",
     "intent": "DYNAMIC",
     "requestId": "2277"
+  },
+  {
+    "timestamp": "2026-03-04T05:52:56.705Z",
+    "question": "Show revenue trend for the last 7 days",
+    "intent": "DYNAMIC",
+    "requestId": "6704"
+  },
+  {
+    "timestamp": "2026-03-04T05:53:01.628Z",
+    "question": "Show revenue trend for the last 7 days",
+    "intent": "DYNAMIC",
+    "requestId": "1627"
+  },
+  {
+    "timestamp": "2026-03-04T05:53:13.761Z",
+    "question": "Show revenue trend for the last 30 days",
+    "intent": "DYNAMIC",
+    "requestId": "3761"
+  },
+  {
+    "timestamp": "2026-03-04T06:00:46.461Z",
+    "question": "How many devices are currently inactive?",
+    "intent": "DYNAMIC",
+    "requestId": "6460"
+  },
+  {
+    "timestamp": "2026-03-04T06:00:54.246Z",
+    "question": "Show revenue trend for the last 7 days",
+    "intent": "DYNAMIC",
+    "requestId": "4246"
+  },
+  {
+    "timestamp": "2026-03-04T06:08:40.977Z",
+    "question": "Show revenue trend for the last 7 days",
+    "intent": "DYNAMIC",
+    "requestId": "0976"
+  },
+  {
+    "timestamp": "2026-03-04T06:09:04.569Z",
+    "question": "Show revenue trend for the last 15 days",
+    "intent": "DYNAMIC",
+    "requestId": "4569"
+  },
+  {
+    "timestamp": "2026-03-04T06:10:02.693Z",
+    "question": "Show revenue trend for the last 30 days",
+    "intent": "DYNAMIC",
+    "requestId": "2693"
+  },
+  {
+    "timestamp": "2026-03-04T06:11:39.830Z",
+    "question": "What is the total transaction amount for today?",
+    "intent": "DYNAMIC",
+    "requestId": "9830"
   }
 ]
