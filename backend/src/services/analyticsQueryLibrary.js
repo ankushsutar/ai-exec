@@ -146,26 +146,32 @@ const analyticsQueryLibrary = {
     ];
   },
 
-  // 10 Top devices by revenue
-  getTopDevicesByRevenue: (limit = 10) => [
-    {
-      $match: {
-        actionStatus: 1,
-        txnAmt: { $exists: true, $ne: null },
-        deviceId: { $ne: null },
+  // 10 Top devices by revenue (optionally filtered by year/month)
+  getTopDevicesByRevenue: (limit = 10, year = null, month = null) => {
+    const match = {
+      actionStatus: 1,
+      txnAmt: { $exists: true, $ne: null },
+      deviceId: { $ne: null },
+    };
+    if (year && month) {
+      const start = new Date(Date.UTC(year, month - 1, 1));
+      const end = new Date(Date.UTC(year, month, 0, 23, 59, 59, 999));
+      match.createdAt = { $gte: start, $lte: end };
+    }
+    return [
+      { $match: match },
+      {
+        $group: {
+          _id: "$deviceId",
+          revenue: { $sum: "$txnAmt" },
+          count: { $sum: 1 },
+        },
       },
-    },
-    {
-      $group: {
-        _id: "$deviceId",
-        revenue: { $sum: "$txnAmt" },
-        count: { $sum: 1 },
-      },
-    },
-    { $sort: { revenue: -1 } },
-    { $limit: limit },
-    { $project: { _id: 0, deviceId: "$_id", revenue: 1, count: 1 } },
-  ],
+      { $sort: { revenue: -1 } },
+      { $limit: limit },
+      { $project: { _id: 0, deviceId: "$_id", revenue: 1, count: 1 } },
+    ];
+  },
 
   // 11 Device transaction frequency
   getDeviceTransactionFrequency: () => [
@@ -215,13 +221,23 @@ const analyticsQueryLibrary = {
     { $project: { _id: 0, transactionType: "$_id", count: 1, revenue: 1 } },
   ],
 
-  // 14 Largest transactions
-  getLargestTransactions: (limit = 10) => [
-    { $match: { actionStatus: 1, txnAmt: { $exists: true, $ne: null } } },
-    { $sort: { txnAmt: -1 } },
-    { $limit: limit },
-    { $project: { _id: 0, deviceId: 1, txnAmt: 1, createdAt: 1, reqRefNo: 1 } },
-  ],
+  // 14 Largest transactions (optionally filtered by year/month)
+  getLargestTransactions: (limit = 10, year = null, month = null) => {
+    const match = { actionStatus: 1, txnAmt: { $exists: true, $ne: null } };
+    if (year && month) {
+      const start = new Date(Date.UTC(year, month - 1, 1));
+      const end = new Date(Date.UTC(year, month, 0, 23, 59, 59, 999));
+      match.createdAt = { $gte: start, $lte: end };
+    }
+    return [
+      { $match: match },
+      { $sort: { txnAmt: -1 } },
+      { $limit: limit },
+      {
+        $project: { _id: 0, deviceId: 1, txnAmt: 1, createdAt: 1, reqRefNo: 1 },
+      },
+    ];
+  },
 
   // 15 Daily transaction volume
   getDailyTransactionVolume: (days = 30) => {

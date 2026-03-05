@@ -101,7 +101,11 @@ async function orchestrateHybridQuery(question, requestId) {
         pipeline = analyticsQueryLibrary.getActiveDevicesLast24h();
         break;
       case "MONGODB_BI_TOP_DEVICES_REV":
-        pipeline = analyticsQueryLibrary.getTopDevicesByRevenue(limit);
+        pipeline = analyticsQueryLibrary.getTopDevicesByRevenue(
+          limit,
+          year,
+          month,
+        );
         break;
       case "MONGODB_BI_TXN_FREQ":
         pipeline = analyticsQueryLibrary.getDeviceTransactionFrequency();
@@ -113,7 +117,11 @@ async function orchestrateHybridQuery(question, requestId) {
         pipeline = analyticsQueryLibrary.getTransactionTypeDistribution();
         break;
       case "MONGODB_BI_LARGEST_TXNS":
-        pipeline = analyticsQueryLibrary.getLargestTransactions(limit);
+        pipeline = analyticsQueryLibrary.getLargestTransactions(
+          limit,
+          year,
+          month,
+        );
         break;
       case "MONGODB_BI_DAILY_VOL":
         pipeline = analyticsQueryLibrary.getDailyTransactionVolume(days);

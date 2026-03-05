@@ -79,15 +79,21 @@ async function dispatchIntent(question) {
       regex: /\brevenue\s+by\s+(?:day|weekday)\b/i,
     },
 
-    // Highest revenue device by month
+    // Highest revenue device by month -- MUST come before MONGODB_BI_TOP_DEVICES_REV
     {
       intent: "MONGODB_BI_HIGH_REV_DEV_MONTH",
-      regex: /\bhighest\s+revenue\s+device.*month\b/i,
+      regex:
+        /\bbest\s+device\s+(?:in|for)\s+(?:january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\b/i,
     },
     {
       intent: "MONGODB_BI_HIGH_REV_DEV_MONTH",
       regex:
-        /\btop\s+(?:revenue\s+)?device.*(?:january|february|march|april|may|june|july|august|september|october|november|december)\b/i,
+        /\bhighest\s+revenue\s+device.*(?:january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|month)\b/i,
+    },
+    {
+      intent: "MONGODB_BI_HIGH_REV_DEV_MONTH",
+      regex:
+        /\btop\s+(?:\d+\s+)?(?:revenue\s+)?device.*(?:january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\b/i,
     },
     {
       intent: "MONGODB_BI_HIGH_REV_DEV_MONTH",
@@ -156,11 +162,11 @@ async function dispatchIntent(question) {
 
     {
       intent: "MONGODB_BI_LARGEST_TXNS",
-      regex: /\blargest\s+transactions?\b/i,
+      regex: /\blargest\s+(?:\d+\s+)?transactions?\b/i,
     },
     {
       intent: "MONGODB_BI_LARGEST_TXNS",
-      regex: /\bbiggest\s+transactions?\b/i,
+      regex: /\bbiggest\s+(?:\d+\s+)?transactions?\b/i,
     },
     {
       intent: "MONGODB_BI_LARGEST_TXNS",
