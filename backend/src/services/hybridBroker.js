@@ -185,6 +185,26 @@ async function orchestrateHybridQuery(question, requestId) {
         collectionName = "deviceStatHistoryInfo";
         pipeline = analyticsQueryLibrary.getRebootAnalysis(limit);
         break;
+      case "MONGODB_BI_LOW_BATTERY":
+        collectionName = "deviceStatHistoryInfo";
+        pipeline = analyticsQueryLibrary.getLowBatteryDevices(limit, threshold);
+        break;
+      case "MONGODB_BI_STORAGE_FAILS":
+        collectionName = "deviceStatHistoryInfo";
+        pipeline = analyticsQueryLibrary.getStorageFailuresByFirmware();
+        break;
+      case "MONGODB_BI_SERVER_ERRORS":
+        collectionName = "deviceStatHistoryInfo";
+        pipeline = analyticsQueryLibrary.getServerCommunicationErrors(limit);
+        break;
+      case "MONGODB_BI_USB_RELIABILITY":
+        collectionName = "deviceStatHistoryInfo";
+        pipeline = analyticsQueryLibrary.getUsbReliability(limit);
+        break;
+      case "MONGODB_BI_SIM_DROPS":
+        collectionName = "deviceStatHistoryInfo";
+        pipeline = analyticsQueryLibrary.getSimAndNetworkDrops(limit);
+        break;
     }
 
     if (pipeline.length > 0) {

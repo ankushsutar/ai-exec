@@ -317,6 +317,47 @@ async function dispatchIntent(question) {
     },
     { intent: "MONGODB_BI_REBOOT_ANALYSIS", regex: /\bhighest\s+reboot\b/i },
 
+    // 30 Low Battery Devices
+    {
+      intent: "MONGODB_BI_LOW_BATTERY",
+      regex: /\b(?:low|critical)\s+battery\b/i,
+    },
+    {
+      intent: "MONGODB_BI_LOW_BATTERY",
+      regex: /\bbattery\s+(?:health|issues|level)\b/i,
+    },
+
+    // 31 Storage Failures
+    {
+      intent: "MONGODB_BI_STORAGE_FAILS",
+      regex: /\b(?:flash|storage|file)\s+failures?\b/i,
+    },
+    { intent: "MONGODB_BI_STORAGE_FAILS", regex: /\bdownload\s+failures?\b/i },
+
+    // 32 Server Communication Errors
+    {
+      intent: "MONGODB_BI_SERVER_ERRORS",
+      regex: /\b(?:server|http|mqtt)\s+(?:errors?|failures?|communication)\b/i,
+    },
+    { intent: "MONGODB_BI_SERVER_ERRORS", regex: /\bconnection\s+issues?\b/i },
+
+    // 33 USB Port Reliability
+    {
+      intent: "MONGODB_BI_USB_RELIABILITY",
+      regex: /\busb\s+(?:reliability|plugins?|ports?)\b/i,
+    },
+    {
+      intent: "MONGODB_BI_USB_RELIABILITY",
+      regex: /\bflaky\s+(?:usb|connection)\b/i,
+    },
+
+    // 34 SIM and Network Drops
+    {
+      intent: "MONGODB_BI_SIM_DROPS",
+      regex: /\bsim\s+(?:swaps?|drops?|changes?)\b/i,
+    },
+    { intent: "MONGODB_BI_SIM_DROPS", regex: /\bnetwork\s+drops?\b/i },
+
     // Top N devices by revenue — catches "top 5 devices", "top devices by revenue", "best performing devices"
     {
       intent: "MONGODB_BI_TOP_DEVICES_REV",

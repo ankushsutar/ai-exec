@@ -541,6 +541,145 @@ const analyticsQueryLibrary = {
       },
     },
   ],
+
+  // 30 Low Battery Devices
+  getLowBatteryDevices: (limit = 10, threshold = 20) => [
+    {
+      $match: {
+        batteryLevel: { $lt: threshold, $gt: 0 },
+        "metadata.deviceId": { $ne: null },
+      },
+    },
+    { $sort: { batteryLevel: 1 } },
+    { $limit: limit },
+    {
+      $project: {
+        _id: 0,
+        deviceId: "$metadata.deviceId",
+        batteryLevel: 1,
+        chargingStatus: 1,
+      },
+    },
+  ],
+
+  // 31 Storage & Download Failures by Firmware
+  getStorageFailuresByFirmware: () => [
+    {
+      $match: {
+        deviceModemFirmWareName: { $ne: "" },
+        $or: [
+          { flashFileReadFailCount: { $gt: 0 } },
+          { flashFileWriteFailCount: { $gt: 0 } },
+          { httpDownloadFailCount: { $gt: 0 } },
+        ],
+      },
+    },
+    {
+      $group: {
+        _id: "$deviceModemFirmWareName",
+        totalReadFails: { $sum: "$flashFileReadFailCount" },
+        totalWriteFails: { $sum: "$flashFileWriteFailCount" },
+        totalDownloadFails: { $sum: "$httpDownloadFailCount" },
+      },
+    },
+    { $sort: { totalDownloadFails: -1, totalWriteFails: -1 } },
+    {
+      $project: {
+        _id: 0,
+        firmware: "$_id",
+        totalReadFails: 1,
+        totalWriteFails: 1,
+        totalDownloadFails: 1,
+      },
+    },
+  ],
+
+  // 32 Server Communication Errors
+  getServerCommunicationErrors: (limit = 10) => [
+    {
+      $match: {
+        $or: [
+          { httpPostFailCount: { $gt: 0 } },
+          { mqttConnectionFailCount: { $gt: 0 } },
+        ],
+        "metadata.deviceId": { $ne: null },
+      },
+    },
+    {
+      $group: {
+        _id: "$metadata.deviceId",
+        httpFails: { $max: "$httpPostFailCount" },
+        mqttFails: { $max: "$mqttConnectionFailCount" },
+      },
+    },
+    { $sort: { mqttFails: -1, httpFails: -1 } },
+    { $limit: limit },
+    {
+      $project: {
+        _id: 0,
+        deviceId: "$_id",
+        httpFails: 1,
+        mqttFails: 1,
+      },
+    },
+  ],
+
+  // 33 USB Port Reliability
+  getUsbReliability: (limit = 10) => [
+    {
+      $match: {
+        totalUSBPluginCount: { $gt: 0 },
+        "metadata.deviceId": { $ne: null },
+      },
+    },
+    {
+      $group: {
+        _id: "$metadata.deviceId",
+        totalUSBPlugins: { $max: "$totalUSBPluginCount" },
+        avgPluginDuration: { $avg: "$totalUSBPluginDuration" },
+      },
+    },
+    { $sort: { totalUSBPlugins: -1 } },
+    { $limit: limit },
+    {
+      $project: {
+        _id: 0,
+        deviceId: "$_id",
+        totalUSBPlugins: 1,
+        avgPluginDuration: { $round: ["$avgPluginDuration", 0] },
+      },
+    },
+  ],
+
+  // 34 SIM and Network Drops
+  getSimAndNetworkDrops: (limit = 10) => [
+    {
+      $match: {
+        $or: [
+          { totalNWDiscDueToBadRSSICount: { $gt: 0 } },
+          { totalSIMInsertedCount: { $gt: 0 } },
+        ],
+        "metadata.deviceId": { $ne: null },
+      },
+    },
+    {
+      $group: {
+        _id: "$metadata.deviceId",
+        networkDrops: { $max: "$totalNWDiscDueToBadRSSICount" },
+        simSwaps: { $max: "$totalSIMInsertedCount" },
+      },
+    },
+    { $sort: { networkDrops: -1, simSwaps: -1 } },
+    { $limit: limit },
+    {
+      $project: {
+        _id: 0,
+        deviceId: "$_id",
+        networkDrops: 1,
+        simSwaps: 1,
+      },
+    },
+  ],
 };
 
 module.exports = analyticsQueryLibrary;

@@ -1720,5 +1720,83 @@
     "question": "Show me devices that rebooted more than 5 times today",
     "intent": "DYNAMIC",
     "requestId": "1695"
+  },
+  {
+    "timestamp": "2026-03-05T12:42:38.477Z",
+    "question": "show devices with highest network failures",
+    "intent": "DYNAMIC",
+    "requestId": "8477"
+  },
+  {
+    "timestamp": "2026-03-05T12:42:49.323Z",
+    "question": "What is the average battery level across all devices right now?",
+    "intent": "DYNAMIC",
+    "requestId": "9323"
+  },
+  {
+    "timestamp": "2026-03-05T12:43:21.574Z",
+    "question": "show me devices with battery level greater than 50",
+    "intent": "DYNAMIC",
+    "requestId": "1574"
+  },
+  {
+    "timestamp": "2026-03-05T13:42:27.369Z",
+    "question": "Show overall system summary",
+    "intent": "DYNAMIC",
+    "requestId": "7368"
+  },
+  {
+    "timestamp": "2026-03-05T13:42:44.366Z",
+    "question": "Revenue trend for the last 14 days",
+    "intent": "DYNAMIC",
+    "requestId": "4366"
+  },
+  {
+    "timestamp": "2026-03-05T13:42:51.988Z",
+    "question": "Transactions above ₹50,000",
+    "intent": "DYNAMIC",
+    "requestId": "1987"
+  },
+  {
+    "timestamp": "2026-03-05T13:43:01.109Z",
+    "question": "Best performing device for Feb 2025",
+    "intent": "DYNAMIC",
+    "requestId": "1109"
+  },
+  {
+    "timestamp": "2026-03-05T14:17:46.008Z",
+    "question": "show devices with low battery",
+    "intent": "DYNAMIC",
+    "requestId": "6008"
+  },
+  {
+    "timestamp": "2026-03-05T14:18:00.643Z",
+    "question": "top devices with server errors",
+    "intent": "DYNAMIC",
+    "requestId": "0642"
+  },
+  {
+    "timestamp": "2026-03-05T14:19:21.310Z",
+    "question": "Show me the top 10 devices with the most network failures",
+    "intent": "DYNAMIC",
+    "requestId": "1310"
+  },
+  {
+    "timestamp": "2026-03-05T14:19:28.847Z",
+    "question": "Best performing device for Feb 2025",
+    "intent": "DYNAMIC",
+    "requestId": "8847"
+  },
+  {
+    "timestamp": "2026-03-05T14:19:44.537Z",
+    "question": "Best performing device for Jan 2025",
+    "intent": "DYNAMIC",
+    "requestId": "4537"
+  },
+  {
+    "timestamp": "2026-03-05T14:19:58.078Z",
+    "question": "Best performing device for Dec 2025",
+    "intent": "DYNAMIC",
+    "requestId": "8078"
   }
 ]
