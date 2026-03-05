@@ -1144,5 +1144,197 @@
     "question": "Show me the top 10 devices by revenue",
     "intent": "DYNAMIC",
     "requestId": "4387"
+  },
+  {
+    "timestamp": "2026-03-05T09:45:52.661Z",
+    "question": "Show overall system summary",
+    "intent": "DYNAMIC",
+    "requestId": "2660"
+  },
+  {
+    "timestamp": "2026-03-05T09:47:12.251Z",
+    "question": "Show overall system summary",
+    "intent": "DYNAMIC",
+    "requestId": "2251"
+  },
+  {
+    "timestamp": "2026-03-05T10:01:20.342Z",
+    "question": "Show overall system summary",
+    "intent": "DYNAMIC",
+    "requestId": "0341"
+  },
+  {
+    "timestamp": "2026-03-05T10:08:03.193Z",
+    "question": "Show overall system summary",
+    "intent": "DYNAMIC",
+    "requestId": "3192"
+  },
+  {
+    "timestamp": "2026-03-05T10:18:45.089Z",
+    "question": "Show overall system summary",
+    "intent": "DYNAMIC",
+    "requestId": "5089"
+  },
+  {
+    "timestamp": "2026-03-05T10:18:52.370Z",
+    "question": "Show overall system summary",
+    "intent": "DYNAMIC",
+    "requestId": "2370"
+  },
+  {
+    "timestamp": "2026-03-05T10:18:58.610Z",
+    "question": "Show revenue trend for the last 7 days",
+    "intent": "DYNAMIC",
+    "requestId": "8610"
+  },
+  {
+    "timestamp": "2026-03-05T10:19:05.419Z",
+    "question": "Show revenue trend for the last 7 days",
+    "intent": "DYNAMIC",
+    "requestId": "5419"
+  },
+  {
+    "timestamp": "2026-03-05T10:19:11.699Z",
+    "question": "show all the transctions on day 2026-02-18",
+    "intent": "DYNAMIC",
+    "requestId": "1699"
+  },
+  {
+    "timestamp": "2026-03-05T10:22:42.879Z",
+    "question": "Show revenue trend for the last 7 days",
+    "intent": "DYNAMIC",
+    "requestId": "2879"
+  },
+  {
+    "timestamp": "2026-03-05T10:22:50.516Z",
+    "question": "show all the transctions on day 2026-02-18",
+    "intent": "DYNAMIC",
+    "requestId": "0515"
+  },
+  {
+    "timestamp": "2026-03-05T10:23:23.070Z",
+    "question": "show revenue trend per day",
+    "intent": "DYNAMIC",
+    "requestId": "3069"
+  },
+  {
+    "timestamp": "2026-03-05T10:23:44.993Z",
+    "question": "show revenue trend for 7 days",
+    "intent": "DYNAMIC",
+    "requestId": "4992"
+  },
+  {
+    "timestamp": "2026-03-05T10:24:21.950Z",
+    "question": "show transaction success rate",
+    "intent": "DYNAMIC",
+    "requestId": "1949"
+  },
+  {
+    "timestamp": "2026-03-05T10:24:53.595Z",
+    "question": "show revenue by device",
+    "intent": "DYNAMIC",
+    "requestId": "3594"
+  },
+  {
+    "timestamp": "2026-03-05T10:26:15.098Z",
+    "question": "which device has the highest revenue",
+    "intent": "DYNAMIC",
+    "requestId": "5098"
+  },
+  {
+    "timestamp": "2026-03-05T10:27:27.796Z",
+    "question": "top devices by revenue",
+    "intent": "DYNAMIC",
+    "requestId": "7796"
+  },
+  {
+    "timestamp": "2026-03-05T10:28:06.283Z",
+    "question": "Show top 5 merchants by revenue",
+    "intent": "DYNAMIC",
+    "requestId": "6283"
+  },
+  {
+    "timestamp": "2026-03-05T10:28:50.116Z",
+    "question": "show daily transaction value",
+    "intent": "DYNAMIC",
+    "requestId": "0115"
+  },
+  {
+    "timestamp": "2026-03-05T10:29:11.715Z",
+    "question": "Highest revenue device by month",
+    "intent": "DYNAMIC",
+    "requestId": "1715"
+  },
+  {
+    "timestamp": "2026-03-05T10:29:44.747Z",
+    "question": "show Highest revenue generated per device by month",
+    "intent": "DYNAMIC",
+    "requestId": "4747"
+  },
+  {
+    "timestamp": "2026-03-05T10:45:57.766Z",
+    "question": "show me top 3 devices by revenue",
+    "intent": "DYNAMIC",
+    "requestId": "7766"
+  },
+  {
+    "timestamp": "2026-03-05T10:46:29.822Z",
+    "question": "revenue trend last 15 days",
+    "intent": "DYNAMIC",
+    "requestId": "9821"
+  },
+  {
+    "timestamp": "2026-03-05T10:46:39.607Z",
+    "question": "revenue trend last 45 days",
+    "intent": "DYNAMIC",
+    "requestId": "9607"
+  },
+  {
+    "timestamp": "2026-03-05T11:09:58.150Z",
+    "question": "revenue trend last 15 days",
+    "intent": "DYNAMIC",
+    "requestId": "8150"
+  },
+  {
+    "timestamp": "2026-03-05T11:10:09.184Z",
+    "question": "revenue trend last 7 days",
+    "intent": "DYNAMIC",
+    "requestId": "9184"
+  },
+  {
+    "timestamp": "2026-03-05T11:10:25.175Z",
+    "question": "revenue trend last 2 days",
+    "intent": "DYNAMIC",
+    "requestId": "5174"
+  },
+  {
+    "timestamp": "2026-03-05T11:10:44.526Z",
+    "question": "revenue trend for past week",
+    "intent": "DYNAMIC",
+    "requestId": "4526"
+  },
+  {
+    "timestamp": "2026-03-05T11:16:13.098Z",
+    "question": "Show revenue trend for the last 7 days",
+    "intent": "DYNAMIC",
+    "requestId": "3097"
+  },
+  {
+    "timestamp": "2026-03-05T11:16:29.460Z",
+    "question": "Show revenue trend for the last 15 days",
+    "intent": "DYNAMIC",
+    "requestId": "9459"
+  },
+  {
+    "timestamp": "2026-03-05T11:16:39.070Z",
+    "question": "Show revenue trend for the last week",
+    "intent": "DYNAMIC",
+    "requestId": "9070"
+  },
+  {
+    "timestamp": "2026-03-05T11:16:56.573Z",
+    "question": "Show revenue trend for the last 90 days",
+    "intent": "DYNAMIC",
+    "requestId": "6573"
   }
 ]

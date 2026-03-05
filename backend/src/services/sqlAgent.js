@@ -236,7 +236,31 @@ async function fixSQLFromError(question, failedSql, errorMessage) {
       { timeout: 30000 },
     );
 
-    let sql = response.data.response
+    let rawText = response.data.response;
+
+    // EMERGENCY EXTRACTION: Check if LLM returned a JSON object instead of raw SQL
+    try {
+      const cleanJson = rawText
+        .replace(/```json/gi, "")
+        .replace(/```/g, "")
+        .trim();
+      const parsed = JSON.parse(cleanJson);
+      if (parsed.query) rawText = parsed.query;
+      else if (parsed.sql) rawText = parsed.sql;
+      else if (parsed.SELECT) rawText = parsed.SELECT;
+      else if (typeof parsed === "object") {
+        const keys = Object.keys(parsed);
+        if (keys.length === 1) rawText = parsed[keys[0]];
+        else if (parsed.SELECT && parsed.FROM) {
+          // Reconstruct if it returned {SELECT: "...", FROM: "..."}
+          rawText = `SELECT ${parsed.SELECT} FROM ${parsed.FROM} ${parsed["GROUP BY"] || ""} ${parsed["ORDER BY"] || ""}`;
+        }
+      }
+    } catch (e) {
+      // Not JSON, continue with normal extraction
+    }
+
+    let sql = rawText
       .replace(/\`\`\`sql/gi, "")
       .replace(/\`\`\`/g, "")
       .trim();

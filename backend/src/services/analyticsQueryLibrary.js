@@ -12,14 +12,15 @@ const analyticsQueryLibrary = {
     { $project: { _id: 0, totalRevenue: 1, count: 1 } },
   ],
 
-  // 2 Revenue last 7 days
-  getRevenueLast7Days: () => {
-    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  // 2 Revenue last N days from last record or current time (days defaults to 7)
+  getRevenueLast7Days: (referenceDate = null, days = 7) => {
+    const end = referenceDate ? new Date(referenceDate) : new Date();
+    const start = new Date(end.getTime() - (days - 1) * 24 * 60 * 60 * 1000);
     return [
       {
         $match: {
           actionStatus: 1,
-          createdAt: { $gte: sevenDaysAgo },
+          createdAt: { $gte: start, $lte: end },
           txnAmt: { $exists: true, $ne: null },
         },
       },
@@ -34,14 +35,15 @@ const analyticsQueryLibrary = {
     ];
   },
 
-  // 3 Revenue trend per day
-  getRevenueTrendPerDay: (days = 30) => {
-    const startDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+  // 3 Revenue trend per day from last record or current time
+  getRevenueTrendPerDay: (days = 30, referenceDate = null) => {
+    const end = referenceDate ? new Date(referenceDate) : new Date();
+    const start = new Date(end.getTime() - (days - 1) * 24 * 60 * 60 * 1000);
     return [
       {
         $match: {
           actionStatus: 1,
-          createdAt: { $gte: startDate },
+          createdAt: { $gte: start, $lte: end },
           txnAmt: { $exists: true, $ne: null },
         },
       },
@@ -223,7 +225,7 @@ const analyticsQueryLibrary = {
 
   // 15 Daily transaction volume
   getDailyTransactionVolume: (days = 30) => {
-    const startDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+    const startDate = new Date(Date.now() - (days - 1) * 24 * 60 * 60 * 1000);
     return [
       { $match: { actionStatus: 1, createdAt: { $gte: startDate } } },
       {
@@ -322,6 +324,22 @@ const analyticsQueryLibrary = {
     },
     { $sort: { "_id.dayOfWeek": 1 } },
     { $project: { _id: 0, dayOfWeek: "$_id.dayOfWeek", revenue: 1, count: 1 } },
+  ],
+
+  // 21 Overall System Summary
+  getSystemSummary: () => [
+    { $sort: { createdAt: -1 } },
+    { $limit: 1 },
+    {
+      $project: {
+        _id: 0,
+        totalTransactionAmount: 1,
+        totalTransactionsCount: 1,
+        totalSuccessfulTransactionsCount: 1,
+        totalAdvertisementsCount: 1,
+        maxTransactionAmount: 1,
+      },
+    },
   ],
 };
 

@@ -1,0 +1,62 @@
+[
+  {
+    "timestamp": "2026-03-05T06:37:53.572Z",
+    "requestId": "test-bi",
+    "question": "What is total revenue?",
+    "intent": "MONGODB_BI_TOTAL_REV",
+    "duration": 4826,
+    "success": true,
+    "engine": "mongodb_library",
+    "resultCount": 1
+  },
+  {
+    "timestamp": "2026-03-05T06:39:48.488Z",
+    "requestId": "test-hybrid",
+    "question": "What is the revenue for Starbuck?",
+    "intent": "MONGODB_TXN",
+    "duration": 48687,
+    "success": true,
+    "engine": "mongodb_agent",
+    "resultCount": 0
+  },
+  {
+    "timestamp": "2026-03-05T06:41:53.154Z",
+    "requestId": "learn-1",
+    "question": "Show me the revenue per day for the last week",
+    "intent": "MONGODB_TXN",
+    "duration": 40064,
+    "success": true,
+    "engine": "mongodb_agent",
+    "resultCount": 18
+  },
+  {
+    "timestamp": "2026-03-05T06:42:22.035Z",
+    "requestId": "learn-2",
+    "question": "Show me the revenue per day for the last week",
+    "intent": "MONGODB_TXN",
+    "duration": 26608,
+    "success": true,
+    "engine": "mongodb_agent",
+    "resultCount": 18
+  },
+  {
+    "timestamp": "2026-03-05T06:43:18.285Z",
+    "requestId": "learn-1",
+    "question": "Show me the revenue per day for the last week",
+    "intent": "MONGODB_TXN",
+    "duration": 44620,
+    "success": true,
+    "engine": "mongodb_agent",
+    "resultCount": 18
+  },
+  {
+    "timestamp": "2026-03-05T06:43:20.560Z",
+    "requestId": "learn-2",
+    "question": "Show me the revenue per day for the last week",
+    "intent": "GOLDEN_MQL",
+    "duration": 275,
+    "success": true,
+    "engine": "mongodb_golden",
+    "resultCount": 18
+  }
+]

@@ -25,60 +25,263 @@ async function dispatchIntent(question) {
   ];
 
   const MONGODB_BI_PATTERNS = [
-    // 1-16 Base Library
-    { intent: "MONGODB_BI_TOTAL_REV", regex: /\btotal revenue\b/i },
-    { intent: "MONGODB_BI_REV_7D", regex: /\brevenue.*last 7 days\b/i },
-    { intent: "MONGODB_BI_REV_TREND", regex: /\bdaily revenue trend\b/i },
+    // ── Revenue ──────────────────────────────────────────────────────────────
+    { intent: "MONGODB_BI_TOTAL_REV", regex: /\btotal\s+revenue\b/i },
+    {
+      intent: "MONGODB_BI_TOTAL_REV",
+      regex: /\bhow\s+much\s+(total\s+)?revenue\b/i,
+    },
+    { intent: "MONGODB_BI_TOTAL_REV", regex: /\boverall\s+revenue\b/i },
+
+    // Revenue trend / daily breakdown -- checked FIRST (specific), before the broad N-days pattern
+    { intent: "MONGODB_BI_REV_TREND", regex: /\bdaily\s+revenue\s+trend\b/i },
+    { intent: "MONGODB_BI_REV_TREND", regex: /\brevenue\s+trend\b/i },
     { intent: "MONGODB_BI_REV_TREND", regex: /\brev.*trend\b/i },
-    { intent: "MONGODB_BI_REV_PER_DEVICE", regex: /\brevenue per device\b/i },
-    { intent: "MONGODB_BI_SUCCESS_RATE", regex: /\bsuccess rate\b/i },
-    { intent: "MONGODB_BI_FAILURE_ANALYSIS", regex: /\bfailure analysis\b/i },
+    {
+      intent: "MONGODB_BI_REV_TREND",
+      regex: /\brevenue\s+over\s+(?:time|days?|weeks?|months?)\b/i,
+    },
+
+    // Revenue total for last N days -- broad, checked AFTER trend patterns.
+    // Negative lookahead prevents matching "revenue trend last X days".
+    {
+      intent: "MONGODB_BI_REV_7D",
+      regex: /\brevenue(?!.*\btrend\b).*(?:last|past)\s+\d+\s+days?\b/i,
+    },
+    {
+      intent: "MONGODB_BI_REV_7D",
+      regex: /\brevenue(?!.*\btrend\b).*(?:last|past)\s+week\b/i,
+    },
+    { intent: "MONGODB_BI_REV_7D", regex: /\brevenue.*last\s+7\s+days?\b/i },
+
+    // Revenue per device / by device
+    {
+      intent: "MONGODB_BI_REV_PER_DEVICE",
+      regex: /\brevenue\s+per\s+device\b/i,
+    },
+    {
+      intent: "MONGODB_BI_REV_PER_DEVICE",
+      regex: /\brevenue\s+by\s+device\b/i,
+    },
+    {
+      intent: "MONGODB_BI_REV_PER_DEVICE",
+      regex: /\bdevice[-\s]+wise\s+revenue\b/i,
+    },
+
+    // Revenue per day of week
+    {
+      intent: "MONGODB_BI_DAY_OF_WEEK",
+      regex: /\bday\s+of\s+(?:the\s+)?week\b/i,
+    },
+    { intent: "MONGODB_BI_DAY_OF_WEEK", regex: /\bweekday\s+revenue\b/i },
+    {
+      intent: "MONGODB_BI_DAY_OF_WEEK",
+      regex: /\brevenue\s+by\s+(?:day|weekday)\b/i,
+    },
+
+    // Highest revenue device by month
+    {
+      intent: "MONGODB_BI_HIGH_REV_DEV_MONTH",
+      regex: /\bhighest\s+revenue\s+device.*month\b/i,
+    },
+    {
+      intent: "MONGODB_BI_HIGH_REV_DEV_MONTH",
+      regex:
+        /\btop\s+(?:revenue\s+)?device.*(?:january|february|march|april|may|june|july|august|september|october|november|december)\b/i,
+    },
+    {
+      intent: "MONGODB_BI_HIGH_REV_DEV_MONTH",
+      regex: /\bbest\s+device.*month\b/i,
+    },
+
+    // ── Transactions ─────────────────────────────────────────────────────────
+    { intent: "MONGODB_BI_SUCCESS_RATE", regex: /\bsuccess\s+rate\b/i },
+    { intent: "MONGODB_BI_SUCCESS_RATE", regex: /\btransaction\s+success\b/i },
+    {
+      intent: "MONGODB_BI_SUCCESS_RATE",
+      regex: /\bhow\s+many\s+(?:transactions?)?\s+success/i,
+    },
+
+    { intent: "MONGODB_BI_FAILURE_ANALYSIS", regex: /\bfailure\s+analysis\b/i },
+    {
+      intent: "MONGODB_BI_FAILURE_ANALYSIS",
+      regex: /\btransaction\s+fail(?:ure|ed)?\s+analysis\b/i,
+    },
+
     {
       intent: "MONGODB_BI_AVG_TXN_VAL",
-      regex: /\baverage transaction value\b/i,
+      regex: /\baverage\s+transaction\s+(?:value|amount)\b/i,
     },
-    { intent: "MONGODB_BI_AVG_TXN_VAL", regex: /\bavg transaction value\b/i },
+    {
+      intent: "MONGODB_BI_AVG_TXN_VAL",
+      regex: /\bavg\s+(?:transaction\s+)?(?:value|amount)\b/i,
+    },
+    {
+      intent: "MONGODB_BI_AVG_TXN_VAL",
+      regex: /\bmean\s+(?:transaction\s+)?(?:value|amount)\b/i,
+    },
+
     {
       intent: "MONGODB_BI_HOURLY_DIST",
-      regex: /\bhourly transaction distribution\b/i,
-    },
-    { intent: "MONGODB_BI_HOURLY_DIST", regex: /\bhourly distribution\b/i },
-    { intent: "MONGODB_BI_ACTIVE_24H", regex: /\bactive devices.*24\b/i },
-    {
-      intent: "MONGODB_BI_TOP_DEVICES_REV",
-      regex: /\btop (10\s)?devices.*revenue\b/i,
+      regex: /\bhourly\s+(?:transaction\s+)?distribution\b/i,
     },
     {
-      intent: "MONGODB_BI_TXN_FREQ",
-      regex: /\bdevice transaction frequency\b/i,
+      intent: "MONGODB_BI_HOURLY_DIST",
+      regex: /\btransactions\s+by\s+hour\b/i,
+    },
+    { intent: "MONGODB_BI_HOURLY_DIST", regex: /\bhour(?:ly)?\s+breakdown\b/i },
+
+    {
+      intent: "MONGODB_BI_MODE_DIST",
+      regex: /\btransaction\s+mode\s+distribution\b/i,
     },
     {
       intent: "MONGODB_BI_MODE_DIST",
-      regex: /\btransaction mode distribution\b/i,
+      regex: /\bpayment\s+mode\s+(?:distribution|breakdown)\b/i,
+    },
+    { intent: "MONGODB_BI_MODE_DIST", regex: /\bby\s+(?:payment\s+)?mode\b/i },
+
+    {
+      intent: "MONGODB_BI_TYPE_DIST",
+      regex: /\btransaction\s+type\s+distribution\b/i,
     },
     {
       intent: "MONGODB_BI_TYPE_DIST",
-      regex: /\btransaction type distribution\b/i,
+      regex: /\bpayment\s+type\s+(?:distribution|breakdown)\b/i,
     },
-    { intent: "MONGODB_BI_LARGEST_TXNS", regex: /\blargest transactions\b/i },
-    { intent: "MONGODB_BI_DAILY_VOL", regex: /\bdaily transaction volume\b/i },
     {
-      intent: "MONGODB_BI_HIGH_REV_DEV_MONTH",
-      regex: /\bhighest revenue device.*month\b/i,
+      intent: "MONGODB_BI_TYPE_DIST",
+      regex: /\bby\s+(?:transaction\s+)?type\b/i,
     },
 
-    // 17-20 New BI Ops
+    {
+      intent: "MONGODB_BI_LARGEST_TXNS",
+      regex: /\blargest\s+transactions?\b/i,
+    },
+    {
+      intent: "MONGODB_BI_LARGEST_TXNS",
+      regex: /\bbiggest\s+transactions?\b/i,
+    },
+    {
+      intent: "MONGODB_BI_LARGEST_TXNS",
+      regex: /\bhighest\s+(?:amount|value)\s+transactions?\b/i,
+    },
+    {
+      intent: "MONGODB_BI_LARGEST_TXNS",
+      regex: /\btop\s+\d*\s*transactions?\s+by\s+(?:amount|value)\b/i,
+    },
+
+    {
+      intent: "MONGODB_BI_DAILY_VOL",
+      regex: /\bdaily\s+transaction\s+volume\b/i,
+    },
+    {
+      intent: "MONGODB_BI_DAILY_VOL",
+      regex: /\btransaction\s+(?:volume|count)\s+per\s+day\b/i,
+    },
+    {
+      intent: "MONGODB_BI_DAILY_VOL",
+      regex: /\bdaily\s+(?:transaction\s+)?count\b/i,
+    },
+    { intent: "MONGODB_BI_DAILY_VOL", regex: /\btransactions?\s+per\s+day\b/i },
+
+    // High-value transactions
+    {
+      intent: "MONGODB_BI_HIGH_VALUE",
+      regex: /\bhigh[-\s]+value\s+transactions?\b/i,
+    },
+    {
+      intent: "MONGODB_BI_HIGH_VALUE",
+      regex:
+        /\btransactions?\s+(?:above|over|exceeding|greater\s+than|more\s+than)\s+[\d,₹$]+/i,
+    },
+    { intent: "MONGODB_BI_HIGH_VALUE", regex: /\bvalue\s+over\b/i },
+    { intent: "MONGODB_BI_HIGH_VALUE", regex: /\blarge\s+transactions?\b/i },
+
+    // ── Devices ──────────────────────────────────────────────────────────────
+    {
+      intent: "MONGODB_BI_ACTIVE_24H",
+      regex:
+        /\bactive\s+devices?\s*(?:in|last|past)?\s*(?:last\s+)?24\s*(?:h|hours?)?\b/i,
+    },
+    {
+      intent: "MONGODB_BI_ACTIVE_24H",
+      regex: /\bdevices?\s+active\s+(?:today|now|currently)\b/i,
+    },
+    {
+      intent: "MONGODB_BI_ACTIVE_24H",
+      regex: /\bactive\s+devices?\s+today\b/i,
+    },
+
+    // Top N devices by revenue — catches "top 5 devices", "top devices by revenue", "best performing devices"
+    {
+      intent: "MONGODB_BI_TOP_DEVICES_REV",
+      regex: /\btop\s+\d*\s*devices?\s+(?:by\s+)?revenue\b/i,
+    },
+    {
+      intent: "MONGODB_BI_TOP_DEVICES_REV",
+      regex: /\bbest\s+(?:performing\s+)?devices?\b/i,
+    },
+    {
+      intent: "MONGODB_BI_TOP_DEVICES_REV",
+      regex: /\bhighest\s+(?:earning|revenue)\s+devices?\b/i,
+    },
+    {
+      intent: "MONGODB_BI_TOP_DEVICES_REV",
+      regex: /\btop\s+\d+\s+devices?\b/i,
+    },
+
+    {
+      intent: "MONGODB_BI_TXN_FREQ",
+      regex: /\bdevice\s+transaction\s+frequency\b/i,
+    },
+    {
+      intent: "MONGODB_BI_TXN_FREQ",
+      regex: /\btransactions?\s+per\s+device\b/i,
+    },
+    {
+      intent: "MONGODB_BI_TXN_FREQ",
+      regex: /\bdevice\s+(?:usage|activity)\s+frequency\b/i,
+    },
+
+    // Devices with most failures
+    {
+      intent: "MONGODB_BI_FAILURES",
+      regex: /\bhighest\s+(?:failure|failing)\b/i,
+    },
+    { intent: "MONGODB_BI_FAILURES", regex: /\btransaction\s+failures?\b/i },
+    {
+      intent: "MONGODB_BI_FAILURES",
+      regex: /\bdevices?\s+(?:with\s+)?(?:most|highest)\s+fail(?:ure|ed)?\b/i,
+    },
+    { intent: "MONGODB_BI_FAILURES", regex: /\bfailing\s+devices?\b/i },
+    {
+      intent: "MONGODB_BI_FAILURES",
+      regex: /\bdevice\s+(?:failure|error)\s+(?:rate|count)\b/i,
+    },
+
+    // ARPAD
     { intent: "MONGODB_BI_ARPAD", regex: /\barpad\b/i },
     {
       intent: "MONGODB_BI_ARPAD",
-      regex: /\baverage revenue per active device\b/i,
+      regex: /\baverage\s+revenue\s+per\s+(?:active\s+)?device\b/i,
     },
-    { intent: "MONGODB_BI_FAILURES", regex: /\bhighest failure\b/i },
-    { intent: "MONGODB_BI_FAILURES", regex: /\btransaction failure\b/i },
-    { intent: "MONGODB_BI_HIGH_VALUE", regex: /\bhigh value transaction\b/i },
-    { intent: "MONGODB_BI_HIGH_VALUE", regex: /\bvalue over\b/i },
-    { intent: "MONGODB_BI_DAY_OF_WEEK", regex: /\bday of week\b/i },
-    { intent: "MONGODB_BI_DAY_OF_WEEK", regex: /\bday of the week\b/i },
+    {
+      intent: "MONGODB_BI_ARPAD",
+      regex: /\brevenue\s+per\s+active\s+device\b/i,
+    },
+
+    // ── System ───────────────────────────────────────────────────────────────
+    { intent: "MONGODB_BI_SYSTEM_SUMMARY", regex: /\bsystem\s+summary\b/i },
+    {
+      intent: "MONGODB_BI_SYSTEM_SUMMARY",
+      regex: /\boverall\s+(?:system\s+)?stats?(?:istics)?\b/i,
+    },
+    {
+      intent: "MONGODB_BI_SYSTEM_SUMMARY",
+      regex: /\bgive\s+(?:me\s+)?(?:a\s+)?summary\b/i,
+    },
+    { intent: "MONGODB_BI_SYSTEM_SUMMARY", regex: /\bdashboard\s+overview\b/i },
   ];
 
   const HYBRID_PATTERNS = [
@@ -151,7 +354,7 @@ DECISION FLOW:
 
 CATEGORIES:
 - SQL: "list all merchants", "which merchants have no devices", "find device for merchant Ankush"
-- MONGODB: "show all transctions", "show transactions on 2026-02-16", "health of system", "total revenue"
+- MONGODB: "show all transactions", "show transactions on 2026-02-16", "overall system summary", "total revenue"
 - HYBRID: "revenue for merchant X", "transactions for user Y"
 
 QUESTION: "${question}"

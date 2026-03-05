@@ -40,5 +40,11 @@
     "content": "SELECT\": \"m.merchantBusinessName, dr.deviceId, SUM(dr.totalTransactionsPlayed) AS highValueTransactions\",\n    \"FROM\": \"merchantInfo m\",\n    \"INNER JOIN\": [\n        {\n            \"relation\": \"merchantRelationInfo mr\",\n            \"condition\": \"m.merchantId = mr.merchantId\"\n        },\n        {\n            \"relation\": \"deviceRelationInfo dr\",\n            \"condition\": \"mr.relationId = dr.relationId\"\n        }\n    ],\n    \"WHERE\": [\n        {\n            \"column\": \"dr.totalTransactionsPlayed\",\n            \"operator\": \"> 80000\",\n            \"condition\": \"dr.totalTransactionsPlayed > 80000\"\n        }\n    ],\n    \"GROUP BY\": [\n        \"m.merchantBusinessName\",\n        \"dr.deviceId\"\n    ],\n    \"LIMIT\": 50\n}",
     "type": "error",
     "createdAt": "2026-03-04T14:28:39.916Z"
+  },
+  {
+    "question": "Show overall system summary",
+    "content": "SELECT\": \"SUM(CASE WHEN d.isActive THEN 1 ELSE 0 END) AS total_active_devices, \n     SUM(CASE WHEN d.isDefault THEN 1 ELSE 0 END) AS total_default_devices,\n     COUNT(DISTINCT dr.deviceId) AS unique_device_ids\",\n    \"FROM\": \"deviceStatsInfo d INNER JOIN deviceRelationInfo dr ON d.deviceId = dr.deviceId\",\n    \"GROUP BY\": \"\",\n    \"HAVING\": \"\",\n    \"ORDER BY\": \"\"\n}",
+    "type": "error",
+    "createdAt": "2026-03-05T09:48:15.894Z"
   }
 ]

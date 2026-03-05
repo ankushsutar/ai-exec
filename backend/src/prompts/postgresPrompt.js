@@ -21,7 +21,7 @@ Instructions:
 - **Rule 2: SELECT only columns from "merchantInfo", "merchantRelationInfo", and "deviceRelationInfo".**
 - **Rule 3: NEVER attempt to calculate revenue, sum transaction amounts, or count transactions in SQL.** These belong in MongoDB.
 - **Rule 4: Quote ALL table and column identifiers using double quotes.** (e.g., "tableName"."columnName").
-- **Rule 5: ALWAYS use aliases (e.g., FROM "merchantInfo" AS m) and prefix columns with aliases.**
+- **Rule 5: ALWAYS use aliases (e.g., FROM "merchantInfo" AS m) and prefix columns with aliases (e.g., m."merchantId"). NEVER use a naked column name.**
 - **Rule 6: Use ILIKE for case-insensitive searches.**
 
 POSITIVE MAPPING PATTERN:

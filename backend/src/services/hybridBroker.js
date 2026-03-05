@@ -3,6 +3,7 @@ const { executeDynamicQuery } = require("./dbService");
 const { connect: connectMongo } = require("./mongoService");
 const { generateMQLFromPrompt } = require("./mongoAgent");
 const { dispatchIntent } = require("./intentDispatcher");
+const { extractBIParams } = require("./biParamExtractor");
 
 /**
  * The Intelligent Broker that orchestrates across Postgres and MongoDB.
@@ -47,6 +48,21 @@ async function orchestrateHybridQuery(question, requestId) {
     const analyticsQueryLibrary = require("./analyticsQueryLibrary");
     const db = await connectMongo();
 
+    // Look for the latest successful transaction to anchor "Last X days" queries
+    // This ensures we get data even if the demo database hasn't been updated recently.
+    const latestTxn = await db
+      .collection("transactionActionHistoryInfo")
+      .find({ actionStatus: 1 })
+      .sort({ createdAt: -1 })
+      .limit(1)
+      .toArray();
+    const referenceDate = latestTxn.length > 0 ? latestTxn[0].createdAt : null;
+
+    // Extract dynamic parameters from the user's natural language question
+    const biParams = extractBIParams(question, referenceDate);
+    const { days, limit, threshold, year, month } = biParams;
+    console.log(`[Hybrid Broker] BI Params extracted:`, biParams);
+
     let pipeline = [];
     let collectionName = "transactionActionHistoryInfo";
 
@@ -55,10 +71,16 @@ async function orchestrateHybridQuery(question, requestId) {
         pipeline = analyticsQueryLibrary.getTotalRevenue();
         break;
       case "MONGODB_BI_REV_7D":
-        pipeline = analyticsQueryLibrary.getRevenueLast7Days();
+        pipeline = analyticsQueryLibrary.getRevenueLast7Days(
+          referenceDate,
+          days,
+        );
         break;
       case "MONGODB_BI_REV_TREND":
-        pipeline = analyticsQueryLibrary.getRevenueTrendPerDay(30);
+        pipeline = analyticsQueryLibrary.getRevenueTrendPerDay(
+          days,
+          referenceDate,
+        );
         break;
       case "MONGODB_BI_REV_PER_DEVICE":
         pipeline = analyticsQueryLibrary.getRevenuePerDevice();
@@ -79,7 +101,7 @@ async function orchestrateHybridQuery(question, requestId) {
         pipeline = analyticsQueryLibrary.getActiveDevicesLast24h();
         break;
       case "MONGODB_BI_TOP_DEVICES_REV":
-        pipeline = analyticsQueryLibrary.getTopDevicesByRevenue(10);
+        pipeline = analyticsQueryLibrary.getTopDevicesByRevenue(limit);
         break;
       case "MONGODB_BI_TXN_FREQ":
         pipeline = analyticsQueryLibrary.getDeviceTransactionFrequency();
@@ -91,38 +113,12 @@ async function orchestrateHybridQuery(question, requestId) {
         pipeline = analyticsQueryLibrary.getTransactionTypeDistribution();
         break;
       case "MONGODB_BI_LARGEST_TXNS":
-        pipeline = analyticsQueryLibrary.getLargestTransactions(10);
+        pipeline = analyticsQueryLibrary.getLargestTransactions(limit);
         break;
       case "MONGODB_BI_DAILY_VOL":
-        pipeline = analyticsQueryLibrary.getDailyTransactionVolume(30);
+        pipeline = analyticsQueryLibrary.getDailyTransactionVolume(days);
         break;
       case "MONGODB_BI_HIGH_REV_DEV_MONTH":
-        const yearMatch = question.match(/\b(20\d{2})\b/);
-        const year = yearMatch
-          ? parseInt(yearMatch[1], 10)
-          : new Date().getFullYear();
-
-        let month = new Date().getMonth() + 1; // Default to current month
-        const monthsStr = [
-          "january",
-          "february",
-          "march",
-          "april",
-          "may",
-          "june",
-          "july",
-          "august",
-          "september",
-          "october",
-          "november",
-          "december",
-        ];
-        for (let i = 0; i < monthsStr.length; i++) {
-          if (question.toLowerCase().includes(monthsStr[i])) {
-            month = i + 1;
-            break;
-          }
-        }
         pipeline = analyticsQueryLibrary.getHighestRevenueDeviceByMonth(
           year,
           month,
@@ -132,19 +128,20 @@ async function orchestrateHybridQuery(question, requestId) {
         pipeline = analyticsQueryLibrary.getAverageRevenuePerDevice();
         break;
       case "MONGODB_BI_FAILURES":
-        pipeline = analyticsQueryLibrary.getDevicesWithHighestFailures(10);
+        pipeline = analyticsQueryLibrary.getDevicesWithHighestFailures(limit);
         break;
       case "MONGODB_BI_HIGH_VALUE":
-        // Extract threshold if present in query, else default to 10000
-        const match = question.match(/over\s*(\d+)/i);
-        const threshold = match ? parseInt(match[1], 10) : 10000;
         pipeline = analyticsQueryLibrary.getHighValueTransactions(
           threshold,
-          20,
+          limit,
         );
         break;
       case "MONGODB_BI_DAY_OF_WEEK":
         pipeline = analyticsQueryLibrary.getRevenueByDayOfWeek();
+        break;
+      case "MONGODB_BI_SYSTEM_SUMMARY":
+        collectionName = "systemSummaryInfo";
+        pipeline = analyticsQueryLibrary.getSystemSummary();
         break;
     }
 

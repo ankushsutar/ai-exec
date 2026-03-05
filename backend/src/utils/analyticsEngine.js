@@ -113,6 +113,16 @@ function processAnalytics(data) {
     (k) => !k.startsWith("_") && !k.endsWith("_formatted"),
   );
 
+  if (keys.length === 0) {
+    return {
+      summary: "Data contains no displayable fields",
+      kpis: [],
+      chartData: [],
+      tableData: data,
+      columns: [],
+    };
+  }
+
   // --- WIDE SINGLE-ROW SUMMARY DETECTION ---
   // If we only have 1 row, but it has many distinct numeric stats or arrays, treat it as a Summary Object.
   const hasArrays = keys.some((k) => Array.isArray(firstRow[k]));
@@ -208,9 +218,19 @@ function processAnalytics(data) {
   }
 
   // Fallbacks
-  if (!labelKey) labelKey = keys[0]; // Just use the first column if no explicit string found
-  if (!valueKey && keys.length > 1) valueKey = keys[1]; // Use the second column
-  if (!valueKey) valueKey = keys[0]; // If only one column, use it for both (rare, e.g. single aggregate)
+  if (!labelKey) labelKey = keys.length > 0 ? keys[0] : null;
+  if (!valueKey && keys.length > 1) valueKey = keys[1];
+  if (!valueKey && keys.length > 0) valueKey = keys[0];
+
+  if (!labelKey || !valueKey) {
+    return {
+      summary: "Could not identify usable columns for analysis",
+      kpis: [],
+      chartData: [],
+      tableData: data,
+      columns: keys,
+    };
+  }
 
   data.forEach((row) => {
     const rawVal = row[valueKey];
@@ -233,7 +253,7 @@ function processAnalytics(data) {
     // Just a single aggregate value (e.g. "SELECT SUM(amount)")
     kpis.push({ name: `Total ${keys[0].replace("_", " ")}`, value: totalSum });
   } else {
-    if (valueKey.toLowerCase().includes("id")) {
+    if (valueKey && valueKey.toLowerCase().includes("id")) {
       kpis.push({ name: "Total count", value: data.length });
     } else {
       const rawKPI = parseFloat(totalSum.toFixed(2));
@@ -245,7 +265,11 @@ function processAnalytics(data) {
     }
 
     // Prevent generating nonsense max/min KPIs when the numeric value is just an ID or uniform (all 1s)
-    if (!valueKey.toLowerCase().includes("id") && totalSum !== data.length) {
+    if (
+      valueKey &&
+      !valueKey.toLowerCase().includes("id") &&
+      totalSum !== data.length
+    ) {
       const highestLabel =
         formatValue(labelKey, highest.label, {}) || highest.label;
       const highestValue = formatValue(
@@ -273,7 +297,8 @@ function processAnalytics(data) {
   }
 
   // Clear meaningless chart data if the value being plotted is just an identity sequence
-  const finalChartData = valueKey.toLowerCase().includes("id") ? [] : chartData;
+  const finalChartData =
+    valueKey && valueKey.toLowerCase().includes("id") ? [] : chartData;
 
   return {
     kpis,
