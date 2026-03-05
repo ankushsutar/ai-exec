@@ -42,6 +42,117 @@ async function orchestrateHybridQuery(question, requestId) {
     }
   }
 
+  if (intent && intent.startsWith("MONGODB_BI_")) {
+    console.log(`[Hybrid Broker] Direct BI Library bypass detected: ${intent}`);
+    const analyticsQueryLibrary = require("./analyticsQueryLibrary");
+    const db = await connectMongo();
+
+    let pipeline = [];
+    let collectionName = "transactionActionHistoryInfo";
+
+    switch (intent) {
+      case "MONGODB_BI_TOTAL_REV":
+        pipeline = analyticsQueryLibrary.getTotalRevenue();
+        break;
+      case "MONGODB_BI_REV_7D":
+        pipeline = analyticsQueryLibrary.getRevenueLast7Days();
+        break;
+      case "MONGODB_BI_REV_TREND":
+        pipeline = analyticsQueryLibrary.getRevenueTrendPerDay(30);
+        break;
+      case "MONGODB_BI_REV_PER_DEVICE":
+        pipeline = analyticsQueryLibrary.getRevenuePerDevice();
+        break;
+      case "MONGODB_BI_SUCCESS_RATE":
+        pipeline = analyticsQueryLibrary.getTransactionSuccessRate();
+        break;
+      case "MONGODB_BI_FAILURE_ANALYSIS":
+        pipeline = analyticsQueryLibrary.getFailureAnalysis();
+        break;
+      case "MONGODB_BI_AVG_TXN_VAL":
+        pipeline = analyticsQueryLibrary.getAverageTransactionValue();
+        break;
+      case "MONGODB_BI_HOURLY_DIST":
+        pipeline = analyticsQueryLibrary.getHourlyTransactionDistribution();
+        break;
+      case "MONGODB_BI_ACTIVE_24H":
+        pipeline = analyticsQueryLibrary.getActiveDevicesLast24h();
+        break;
+      case "MONGODB_BI_TOP_DEVICES_REV":
+        pipeline = analyticsQueryLibrary.getTopDevicesByRevenue(10);
+        break;
+      case "MONGODB_BI_TXN_FREQ":
+        pipeline = analyticsQueryLibrary.getDeviceTransactionFrequency();
+        break;
+      case "MONGODB_BI_MODE_DIST":
+        pipeline = analyticsQueryLibrary.getTransactionModeDistribution();
+        break;
+      case "MONGODB_BI_TYPE_DIST":
+        pipeline = analyticsQueryLibrary.getTransactionTypeDistribution();
+        break;
+      case "MONGODB_BI_LARGEST_TXNS":
+        pipeline = analyticsQueryLibrary.getLargestTransactions(10);
+        break;
+      case "MONGODB_BI_DAILY_VOL":
+        pipeline = analyticsQueryLibrary.getDailyTransactionVolume(30);
+        break;
+      case "MONGODB_BI_HIGH_REV_DEV_MONTH":
+        const yearMatch = question.match(/\b(20\d{2})\b/);
+        const year = yearMatch
+          ? parseInt(yearMatch[1], 10)
+          : new Date().getFullYear();
+
+        let month = new Date().getMonth() + 1; // Default to current month
+        const monthsStr = [
+          "january",
+          "february",
+          "march",
+          "april",
+          "may",
+          "june",
+          "july",
+          "august",
+          "september",
+          "october",
+          "november",
+          "december",
+        ];
+        for (let i = 0; i < monthsStr.length; i++) {
+          if (question.toLowerCase().includes(monthsStr[i])) {
+            month = i + 1;
+            break;
+          }
+        }
+        pipeline = analyticsQueryLibrary.getHighestRevenueDeviceByMonth(
+          year,
+          month,
+        );
+        break;
+      case "MONGODB_BI_ARPAD":
+        pipeline = analyticsQueryLibrary.getAverageRevenuePerDevice();
+        break;
+      case "MONGODB_BI_FAILURES":
+        pipeline = analyticsQueryLibrary.getDevicesWithHighestFailures(10);
+        break;
+      case "MONGODB_BI_HIGH_VALUE":
+        // Extract threshold if present in query, else default to 10000
+        const match = question.match(/over\s*(\d+)/i);
+        const threshold = match ? parseInt(match[1], 10) : 10000;
+        pipeline = analyticsQueryLibrary.getHighValueTransactions(
+          threshold,
+          20,
+        );
+        break;
+      case "MONGODB_BI_DAY_OF_WEEK":
+        pipeline = analyticsQueryLibrary.getRevenueByDayOfWeek();
+        break;
+    }
+
+    if (pipeline.length > 0) {
+      return await db.collection(collectionName).aggregate(pipeline).toArray();
+    }
+  }
+
   if (
     intent === "MONGODB_TXN" ||
     intent === "MONGODB_STATS" ||

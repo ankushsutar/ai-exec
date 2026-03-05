@@ -24,6 +24,63 @@ async function dispatchIntent(question) {
     /\bdevice uptime\b/i,
   ];
 
+  const MONGODB_BI_PATTERNS = [
+    // 1-16 Base Library
+    { intent: "MONGODB_BI_TOTAL_REV", regex: /\btotal revenue\b/i },
+    { intent: "MONGODB_BI_REV_7D", regex: /\brevenue.*last 7 days\b/i },
+    { intent: "MONGODB_BI_REV_TREND", regex: /\bdaily revenue trend\b/i },
+    { intent: "MONGODB_BI_REV_TREND", regex: /\brev.*trend\b/i },
+    { intent: "MONGODB_BI_REV_PER_DEVICE", regex: /\brevenue per device\b/i },
+    { intent: "MONGODB_BI_SUCCESS_RATE", regex: /\bsuccess rate\b/i },
+    { intent: "MONGODB_BI_FAILURE_ANALYSIS", regex: /\bfailure analysis\b/i },
+    {
+      intent: "MONGODB_BI_AVG_TXN_VAL",
+      regex: /\baverage transaction value\b/i,
+    },
+    { intent: "MONGODB_BI_AVG_TXN_VAL", regex: /\bavg transaction value\b/i },
+    {
+      intent: "MONGODB_BI_HOURLY_DIST",
+      regex: /\bhourly transaction distribution\b/i,
+    },
+    { intent: "MONGODB_BI_HOURLY_DIST", regex: /\bhourly distribution\b/i },
+    { intent: "MONGODB_BI_ACTIVE_24H", regex: /\bactive devices.*24\b/i },
+    {
+      intent: "MONGODB_BI_TOP_DEVICES_REV",
+      regex: /\btop (10\s)?devices.*revenue\b/i,
+    },
+    {
+      intent: "MONGODB_BI_TXN_FREQ",
+      regex: /\bdevice transaction frequency\b/i,
+    },
+    {
+      intent: "MONGODB_BI_MODE_DIST",
+      regex: /\btransaction mode distribution\b/i,
+    },
+    {
+      intent: "MONGODB_BI_TYPE_DIST",
+      regex: /\btransaction type distribution\b/i,
+    },
+    { intent: "MONGODB_BI_LARGEST_TXNS", regex: /\blargest transactions\b/i },
+    { intent: "MONGODB_BI_DAILY_VOL", regex: /\bdaily transaction volume\b/i },
+    {
+      intent: "MONGODB_BI_HIGH_REV_DEV_MONTH",
+      regex: /\bhighest revenue device.*month\b/i,
+    },
+
+    // 17-20 New BI Ops
+    { intent: "MONGODB_BI_ARPAD", regex: /\barpad\b/i },
+    {
+      intent: "MONGODB_BI_ARPAD",
+      regex: /\baverage revenue per active device\b/i,
+    },
+    { intent: "MONGODB_BI_FAILURES", regex: /\bhighest failure\b/i },
+    { intent: "MONGODB_BI_FAILURES", regex: /\btransaction failure\b/i },
+    { intent: "MONGODB_BI_HIGH_VALUE", regex: /\bhigh value transaction\b/i },
+    { intent: "MONGODB_BI_HIGH_VALUE", regex: /\bvalue over\b/i },
+    { intent: "MONGODB_BI_DAY_OF_WEEK", regex: /\bday of week\b/i },
+    { intent: "MONGODB_BI_DAY_OF_WEEK", regex: /\bday of the week\b/i },
+  ];
+
   const HYBRID_PATTERNS = [
     /\bmerchant\b/i,
     /\bmerchant revenue\b/i,
@@ -36,7 +93,22 @@ async function dispatchIntent(question) {
     regex.test(lowercaseQ),
   );
 
+  let biIntent = null;
+  for (const pattern of MONGODB_BI_PATTERNS) {
+    if (pattern.regex.test(lowercaseQ)) {
+      biIntent = pattern.intent;
+      break;
+    }
+  }
+
   // 2. HEURISTIC OVERRIDE (FAST PATH)
+  if (biIntent) {
+    console.log(
+      `[Intent Dispatcher] Heuristic: Identified BI Query (${biIntent}).`,
+    );
+    return biIntent;
+  }
+
   if (hasHybrid) {
     console.log(
       "[Intent Dispatcher] Heuristic: Identified HYBRID (Metadata + Metrics).",

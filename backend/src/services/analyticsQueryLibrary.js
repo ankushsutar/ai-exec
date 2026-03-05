@@ -238,6 +238,91 @@ const analyticsQueryLibrary = {
       { $project: { _id: 0, date: "$_id.day", volume: "$count" } },
     ];
   },
+
+  // 16 Highest revenue device by month
+  getHighestRevenueDeviceByMonth: (year, month) => {
+    // Note: month is 1-indexed (1 = January, 12 = December)
+    const startDate = new Date(Date.UTC(year, month - 1, 1));
+    const endDate = new Date(Date.UTC(year, month, 1));
+    return [
+      {
+        $match: {
+          actionStatus: 1,
+          createdAt: { $gte: startDate, $lt: endDate },
+          txnAmt: { $exists: true, $ne: null },
+          deviceId: { $ne: null },
+        },
+      },
+      {
+        $group: {
+          _id: "$deviceId",
+          revenue: { $sum: "$txnAmt" },
+        },
+      },
+      { $sort: { revenue: -1 } },
+      { $limit: 1 },
+      { $project: { _id: 0, deviceId: "$_id", revenue: 1 } },
+    ];
+  },
+
+  // 17 Average Revenue Per Active Device (ARPAD)
+  getAverageRevenuePerDevice: () => [
+    {
+      $match: {
+        actionStatus: 1,
+        txnAmt: { $exists: true, $ne: null },
+        deviceId: { $ne: null },
+      },
+    },
+    { $group: { _id: "$deviceId", totalDeviceRevenue: { $sum: "$txnAmt" } } },
+    {
+      $group: {
+        _id: null,
+        avgRevenuePerDevice: { $avg: "$totalDeviceRevenue" },
+        activeDevices: { $sum: 1 },
+      },
+    },
+    { $project: { _id: 0, avgRevenuePerDevice: 1, activeDevices: 1 } },
+  ],
+
+  // 18 Devices with highest failure volume (Actionable Ops Metric)
+  getDevicesWithHighestFailures: (limit = 10) => [
+    { $match: { actionStatus: { $ne: 1 }, deviceId: { $ne: null } } },
+    { $group: { _id: "$deviceId", failureCount: { $sum: 1 } } },
+    { $sort: { failureCount: -1 } },
+    { $limit: limit },
+    { $project: { _id: 0, deviceId: "$_id", failureCount: 1 } },
+  ],
+
+  // 19 High-Value Transactions (Risk/VIP Monitoring)
+  getHighValueTransactions: (threshold = 10000, limit = 20) => [
+    { $match: { actionStatus: 1, txnAmt: { $gte: threshold } } },
+    { $sort: { txnAmt: -1, createdAt: -1 } },
+    { $limit: limit },
+    {
+      $project: {
+        _id: 0,
+        deviceId: 1,
+        txnAmt: 1,
+        createdAt: 1,
+        transactionMode: 1,
+      },
+    },
+  ],
+
+  // 20 Revenue by Day of Week (Operational staffing/marketing)
+  getRevenueByDayOfWeek: () => [
+    { $match: { actionStatus: 1, txnAmt: { $exists: true, $ne: null } } },
+    {
+      $group: {
+        _id: { dayOfWeek: { $dayOfWeek: "$createdAt" } },
+        revenue: { $sum: "$txnAmt" },
+        count: { $sum: 1 },
+      },
+    },
+    { $sort: { "_id.dayOfWeek": 1 } },
+    { $project: { _id: 0, dayOfWeek: "$_id.dayOfWeek", revenue: 1, count: 1 } },
+  ],
 };
 
 module.exports = analyticsQueryLibrary;
