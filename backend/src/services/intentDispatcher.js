@@ -219,6 +219,104 @@ async function dispatchIntent(question) {
       regex: /\bactive\s+devices?\s+today\b/i,
     },
 
+    // ── DEVICE TELEMETRY / STATS ─────────────────────────────────────────────
+
+    // 22 Network Quality by Operator
+    {
+      intent: "MONGODB_BI_NETWORK_QUALITY",
+      regex: /\b(?:average|avg)\s+signal\s+strength\b/i,
+    },
+    { intent: "MONGODB_BI_NETWORK_QUALITY", regex: /\bnetwork\s+quality\b/i },
+    {
+      intent: "MONGODB_BI_NETWORK_QUALITY",
+      regex: /\bsignal\s+by\s+operator\b/i,
+    },
+
+    // 23 High Network Failure Devices
+    {
+      intent: "MONGODB_BI_NETWORK_FAILURES",
+      regex: /\bnetwork\s+failures?\b/i,
+    },
+    {
+      intent: "MONGODB_BI_NETWORK_FAILURES",
+      regex:
+        /\bdevices?\s+with\s+(?:most|highest|bad)\s+network\s+failures?\b/i,
+    },
+    { intent: "MONGODB_BI_NETWORK_FAILURES", regex: /\bnetwork\s+errors?\b/i },
+    { intent: "MONGODB_BI_NETWORK_FAILURES", regex: /\bpoor\s+network\b/i },
+
+    // 24 Average Device Uptime
+    {
+      intent: "MONGODB_BI_AVG_UPTIME",
+      regex: /\b(?:average|avg)\s+(?:device\s+)?uptime\b/i,
+    },
+    {
+      intent: "MONGODB_BI_AVG_UPTIME",
+      regex: /\bhow\s+long\s+are\s+devices\s+(?:up|online)\b/i,
+    },
+    { intent: "MONGODB_BI_AVG_UPTIME", regex: /\bdevice\s+run\s*time\b/i },
+
+    // 25 Firmware Distribution
+    {
+      intent: "MONGODB_BI_FIRMWARE_DIST",
+      regex: /\bfirmware\s+(?:distribution|versions?)\b/i,
+    },
+    {
+      intent: "MONGODB_BI_FIRMWARE_DIST",
+      regex: /\bhow\s+many\s+devices\s+are\s+on\s+firmware\b/i,
+    },
+    {
+      intent: "MONGODB_BI_FIRMWARE_DIST",
+      regex: /\bdevice\s+models?\s+and\s+versions?\b/i,
+    },
+
+    // 26 Audio Failure Devices
+    { intent: "MONGODB_BI_AUDIO_FAILURES", regex: /\baudio\s+failures?\b/i },
+    {
+      intent: "MONGODB_BI_AUDIO_FAILURES",
+      regex: /\bfailed\s+to\s+play\s+(?:audio|sound)?\b/i,
+    },
+    {
+      intent: "MONGODB_BI_AUDIO_FAILURES",
+      regex: /\btransactions\s+failed\s+to\s+play\b/i,
+    },
+
+    // 27 Device Button Usage
+    {
+      intent: "MONGODB_BI_BUTTON_USAGE",
+      regex: /\b(?:device\s+)?button\s+(?:usage|presses)\b/i,
+    },
+    {
+      intent: "MONGODB_BI_BUTTON_USAGE",
+      regex: /\bvolume\s+(?:up|down)\s+presses\b/i,
+    },
+    {
+      intent: "MONGODB_BI_BUTTON_USAGE",
+      regex: /\breplay\s+(?:button|presses)\b/i,
+    },
+
+    // 28 Data Consumption by Operator
+    {
+      intent: "MONGODB_BI_DATA_CONSUMPTION",
+      regex: /\bdata\s+(?:consumption|usage)\b/i,
+    },
+    {
+      intent: "MONGODB_BI_DATA_CONSUMPTION",
+      regex: /\btraffic\s+(?:consumed|usage)\b/i,
+    },
+    { intent: "MONGODB_BI_DATA_CONSUMPTION", regex: /\btx\s+and\s+rx\b/i },
+
+    // 29 Reboot Analysis
+    {
+      intent: "MONGODB_BI_REBOOT_ANALYSIS",
+      regex: /\breboot\s+(?:analysis|reasons?)\b/i,
+    },
+    {
+      intent: "MONGODB_BI_REBOOT_ANALYSIS",
+      regex: /\bdevices?\s+(?:that\s+)?rebooted\b/i,
+    },
+    { intent: "MONGODB_BI_REBOOT_ANALYSIS", regex: /\bhighest\s+reboot\b/i },
+
     // Top N devices by revenue — catches "top 5 devices", "top devices by revenue", "best performing devices"
     {
       intent: "MONGODB_BI_TOP_DEVICES_REV",
@@ -265,6 +363,8 @@ async function dispatchIntent(question) {
       intent: "MONGODB_BI_FAILURES",
       regex: /\bdevice\s+(?:failure|error)\s+(?:rate|count)\b/i,
     },
+
+    // ── DEVICE TELEMETRY / STATS ─────────────────────────────────────────────
 
     // ARPAD
     { intent: "MONGODB_BI_ARPAD", regex: /\barpad\b/i },

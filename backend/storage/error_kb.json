@@ -46,5 +46,11 @@
     "content": "SELECT\": \"SUM(CASE WHEN d.isActive THEN 1 ELSE 0 END) AS total_active_devices, \n     SUM(CASE WHEN d.isDefault THEN 1 ELSE 0 END) AS total_default_devices,\n     COUNT(DISTINCT dr.deviceId) AS unique_device_ids\",\n    \"FROM\": \"deviceStatsInfo d INNER JOIN deviceRelationInfo dr ON d.deviceId = dr.deviceId\",\n    \"GROUP BY\": \"\",\n    \"HAVING\": \"\",\n    \"ORDER BY\": \"\"\n}",
     "type": "error",
     "createdAt": "2026-03-05T09:48:15.894Z"
+  },
+  {
+    "question": "how device count ",
+    "content": "deviceInfo.id AS \"deviceId\", COUNT(*) AS \"transactionCount\"",
+    "type": "error",
+    "createdAt": "2026-03-05T12:28:44.657Z"
   }
 ]

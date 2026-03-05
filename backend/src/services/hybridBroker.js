@@ -151,6 +151,40 @@ async function orchestrateHybridQuery(question, requestId) {
         collectionName = "systemSummaryInfo";
         pipeline = analyticsQueryLibrary.getSystemSummary();
         break;
+
+      // ── DEVICE STATS (deviceStatHistoryInfo) ───────────────────────────────
+      case "MONGODB_BI_NETWORK_QUALITY":
+        collectionName = "deviceStatHistoryInfo";
+        pipeline = analyticsQueryLibrary.getNetworkQualityByOperator(limit);
+        break;
+      case "MONGODB_BI_NETWORK_FAILURES":
+        collectionName = "deviceStatHistoryInfo";
+        pipeline = analyticsQueryLibrary.getHighNetworkFailureDevices(limit);
+        break;
+      case "MONGODB_BI_AVG_UPTIME":
+        collectionName = "deviceStatHistoryInfo";
+        pipeline = analyticsQueryLibrary.getAverageDeviceUptime();
+        break;
+      case "MONGODB_BI_FIRMWARE_DIST":
+        collectionName = "deviceStatHistoryInfo";
+        pipeline = analyticsQueryLibrary.getFirmwareDistribution();
+        break;
+      case "MONGODB_BI_AUDIO_FAILURES":
+        collectionName = "deviceStatHistoryInfo";
+        pipeline = analyticsQueryLibrary.getAudioFailureDevices(limit);
+        break;
+      case "MONGODB_BI_BUTTON_USAGE":
+        collectionName = "deviceStatHistoryInfo";
+        pipeline = analyticsQueryLibrary.getDeviceButtonUsage();
+        break;
+      case "MONGODB_BI_DATA_CONSUMPTION":
+        collectionName = "deviceStatHistoryInfo";
+        pipeline = analyticsQueryLibrary.getDataConsumptionByOperator();
+        break;
+      case "MONGODB_BI_REBOOT_ANALYSIS":
+        collectionName = "deviceStatHistoryInfo";
+        pipeline = analyticsQueryLibrary.getRebootAnalysis(limit);
+        break;
     }
 
     if (pipeline.length > 0) {

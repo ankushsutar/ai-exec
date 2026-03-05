@@ -1534,5 +1534,191 @@
     "question": "Revenue trend for the last 30 days",
     "intent": "DYNAMIC",
     "requestId": "0514"
+  },
+  {
+    "timestamp": "2026-03-05T12:16:59.852Z",
+    "question": "Show me the top 10 devices with the most network failures",
+    "intent": "DYNAMIC",
+    "requestId": "9852"
+  },
+  {
+    "timestamp": "2026-03-05T12:17:21.012Z",
+    "question": "What is the average battery level across all devices right now?",
+    "intent": "DYNAMIC",
+    "requestId": "1012"
+  },
+  {
+    "timestamp": "2026-03-05T12:18:59.475Z",
+    "question": "Revenue trend for the last 14 days",
+    "intent": "DYNAMIC",
+    "requestId": "9475"
+  },
+  {
+    "timestamp": "2026-03-05T12:19:18.388Z",
+    "question": "Revenue trend for the last 30 days",
+    "intent": "DYNAMIC",
+    "requestId": "8388"
+  },
+  {
+    "timestamp": "2026-03-05T12:19:29.587Z",
+    "question": "Revenue trend for the last 60 days",
+    "intent": "DYNAMIC",
+    "requestId": "9586"
+  },
+  {
+    "timestamp": "2026-03-05T12:19:46.086Z",
+    "question": "Transactions above ₹50,000",
+    "intent": "DYNAMIC",
+    "requestId": "6086"
+  },
+  {
+    "timestamp": "2026-03-05T12:20:04.255Z",
+    "question": "Top 5 devices by revenue in Jan 2025",
+    "intent": "DYNAMIC",
+    "requestId": "4255"
+  },
+  {
+    "timestamp": "2026-03-05T12:20:23.407Z",
+    "question": "Top 5 devices by revenue in Feb 2025",
+    "intent": "DYNAMIC",
+    "requestId": "3407"
+  },
+  {
+    "timestamp": "2026-03-05T12:20:49.090Z",
+    "question": "Show overall system summary",
+    "intent": "DYNAMIC",
+    "requestId": "9089"
+  },
+  {
+    "timestamp": "2026-03-05T12:20:58.120Z",
+    "question": "Revenue trend for the last 14 days",
+    "intent": "DYNAMIC",
+    "requestId": "8120"
+  },
+  {
+    "timestamp": "2026-03-05T12:21:54.007Z",
+    "question": "nhhghghjgjhghgn ",
+    "intent": "DYNAMIC",
+    "requestId": "4007"
+  },
+  {
+    "timestamp": "2026-03-05T12:22:59.893Z",
+    "question": "mujhe revenue trend chahiye 14 days ka ",
+    "intent": "DYNAMIC",
+    "requestId": "9893"
+  },
+  {
+    "timestamp": "2026-03-05T12:23:38.723Z",
+    "question": "mujhe device ka data cahiye jisme jada transactions hain",
+    "intent": "DYNAMIC",
+    "requestId": "8723"
+  },
+  {
+    "timestamp": "2026-03-05T12:24:49.357Z",
+    "question": "mujhe koi device batao jisme jabse jada transactions hain",
+    "intent": "DYNAMIC",
+    "requestId": "9357"
+  },
+  {
+    "timestamp": "2026-03-05T12:25:53.711Z",
+    "question": "Best performing device in the previous month show with graphs",
+    "intent": "DYNAMIC",
+    "requestId": "3711"
+  },
+  {
+    "timestamp": "2026-03-05T12:26:28.506Z",
+    "question": "Best performing device in the previous month",
+    "intent": "DYNAMIC",
+    "requestId": "8506"
+  },
+  {
+    "timestamp": "2026-03-05T12:26:48.827Z",
+    "question": "Best performing device in the Feb 2026",
+    "intent": "DYNAMIC",
+    "requestId": "8827"
+  },
+  {
+    "timestamp": "2026-03-05T12:27:18.008Z",
+    "question": "what was previous month",
+    "intent": "DYNAMIC",
+    "requestId": "8008"
+  },
+  {
+    "timestamp": "2026-03-05T12:27:39.902Z",
+    "question": "best device data base on your consideration ",
+    "intent": "DYNAMIC",
+    "requestId": "9901"
+  },
+  {
+    "timestamp": "2026-03-05T12:28:18.353Z",
+    "question": "how device count ",
+    "intent": "DYNAMIC",
+    "requestId": "8353"
+  },
+  {
+    "timestamp": "2026-03-05T12:28:38.576Z",
+    "question": "show device count ",
+    "intent": "DYNAMIC",
+    "requestId": "8576"
+  },
+  {
+    "timestamp": "2026-03-05T12:30:43.286Z",
+    "question": "Which firmware version has the highest download failure rate?",
+    "intent": "DYNAMIC",
+    "requestId": "3286"
+  },
+  {
+    "timestamp": "2026-03-05T12:31:30.754Z",
+    "question": "Show me devices that rebooted more than 5 times today",
+    "intent": "DYNAMIC",
+    "requestId": "0754"
+  },
+  {
+    "timestamp": "2026-03-05T12:33:06.341Z",
+    "question": "Average signal strength by network operator",
+    "intent": "DYNAMIC",
+    "requestId": "6341"
+  },
+  {
+    "timestamp": "2026-03-05T12:34:01.433Z",
+    "question": "List devices where audio transactions failed to play",
+    "intent": "DYNAMIC",
+    "requestId": "1433"
+  },
+  {
+    "timestamp": "2026-03-05T12:36:10.751Z",
+    "question": "Which firmware version has the highest download failure rate?",
+    "intent": "DYNAMIC",
+    "requestId": "0750"
+  },
+  {
+    "timestamp": "2026-03-05T12:36:19.791Z",
+    "question": "Average signal strength by network operator",
+    "intent": "DYNAMIC",
+    "requestId": "9791"
+  },
+  {
+    "timestamp": "2026-03-05T12:36:26.711Z",
+    "question": "Daily transaction volume last 30 days",
+    "intent": "DYNAMIC",
+    "requestId": "6711"
+  },
+  {
+    "timestamp": "2026-03-05T12:39:37.460Z",
+    "question": "List devices where audio transactions failed to play",
+    "intent": "DYNAMIC",
+    "requestId": "7460"
+  },
+  {
+    "timestamp": "2026-03-05T12:40:16.409Z",
+    "question": "Top 5 devices by revenue in Jan 2025",
+    "intent": "DYNAMIC",
+    "requestId": "6409"
+  },
+  {
+    "timestamp": "2026-03-05T12:41:01.696Z",
+    "question": "Show me devices that rebooted more than 5 times today",
+    "intent": "DYNAMIC",
+    "requestId": "1695"
   }
 ]

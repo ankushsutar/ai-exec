@@ -45,7 +45,13 @@ export class ChatComponent implements OnInit, AfterViewChecked {
         "Top 5 devices by revenue in Jan 2025",
         "Transactions above ₹50,000",
         "Best performing device for Feb 2025",
-        "Daily transaction volume last 30 days"
+        "Daily transaction volume last 30 days",
+        "Show me the top 10 devices with the most network failures",
+        "What is the average battery level across all devices right now?",
+        "Which firmware version has the highest download failure rate?",
+        "Show me devices that rebooted more than 5 times today",
+        "Average signal strength by network operator",
+        "List devices where audio transactions failed to play"
     ];
 
     ngOnInit(): void {

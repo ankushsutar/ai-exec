@@ -357,6 +357,190 @@ const analyticsQueryLibrary = {
       },
     },
   ],
+
+  // ── DEVICE STATS (deviceStatHistoryInfo) ───────────────────────────────────
+
+  // 22 Network Quality by Operator
+  getNetworkQualityByOperator: (limit = 10) => [
+    { $match: { operatorName: { $exists: true, $ne: "" } } },
+    {
+      $group: {
+        _id: "$operatorName",
+        avgSignalStrength: { $avg: "$signalStrength" },
+        avgRsrp: { $avg: "$rsrp" },
+        avgRxlev: { $avg: "$rxlev" },
+        deviceCount: { $sum: 1 },
+      },
+    },
+    { $sort: { deviceCount: -1 } },
+    { $limit: limit },
+    {
+      $project: {
+        _id: 0,
+        operatorName: "$_id",
+        avgSignalStrength: 1,
+        avgRsrp: { $round: ["$avgRsrp", 2] },
+        avgRxlev: { $round: ["$avgRxlev", 2] },
+        deviceCount: 1,
+      },
+    },
+  ],
+
+  // 23 High Network Failure Devices
+  getHighNetworkFailureDevices: (limit = 10) => [
+    {
+      $match: {
+        totalNWFailureCount: { $gt: 0 },
+        "metadata.deviceId": { $ne: null },
+      },
+    },
+    {
+      $group: {
+        _id: "$metadata.deviceId",
+        totalNetworkFailures: { $max: "$totalNWFailureCount" },
+        maxNetworkErrors: { $max: "$networkQualityBitErr" },
+      },
+    },
+    { $sort: { totalNetworkFailures: -1 } },
+    { $limit: limit },
+    {
+      $project: {
+        _id: 0,
+        deviceId: "$_id",
+        totalNetworkFailures: 1,
+        maxNetworkErrors: 1,
+      },
+    },
+  ],
+
+  // 24 Average Device Uptime
+  getAverageDeviceUptime: () => [
+    { $match: { deviceUptime: { $exists: true, $ne: null } } },
+    {
+      $group: {
+        _id: null,
+        avgUptimeSeconds: { $avg: "$deviceUptime" },
+        maxUptimeSeconds: { $max: "$deviceUptime" },
+        reportingDevices: { $sum: 1 },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        avgUptimeHours: { $divide: ["$avgUptimeSeconds", 3600] },
+        maxUptimeHours: { $divide: ["$maxUptimeSeconds", 3600] },
+        reportingDevices: 1,
+      },
+    },
+  ],
+
+  // 25 Firmware Distribution
+  getFirmwareDistribution: () => [
+    { $match: { deviceModemFirmWareName: { $exists: true, $ne: "" } } },
+    {
+      $group: {
+        _id: "$deviceModemFirmWareName",
+        deviceCount: { $sum: 1 },
+      },
+    },
+    { $sort: { deviceCount: -1 } },
+    { $project: { _id: 0, firmwareVersion: "$_id", deviceCount: 1 } },
+  ],
+
+  // 26 Audio Failure Devices
+  getAudioFailureDevices: (limit = 10) => [
+    {
+      $match: {
+        totalTransactionsFailedToPlay: { $gt: 0 },
+        "metadata.deviceId": { $ne: null },
+      },
+    },
+    {
+      $group: {
+        _id: "$metadata.deviceId",
+        totalFailedToPlay: { $max: "$totalTransactionsFailedToPlay" },
+        totalPlayed: { $max: "$totalTransactionsPlayed" },
+      },
+    },
+    { $sort: { totalFailedToPlay: -1 } },
+    { $limit: limit },
+    {
+      $project: {
+        _id: 0,
+        deviceId: "$_id",
+        totalFailedToPlay: 1,
+        totalPlayed: 1,
+      },
+    },
+  ],
+
+  // 27 Device Button Usage
+  getDeviceButtonUsage: () => [
+    {
+      $group: {
+        _id: null,
+        totalVolumeUp: { $sum: "$volumeUpPressCounts" },
+        totalVolumeDown: { $sum: "$volumeDownPressCounts" },
+        totalReplays: { $sum: "$replayPressCounts" },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        totalVolumeUp: 1,
+        totalVolumeDown: 1,
+        totalReplays: 1,
+      },
+    },
+  ],
+
+  // 28 Data Consumption by Operator
+  getDataConsumptionByOperator: () => [
+    { $match: { operatorName: { $exists: true, $ne: "" } } },
+    {
+      $group: {
+        _id: "$operatorName",
+        totalTxBytes: { $sum: "$totalTxTrafficConsumed" },
+        totalRxBytes: { $sum: "$totalRxTrafficConsumed" },
+      },
+    },
+    { $sort: { totalRxBytes: -1 } },
+    {
+      $project: {
+        _id: 0,
+        operatorName: "$_id",
+        totalTxMB: { $divide: ["$totalTxBytes", 1048576] },
+        totalRxMB: { $divide: ["$totalRxBytes", 1048576] },
+      },
+    },
+  ],
+
+  // 29 Reboot Analysis
+  getRebootAnalysis: (limit = 10) => [
+    {
+      $match: {
+        totalDeviceRebootCount: { $gt: 0 },
+        "metadata.deviceId": { $ne: null },
+      },
+    },
+    {
+      $group: {
+        _id: "$metadata.deviceId",
+        totalReboots: { $max: "$totalDeviceRebootCount" },
+        lastRebootReason: { $last: "$deviceLastRebootReason" },
+      },
+    },
+    { $sort: { totalReboots: -1 } },
+    { $limit: limit },
+    {
+      $project: {
+        _id: 0,
+        deviceId: "$_id",
+        totalReboots: 1,
+        lastRebootReason: 1,
+      },
+    },
+  ],
 };
 
 module.exports = analyticsQueryLibrary;
