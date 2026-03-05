@@ -1456,5 +1456,83 @@
     "question": "largest 3 transactions in Feb 2025",
     "intent": "DYNAMIC",
     "requestId": "9748"
+  },
+  {
+    "timestamp": "2026-03-05T11:56:18.908Z",
+    "question": "Daily transaction volume last 30 days",
+    "intent": "DYNAMIC",
+    "requestId": "8907"
+  },
+  {
+    "timestamp": "2026-03-05T11:56:34.624Z",
+    "question": "Best performing device for Feb 2025",
+    "intent": "DYNAMIC",
+    "requestId": "4623"
+  },
+  {
+    "timestamp": "2026-03-05T11:57:07.842Z",
+    "question": "Best performing device for Feb 2026",
+    "intent": "DYNAMIC",
+    "requestId": "7841"
+  },
+  {
+    "timestamp": "2026-03-05T11:57:23.388Z",
+    "question": "Best performing device for March 2026",
+    "intent": "DYNAMIC",
+    "requestId": "3388"
+  },
+  {
+    "timestamp": "2026-03-05T11:57:35.739Z",
+    "question": "Best performing device for Feb 2025",
+    "intent": "DYNAMIC",
+    "requestId": "5739"
+  },
+  {
+    "timestamp": "2026-03-05T11:57:49.474Z",
+    "question": "Best performing device for March 2025",
+    "intent": "DYNAMIC",
+    "requestId": "9474"
+  },
+  {
+    "timestamp": "2026-03-05T11:58:04.633Z",
+    "question": "Show overall system summary",
+    "intent": "DYNAMIC",
+    "requestId": "4633"
+  },
+  {
+    "timestamp": "2026-03-05T11:58:42.764Z",
+    "question": "revenue trend for year 2025",
+    "intent": "DYNAMIC",
+    "requestId": "2764"
+  },
+  {
+    "timestamp": "2026-03-05T11:59:22.479Z",
+    "question": "Daily transaction volume last 30 days",
+    "intent": "DYNAMIC",
+    "requestId": "2479"
+  },
+  {
+    "timestamp": "2026-03-05T11:59:41.279Z",
+    "question": "Daily transaction volume last 60 days",
+    "intent": "DYNAMIC",
+    "requestId": "1279"
+  },
+  {
+    "timestamp": "2026-03-05T12:00:01.353Z",
+    "question": "Top 5 devices by revenue in Jan 2025",
+    "intent": "DYNAMIC",
+    "requestId": "1353"
+  },
+  {
+    "timestamp": "2026-03-05T12:00:11.257Z",
+    "question": "Revenue trend for the last 14 days",
+    "intent": "DYNAMIC",
+    "requestId": "1257"
+  },
+  {
+    "timestamp": "2026-03-05T12:00:30.515Z",
+    "question": "Revenue trend for the last 30 days",
+    "intent": "DYNAMIC",
+    "requestId": "0514"
   }
 ]
