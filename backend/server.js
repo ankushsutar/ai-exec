@@ -27,9 +27,9 @@ app.use(errorHandler);
 
 const { extractDatabaseSchema } = require("./src/services/data/dbService");
 const {
-  extractAllTableNames,
-  getAICuratedTables,
-} = require("./src/services/knowledge/schemaPruner");
+  ALLOWED_POSTGRES_TABLES,
+  ALLOWED_MONGO_COLLECTIONS,
+} = require("./src/config/allowedSchema");
 const { generateEmbedding } = require("./src/services/ai/ollamaService");
 const { addTableEmbedding } = require("./src/services/data/vectorStore");
 const {
@@ -55,9 +55,10 @@ app.listen(config.port, async () => {
       );
 
       const knowledgeCache = loadCache();
-      const rawTables = await extractAllTableNames();
-      const aiCuratedTables = await getAICuratedTables(rawTables);
-      const schemaString = await extractDatabaseSchema(aiCuratedTables);
+      console.log(
+        `[Server] Using schema whitelist: ${ALLOWED_POSTGRES_TABLES.length} Postgres tables, ${ALLOWED_MONGO_COLLECTIONS.length} Mongo collections.`,
+      );
+      const schemaString = await extractDatabaseSchema(ALLOWED_POSTGRES_TABLES);
 
       console.log("[Server] Populating In-Memory Vector Store...");
       const tableBlocks = schemaString
@@ -91,8 +92,10 @@ app.listen(config.port, async () => {
         extractMongoSchema,
       } = require("./src/services/data/mongoService");
       try {
-        const mongoCollections = await listCollections();
-        const mongoSchemaString = await extractMongoSchema(mongoCollections);
+        // Use whitelist instead of discovering all collections
+        const mongoSchemaString = await extractMongoSchema(
+          ALLOWED_MONGO_COLLECTIONS,
+        );
         const mongoBlocks = mongoSchemaString
           .split("\n\n")
           .filter((b) => b.trim() !== "");

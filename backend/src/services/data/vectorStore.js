@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const STORE_FILE = path.join(
   __dirname,
-  "../../storage/knowledge_embeddings.json",
+  "../../../storage/knowledge_embeddings.json",
 );
 
 let memoryStore = [];
