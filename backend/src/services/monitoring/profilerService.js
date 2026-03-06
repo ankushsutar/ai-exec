@@ -2,8 +2,8 @@ const fs = require("fs");
 const path = require("path");
 
 const METRICS_FILE = path.join(
-  __dirname,
-  "../../storage/performance_metrics.json",
+  process.cwd(),
+  "storage/performance_metrics.json",
 );
 
 /**

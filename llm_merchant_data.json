@@ -1,0 +1,68 @@
+[
+  {
+    "entity": "Merchant",
+    "storage_strategy": "Relational",
+    "relational_store": {
+      "database": "PostgreSQL",
+      "tables": [
+        {
+          "name": "merchantInfo",
+          "model": "MerchantInfoDBFKey",
+          "primary_key": "merchantId",
+          "dependencies": ["groupInfo"],
+          "description": "Source of truth for merchant identity, legal names, and business contact details."
+        }
+      ]
+    }
+  },
+  {
+    "entity": "Relation_Mapping",
+    "storage_strategy": "Relational",
+    "description": "A multi-table mapping that uses a shared RelationId to bind devices, merchants, terminals, and QR codes.",
+    "relational_store": {
+      "database": "PostgreSQL",
+      "tables": [
+        {
+          "name": "merchantRelationInfo",
+          "model": "MerchantRelationInfoDBFKey",
+          "primary_key": "relationId",
+          "foreign_key": "merchantId",
+          "description": "Links a unique RelationId to a specific Merchant."
+        },
+        {
+          "name": "deviceRelationInfo",
+          "model": "DeviceRelationInfoDBFKey",
+          "primary_key": "relationId",
+          "foreign_key": "deviceId",
+          "description": "Links a unique RelationId to a physical SoundBox device."
+        },
+        {
+          "name": "terminalRelationInfo",
+          "model": "TerminalRelationInfoDBFKey",
+          "primary_key": "relationId",
+          "foreign_key": "terminalId",
+          "description": "Links a unique RelationId to a logical payment Terminal ID (TID)."
+        },
+        {
+          "name": "qrRelationInfo",
+          "model": "QRRelationInfoDBFKey",
+          "primary_key": "relationId",
+          "foreign_key": "qrId",
+          "description": "Links a unique RelationId to a specific QR/VPA record."
+        },
+        {
+          "name": "terminalInfo",
+          "model": "TerminalInfoDB",
+          "primary_key": "terminalId",
+          "description": "Master list of logical payment endpoints."
+        },
+        {
+          "name": "qrInfo",
+          "model": "QRInfoDB",
+          "primary_key": "id",
+          "description": "Stores the Merchant VPA and the actual QR string payload."
+        }
+      ]
+    }
+  }
+]

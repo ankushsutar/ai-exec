@@ -130,5 +130,11 @@
     "fingerprint": "c529bda31af66d9ee4c8e1df81e7e9fff70593c6374c05a4b87c5f3d1a70f9b6",
     "dbType": "mongodb",
     "updatedAt": "2026-03-06T10:36:01.678Z"
+  },
+  "terminalRelationInfo\" [Rows: 6]": {
+    "summary": "This table stores terminal relationship information, including terminal IDs, users who have used them, and their verification status and activation/active status. It's designed to help administrators manage user profiles by tracking which terminals are associated with which users, indicating whether they've been verified or activated.",
+    "fingerprint": "70d43af84e82ccdc7d446626dc7a190fdfbad1070ca16ea6988f4072dbdea2b6",
+    "dbType": "postgres",
+    "updatedAt": "2026-03-06T11:41:17.615Z"
   }
 }

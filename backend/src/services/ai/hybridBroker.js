@@ -241,9 +241,10 @@ async function orchestrateHybridQuery(question, requestId) {
   
   STRICT ARCHITECTURAL RULES:
   1. Use ONLY "merchantInfo", "merchantRelationInfo", and "deviceRelationInfo".
-  2. JOIN Pattern: "merchantInfo"."merchantId" -> "merchantRelationInfo"."merchantId" -> "deviceRelationInfo"."relationId".
-  3. Return "deviceId" (BIGINT) and "merchantBusinessName" (VARCHAR).
-  4. Return ONLY a valid SELECT query.
+  2. JOIN Pattern: "merchantInfo"."merchantId" -> "merchantRelationInfo"."merchantId", then "merchantRelationInfo"."relationId" -> "deviceRelationInfo"."relationId".
+  3. Return "deviceRelationInfo"."deviceId" (the MongoDB linking ID) and "merchantInfo"."merchantBusinessName".
+  4. "merchantInfo"."merchantId" is VARCHAR — do NOT join on "merchantInfo"."id" (BIGINT).
+  5. Return ONLY a valid SELECT query.
   `;
 
   const sqlAgent = require("./sqlAgent");

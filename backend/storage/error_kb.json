@@ -52,5 +52,17 @@
     "content": "deviceInfo.id AS \"deviceId\", COUNT(*) AS \"transactionCount\"",
     "type": "error",
     "createdAt": "2026-03-05T12:28:44.657Z"
+  },
+  {
+    "question": "show all users",
+    "content": "SELECT \"u\".id, \"u\".firstName, \"u\".lastName, \"u\".location, \"u\".countryCode, \"u\".mobileNo, \"u\".emailId, \"u\".password, \"r\".id AS \"roleId\", \"f\".imageId, \"u\".autoResetPassword, \"u\".isActive, \"u\".allowLogin, \"u\".createdBy, \"u\".updatedBy, \"u\".deletedBy, \"u\".createdAt, \"u\".updatedAt, \"u\".deletedAt FROM \"userInfo\" AS \"u\" INNER JOIN \"userGroupInfo\" AS \"ug\" ON \"u\".id = \"ug\".userId WHERE \"ug\".groupId IS NULL",
+    "type": "error",
+    "createdAt": "2026-03-06T12:45:24.777Z"
+  },
+  {
+    "question": "show all users",
+    "content": "SELECT \"u\".id, \"u\".firstName, \"u\".lastName, \"u\".location, \"u\".countryCode, \"u\".mobileNo, \"u\".emailId, \"u\".password FROM \"userInfo\" AS \"u\" WHERE 1=1 LIMIT 50",
+    "type": "error",
+    "createdAt": "2026-03-06T12:45:27.961Z"
   }
 ]

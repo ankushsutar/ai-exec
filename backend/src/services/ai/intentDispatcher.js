@@ -22,6 +22,18 @@ async function dispatchIntent(question) {
     /\bnetwork\b/i,
     /\bbattery\b/i,
     /\bdevice uptime\b/i,
+    /\bbattery\b/i,
+    /\bdevice uptime\b/i,
+    /\bsignal\b/i,
+  ];
+
+  const SQL_PATTERNS = [
+    /\buser/i,
+    /\brole/i,
+    /\bgroup/i,
+    /\baccess right/i,
+    /\bpermission/i,
+    /\bhierarchy/i,
   ];
 
   const MONGODB_BI_PATTERNS = [
@@ -442,6 +454,7 @@ async function dispatchIntent(question) {
   const hasStats = MONGODB_STATS_PATTERNS.some((regex) =>
     regex.test(lowercaseQ),
   );
+  const hasSql = SQL_PATTERNS.some((regex) => regex.test(lowercaseQ));
 
   let biIntent = null;
   for (const pattern of MONGODB_BI_PATTERNS) {
@@ -478,6 +491,13 @@ async function dispatchIntent(question) {
       "[Intent Dispatcher] Heuristic: Identified MONGODB_STATS (Device Stats).",
     );
     return "MONGODB_STATS";
+  }
+
+  if (hasSql) {
+    console.log(
+      "[Intent Dispatcher] Heuristic: Identified SQL (Metadata/User Management).",
+    );
+    return "SQL";
   }
 
   // 3. LLM ANALYSIS (DECISION PATH)

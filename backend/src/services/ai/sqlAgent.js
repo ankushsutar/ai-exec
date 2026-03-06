@@ -46,7 +46,8 @@ async function generateSQLFromPrompt(
         "[SQL Agent] RAG Vector Store is empty (warming up). Falling back to basic schema extraction...",
       );
       const { extractDatabaseSchema } = require("../data/dbService");
-      topSchemas = await extractDatabaseSchema();
+      const { ALLOWED_POSTGRES_TABLES } = require("../../config/allowedSchema");
+      topSchemas = await extractDatabaseSchema(ALLOWED_POSTGRES_TABLES);
     }
   } catch (e) {
     console.error(
@@ -54,7 +55,8 @@ async function generateSQLFromPrompt(
     );
     try {
       const { extractDatabaseSchema } = require("../data/dbService");
-      topSchemas = await extractDatabaseSchema();
+      const { ALLOWED_POSTGRES_TABLES } = require("../../config/allowedSchema");
+      topSchemas = await extractDatabaseSchema(ALLOWED_POSTGRES_TABLES);
     } catch (inner) {
       topSchemas = "Unknown Schema";
     }
@@ -171,13 +173,17 @@ async function generateSQLFromPrompt(
       const prefix = match[1];
       if (!allValidPrefixes.includes(prefix)) {
         console.warn(`[SQL Agent] Detected undefined alias prefix: ${prefix}`);
-        // Heuristic fix for common hallucinations
-        if (prefix === "r" || prefix === "relation") {
+        // Heuristic fix for common hallucinations (uses whitelisted tables only)
+        if (prefix === "r" || prefix === "relation" || prefix === "mr") {
           sql = sql.split(`"${prefix}"."`).join('"merchantRelationInfo"."');
-        } else if (prefix === "d" || prefix === "device") {
+        } else if (prefix === "d" || prefix === "device" || prefix === "mdr") {
           sql = sql.split(`"${prefix}"."`).join('"deviceRelationInfo"."');
         } else if (prefix === "m" || prefix === "merchant") {
           sql = sql.split(`"${prefix}"."`).join('"merchantInfo"."');
+        } else if (prefix === "u" || prefix === "user") {
+          sql = sql.split(`"${prefix}"."`).join('"userInfo"."');
+        } else if (prefix === "g" || prefix === "group") {
+          sql = sql.split(`"${prefix}"."`).join('"groupInfo"."');
         }
       }
     });

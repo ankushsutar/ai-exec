@@ -17,10 +17,10 @@ const ALLOWED_POSTGRES_TABLES = [
   "userGroupInfo",
   "merchantInfo",
   "merchantRelationInfo",
-  "MerchantDeviceRelationInfo",
   "deviceBriefInfo",
   "deviceIdentInfo",
   "deviceRelationInfo",
+  "terminalRelationInfo",
   "groupInfo",
   "groupHierarchyInfo",
 ];

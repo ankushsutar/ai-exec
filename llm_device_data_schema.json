@@ -1,0 +1,97 @@
+[
+  {
+    "entity": "Device",
+    "storage_strategy": "Hybrid",
+    "description": "Hardware entity management. Identity and credentials in Postgres; Telemetry and Summaries in MongoDB.",
+    "relational_store": {
+      "database": "PostgreSQL",
+      "tables": [
+        {
+          "name": "deviceInfo",
+          "model": "DeviceInfoDBFKey",
+          "primary_key": "id",
+          "dependencies": ["manufacturerTypeInfo", "deviceTypeInfo"],
+          "description": "Core source of truth for device identity and hardware associations."
+        },
+        {
+          "name": "deviceIdentInfo",
+          "model": "DeviceIdentDB",
+          "primary_key": "deviceId",
+          "dependencies": ["groupInfo"],
+          "description": "Additional device info: security keys, MQTT topics, terminal IDs, and group-based assignments."
+        },
+        {
+          "name": "deviceConfigInfo",
+          "model": "DeviceConfigDBFKey",
+          "foreign_key": "deviceId",
+          "dependencies": ["firmwareInfo", "serverInfo"],
+          "description": "Operational configurations, volume settings, and server connection flags."
+        },
+        {
+          "name": "deviceTypeInfo",
+          "model": "DeviceTypeInfoDBFKey",
+          "primary_key": "id",
+          "description": "Hardware classifications (NetworkType, FormFactor, AudioType)."
+        }
+      ]
+    },
+    "document_store": {
+      "database": "MongoDB",
+      "collections": [
+        {
+          "name": "deviceStatHistoryInfo",
+          "model": "DeviceStatHistoryInfoMDB",
+          "linking_key": "metadata.deviceId",
+          "description": "Historical Data: Periodic statistics, network quality logs, and telemetry over time."
+        },
+        {
+          "name": "deviceSessionSummaryInfo",
+          "model": "DeviceSessionSummaryInfoMDB",
+          "linking_key": "deviceId",
+          "description": "Summary: Aggregated view of periodic statistics, heartbeat status, and transaction counts."
+        }
+      ]
+    }
+  },
+  {
+    "entity": "Firmware",
+    "storage_strategy": "Relational",
+    "relational_store": {
+      "database": "PostgreSQL",
+      "tables": [
+        { "name": "firmwareInfo", "model": "FirmwareInfoDB" },
+        { "name": "fileInfo", "model": "FileInfoDB" }
+      ]
+    }
+  },
+  {
+    "entity": "Group",
+    "storage_strategy": "Relational",
+    "relational_store": {
+      "database": "PostgreSQL",
+      "tables": [
+        { "name": "groupInfo", "model": "GroupInfoDB" }
+      ]
+    }
+  },
+  {
+    "entity": "Manufacturer",
+    "storage_strategy": "Relational",
+    "relational_store": {
+      "database": "PostgreSQL",
+      "tables": [
+        { "name": "manufacturerTypeInfo", "model": "ManufacturerTypeInfoDB" }
+      ]
+    }
+  },
+  {
+    "entity": "Server_Configuration",
+    "storage_strategy": "Relational",
+    "relational_store": {
+      "database": "PostgreSQL",
+      "tables": [
+        { "name": "serverInfo", "model": "ServerInfoDB" }
+      ]
+    }
+  }
+]

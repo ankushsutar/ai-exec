@@ -1,0 +1,139 @@
+[
+  {
+    "entity": "Device",
+    "storage_strategy": "Hybrid",
+    "description": "Hardware entity management. Identity and credentials in Postgres; Telemetry and Summaries in MongoDB.",
+    "relational_store": {
+      "database": "PostgreSQL",
+      "tables": [
+        {
+          "name": "deviceInfo",
+          "model": "DeviceInfoDBFKey",
+          "primary_key": "id",
+          "dependencies": ["deviceTypeInfo", "manufacturerTypeInfo"],
+          "description": "Core source of truth for device identity and hardware associations."
+        },
+        {
+          "name": "deviceIdentInfo",
+          "model": "DeviceIdentDB",
+          "primary_key": "deviceId",
+          "dependencies": ["groupInfo"],
+          "description": "Additional device info: security keys, MQTT topics, terminal IDs, and group-based assignments."
+        },
+        {
+          "name": "deviceConfigInfo",
+          "model": "DeviceConfigDBFKey",
+          "foreign_key": "deviceId",
+          "dependencies": ["firmwareInfo", "serverInfo"],
+          "description": "Operational configurations, volume settings, and server connection flags."
+        },
+        {
+          "name": "deviceTypeInfo",
+          "model": "DeviceTypeInfoDBFKey",
+          "primary_key": "id",
+          "description": "Hardware classifications (NetworkType, FormFactor, AudioType)."
+        },
+        {
+          "name": "deviceAdvertisementRelationInfo",
+          "model": "DeviceAdvertisementRelationDBFKey",
+          "foreign_key": "deviceId",
+          "description": "Mapping table for scheduled audio advertisements per device."
+        }
+      ]
+    },
+    "document_store": {
+      "database": "MongoDB",
+      "collections": [
+        {
+          "name": "deviceStatHistoryInfo",
+          "model": "DeviceStatHistoryInfoMDB",
+          "linking_key": "metadata.deviceId",
+          "description": "Historical Data: Periodic statistics, network quality logs, and telemetry over time."
+        },
+        {
+          "name": "deviceSessionSummaryInfo",
+          "model": "DeviceSessionSummaryInfoMDB",
+          "linking_key": "deviceId",
+          "description": "Summary: Aggregated view of periodic statistics, heartbeat status, and transaction counts."
+        },
+        {
+          "name": "deviceNetworkInfo",
+          "model": "DeviceNetworkInfoMDB",
+          "linking_key": "deviceId",
+          "description": "Current and daily average network performance metrics."
+        }
+      ]
+    }
+  },
+  {
+    "entity": "Payment_Relation_Mapping",
+    "storage_strategy": "Relational",
+    "description": "Binds devices, merchants, terminals, and QRs into a functional payment endpoint using relationId.",
+    "relational_store": {
+      "database": "PostgreSQL",
+      "tables": [
+        { "name": "merchantRelationInfo", "model": "MerchantRelationInfoDBFKey", "primary_key": "relationId" },
+        { "name": "deviceRelationInfo", "model": "DeviceRelationInfoDBFKey", "primary_key": "relationId" },
+        { "name": "terminalRelationInfo", "model": "TerminalRelationInfoDBFKey", "primary_key": "relationId" },
+        { "name": "qrRelationInfo", "model": "QRRelationInfoDBFKey", "primary_key": "relationId" },
+        { "name": "terminalInfo", "model": "TerminalInfoDB", "primary_key": "terminalId" },
+        { "name": "qrInfo", "model": "QRInfoDB", "primary_key": "id" }
+      ]
+    }
+  },
+  {
+    "entity": "Transaction",
+    "storage_strategy": "Document",
+    "document_store": {
+      "database": "MongoDB",
+      "collections": [
+        {
+          "name": "transactionActionHistoryInfo",
+          "models": ["TransactionActionSentHistoryMDB", "TransactionActionAckHistoryMDB", "TransactionActionResponseHistoryMDB"],
+          "linking_key": "deviceId",
+          "description": "Polymorphic collection tracking the Sent -> Ack -> Played lifecycle of a payment."
+        }
+      ]
+    }
+  },
+  {
+    "entity": "User_Management",
+    "storage_strategy": "Relational",
+    "relational_store": {
+      "database": "PostgreSQL",
+      "tables": [
+        { "name": "userInfo", "model": "UserInfoDB", "primary_key": "id", "dependencies": ["roleInfo"] },
+        { "name": "userGroupInfo", "model": "UserGroupRelationDB", "primary_key": "id", "dependencies": ["groupInfo"] },
+        { "name": "userOTPInfo", "model": "UserOTPDB", "primary_key": "id" },
+        { "name": "roleInfo", "model": "RoleInfoDB", "primary_key": "id" },
+        { "name": "rolesAccessRightsInfo", "model": "RolesAccessRightsDB", "dependencies": ["accessRightsInfo"] },
+        { "name": "accessRightsInfo", "model": "AccessRightsInfoDB", "primary_key": "id" }
+      ]
+    }
+  },
+  {
+    "entity": "Infrastructure",
+    "storage_strategy": "Relational",
+    "relational_store": {
+      "database": "PostgreSQL",
+      "tables": [
+        { "name": "groupInfo", "model": "GroupInfoDB", "primary_key": "id" },
+        { "name": "groupHierarchyInfo", "model": "GroupHierarchyDB", "foreign_key": "groupId" },
+        { "name": "manufacturerTypeInfo", "model": "ManufacturerTypeInfoDB", "primary_key": "id" },
+        { "name": "firmwareInfo", "model": "FirmwareInfoDB", "primary_key": "id" },
+        { "name": "fileInfo", "model": "FileInfoDB", "primary_key": "id" },
+        { "name": "serverInfo", "model": "ServerInfoDB", "primary_key": "id" }
+      ]
+    }
+  },
+  {
+    "entity": "Merchant",
+    "storage_strategy": "Relational",
+    "relational_store": {
+      "database": "PostgreSQL",
+      "tables": [
+        { "name": "merchantInfo", "model": "MerchantInfoDBFKey", "primary_key": "merchantId", "dependencies": ["groupInfo"] }
+      ]
+    }
+  }
+]

@@ -2,30 +2,59 @@
     "relationships": [
         {
             "source": "merchantInfo",
+            "target": "deviceRelationInfo",
+            "path": "merchantInfo.merchantId -> merchantRelationInfo.merchantId -> merchantRelationInfo.relationId -> deviceRelationInfo.relationId -> deviceRelationInfo.deviceId",
+            "description": "Primary path to link a merchant to their physical device IDs. The shared 'relationId' is the bridge between merchantRelationInfo and deviceRelationInfo."
+        },
+        {
+            "source": "merchantInfo",
             "target": "terminalRelationInfo",
-            "path": "merchantInfo.merchantId -> merchantRelationInfo.merchantId -> terminalRelationInfo.relationId",
-            "description": "Primary path to link merchants to terminal IDs (deviceId in Mongo)."
+            "path": "merchantInfo.merchantId -> merchantRelationInfo.merchantId -> merchantRelationInfo.relationId -> terminalRelationInfo.relationId -> terminalRelationInfo.terminalId",
+            "description": "Secondary path to link a merchant to a logical Terminal ID (TID) for payment endpoint queries."
+        },
+        {
+            "source": "userInfo",
+            "target": "deviceIdentInfo",
+            "path": "userInfo.id -> userGroupInfo.userId -> groupInfo.id -> deviceIdentInfo.groupId",
+            "description": "Link from a user to the devices in their group hierarchy."
         }
     ],
     "aliases": {
         "terminalId": "deviceId",
-        "revenue": "transactionActionHistoryInfo.amount",
-        "volume": "transactionActionHistoryInfo.amount"
+        "revenue": "transactionActionHistoryInfo.txnAmt",
+        "volume": "transactionActionHistoryInfo.txnAmt",
+        "amount": "transactionActionHistoryInfo.txnAmt"
     },
     "guardrails": {
         "sql": {
             "avoid": [
-                "deviceIdentInfo"
+                "deviceIdentInfo",
+                "terminalRelationInfo",
+                "terminalInfo"
             ],
             "must_use": [
                 "merchantRelationInfo",
-                "terminalRelationInfo"
+                "deviceRelationInfo"
             ]
         },
         "mongo": {
             "primary_transactions": "transactionActionHistoryInfo",
+            "primary_device_stats": "deviceStatHistoryInfo",
+            "primary_system": "systemSummaryInfo",
+            "primary_daily": "systemDailySummaryInfo",
+            "revenue_field": "txnAmt",
+            "transaction_linking_key": "deviceId",
+            "device_stat_linking_key": "metadata.deviceId",
+            "transaction_constants": {
+                "actionStatus_success": 1,
+                "actionStatus_failed": 20,
+                "actionStatus_unknown": 0,
+                "messageOriginType_tester": 10,
+                "messageOriginType_production": 20
+            },
             "avoid": [
-                "merchantSummaryInfo"
+                "merchantSummaryInfo",
+                "transactionHistoryInfo"
             ]
         }
     }

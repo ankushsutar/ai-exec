@@ -1,0 +1,43 @@
+{
+  "entity": "Transaction",
+  "storage_strategy": "Document",
+  "description": "Records the end-to-end lifecycle of a payment announcement event.",
+  "document_store": {
+    "database": "MongoDB",
+    "collections": [
+      {
+        "name": "transactionActionHistoryInfo",
+        "models": [
+          "TransactionActionSentHistoryMDB",
+          "TransactionActionAckHistoryMDB",
+          "TransactionActionResponseHistoryMDB"
+        ],
+        "primary_key": "actionId",
+        "linking_key": "deviceId",
+        "description": "A unified collection where each transaction is represented by up to three document types linked by a shared 'actionId'.",
+        "lifecycle_stages": {
+          "1_Sent": "Initial request containing amount (txnAmt) and merchant details.",
+          "2_Ack": "Confirmation that the device/network acknowledged the message.",
+          "3_Response": "Final result from the hardware indicating if the audio was played (audioPlayed)."
+        },
+        "query_logic": "To fetch transactions for a merchant's current session: 1. Lookup the active record in 'deviceSessionSummaryInfo' by 'merchantId'. 2. Extract the 'deviceId' and 'createdAt' (session start). 3. Query this collection for documents where 'deviceId' matches and 'createdAt' >= session start."
+      }
+    ]
+  },
+  "constants": {
+    "MessageOriginType": {
+      "0": "Unknown",
+      "10": "Tester (Test User)",
+      "20": "Production (Bank User)"
+    },
+    "AudioPlayedStatus": {
+      "0": "Unknown",
+      "1": "Success",
+      "20": "Failed"
+    },
+    "Currency": {
+      "INR": "Indian Rupee",
+      "USD": "US Dollar"
+    }
+  }
+}
