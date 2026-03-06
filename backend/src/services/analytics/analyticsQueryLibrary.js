@@ -75,10 +75,19 @@ const analyticsQueryLibrary = {
         _id: "$deviceId",
         revenue: { $sum: "$txnAmt" },
         count: { $sum: 1 },
+        lastTransactionDate: { $max: "$createdAt" },
       },
     },
     { $sort: { revenue: -1 } },
-    { $project: { _id: 0, deviceId: "$_id", revenue: 1, count: 1 } },
+    {
+      $project: {
+        _id: 0,
+        deviceId: "$_id",
+        revenue: 1,
+        count: 1,
+        date: "$lastTransactionDate",
+      },
+    },
   ],
 
   // 5 Transaction success rate
@@ -165,11 +174,20 @@ const analyticsQueryLibrary = {
           _id: "$deviceId",
           revenue: { $sum: "$txnAmt" },
           count: { $sum: 1 },
+          lastTransactionDate: { $max: "$createdAt" },
         },
       },
       { $sort: { revenue: -1 } },
       { $limit: limit },
-      { $project: { _id: 0, deviceId: "$_id", revenue: 1, count: 1 } },
+      {
+        $project: {
+          _id: 0,
+          deviceId: "$_id",
+          revenue: 1,
+          count: 1,
+          date: "$lastTransactionDate",
+        },
+      },
     ];
   },
 
@@ -275,11 +293,19 @@ const analyticsQueryLibrary = {
         $group: {
           _id: "$deviceId",
           revenue: { $sum: "$txnAmt" },
+          lastTransactionDate: { $max: "$createdAt" },
         },
       },
       { $sort: { revenue: -1 } },
       { $limit: 1 },
-      { $project: { _id: 0, deviceId: "$_id", revenue: 1 } },
+      {
+        $project: {
+          _id: 0,
+          deviceId: "$_id",
+          revenue: 1,
+          date: "$lastTransactionDate",
+        },
+      },
     ];
   },
 
@@ -306,10 +332,23 @@ const analyticsQueryLibrary = {
   // 18 Devices with highest failure volume (Actionable Ops Metric)
   getDevicesWithHighestFailures: (limit = 10) => [
     { $match: { actionStatus: { $ne: 1 }, deviceId: { $ne: null } } },
-    { $group: { _id: "$deviceId", failureCount: { $sum: 1 } } },
+    {
+      $group: {
+        _id: "$deviceId",
+        failureCount: { $sum: 1 },
+        lastFailureDate: { $max: "$createdAt" },
+      },
+    },
     { $sort: { failureCount: -1 } },
     { $limit: limit },
-    { $project: { _id: 0, deviceId: "$_id", failureCount: 1 } },
+    {
+      $project: {
+        _id: 0,
+        deviceId: "$_id",
+        failureCount: 1,
+        date: "$lastFailureDate",
+      },
+    },
   ],
 
   // 19 High-Value Transactions (Risk/VIP Monitoring)
@@ -460,6 +499,7 @@ const analyticsQueryLibrary = {
         _id: "$metadata.deviceId",
         totalFailedToPlay: { $max: "$totalTransactionsFailedToPlay" },
         totalPlayed: { $max: "$totalTransactionsPlayed" },
+        lastReported: { $max: "$createdAt" },
       },
     },
     { $sort: { totalFailedToPlay: -1 } },
@@ -470,6 +510,7 @@ const analyticsQueryLibrary = {
         deviceId: "$_id",
         totalFailedToPlay: 1,
         totalPlayed: 1,
+        date: "$lastReported",
       },
     },
   ],
@@ -528,6 +569,7 @@ const analyticsQueryLibrary = {
         _id: "$metadata.deviceId",
         totalReboots: { $max: "$totalDeviceRebootCount" },
         lastRebootReason: { $last: "$deviceLastRebootReason" },
+        lastRebootDate: { $max: "$createdAt" },
       },
     },
     { $sort: { totalReboots: -1 } },
@@ -538,6 +580,7 @@ const analyticsQueryLibrary = {
         deviceId: "$_id",
         totalReboots: 1,
         lastRebootReason: 1,
+        date: "$lastRebootDate",
       },
     },
   ],

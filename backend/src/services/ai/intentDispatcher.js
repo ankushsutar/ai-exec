@@ -109,7 +109,12 @@ async function dispatchIntent(question) {
     },
     {
       intent: "MONGODB_BI_HIGH_REV_DEV_MONTH",
-      regex: /\bbest\s+device.*month\b/i,
+      regex: /\bbest\s+(?:performing\s+)?device.*month\b/i,
+    },
+    {
+      intent: "MONGODB_BI_HIGH_REV_DEV_MONTH",
+      regex:
+        /\bbest\s+(?:performing\s+)?device\s+(?:in|for)\s+(?:january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\b/i,
     },
 
     // ── Transactions ─────────────────────────────────────────────────────────
