@@ -1798,5 +1798,35 @@
     "question": "Best performing device for Dec 2025",
     "intent": "DYNAMIC",
     "requestId": "8078"
+  },
+  {
+    "timestamp": "2026-03-06T06:49:57.996Z",
+    "question": "Show overall system summary",
+    "intent": "DYNAMIC",
+    "requestId": "7996"
+  },
+  {
+    "timestamp": "2026-03-06T06:50:05.284Z",
+    "question": "Show me devices that rebooted more than 5 times today",
+    "intent": "DYNAMIC",
+    "requestId": "5283"
+  },
+  {
+    "timestamp": "2026-03-06T06:50:19.668Z",
+    "question": "Average signal strength by network operator",
+    "intent": "DYNAMIC",
+    "requestId": "9667"
+  },
+  {
+    "timestamp": "2026-03-06T06:50:33.565Z",
+    "question": "What is the average battery level across all devices right now?",
+    "intent": "DYNAMIC",
+    "requestId": "3564"
+  },
+  {
+    "timestamp": "2026-03-06T06:50:41.708Z",
+    "question": "List devices where audio transactions failed to play",
+    "intent": "DYNAMIC",
+    "requestId": "1708"
   }
 ]

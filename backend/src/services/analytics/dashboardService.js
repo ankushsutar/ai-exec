@@ -1,4 +1,4 @@
-const { connect: connectMongo } = require("./mongoService");
+const { connect: connectMongo } = require("../data/mongoService");
 const analyticsQueryLibrary = require("./analyticsQueryLibrary");
 
 /**

@@ -1,15 +1,15 @@
 const axios = require("axios");
-const config = require("../config/env");
+const config = require("../../config/env");
 const { generateEmbedding } = require("./ollamaService");
-const { getTopSchemasString } = require("./vectorStore");
-const { getBestFewShotExample } = require("./knowledgeBase");
+const { getTopSchemasString } = require("../data/vectorStore");
+const { getBestFewShotExample } = require("../knowledge/knowledgeBase");
 
 async function generateSQLFromPrompt(
   question,
   originalQuestion = null,
   requestId = "N/A",
 ) {
-  const { getCache, setCache } = require("./cacheService");
+  const { getCache, setCache } = require("../data/cacheService");
   const cachedSql = getCache(question);
   if (cachedSql) {
     console.log(
@@ -45,24 +45,22 @@ async function generateSQLFromPrompt(
       console.warn(
         "[SQL Agent] RAG Vector Store is empty (warming up). Falling back to basic schema extraction...",
       );
-      const { extractDatabaseSchema } = require("./dbService");
-      topSchemas = await extractDatabaseSchema(); // Fetch everything as fallback
+      const { extractDatabaseSchema } = require("../data/dbService");
+      topSchemas = await extractDatabaseSchema();
     }
   } catch (e) {
     console.error(
       "[SQL Agent] Vector search failed, falling back to full schema if possible.",
     );
     try {
-      const { extractDatabaseSchema } = require("./dbService");
+      const { extractDatabaseSchema } = require("../data/dbService");
       topSchemas = await extractDatabaseSchema();
     } catch (inner) {
       topSchemas = "Unknown Schema";
     }
   }
-
-  const concepts = require("../config/concepts.json");
-
-  const { getPostgresPrompt } = require("../prompts/postgresPrompt");
+  const concepts = require("../../config/concepts.json");
+  const { getPostgresPrompt } = require("../../prompts/postgresPrompt");
   const { routeModel } = require("./modelRouter");
 
   // Routing with options:
@@ -210,7 +208,7 @@ async function generateSQLFromPrompt(
     }
 
     console.log("[SQL Agent] Generated SQL:", sql);
-    const { setCache } = require("./cacheService");
+    const { setCache } = require("../data/cacheService");
     setCache(question, sql);
     return sql;
   } catch (error) {
@@ -222,7 +220,7 @@ async function generateSQLFromPrompt(
 async function fixSQLFromError(question, failedSql, errorMessage) {
   console.log("[SQL Agent] Attempting to fix failed SQL query...");
 
-  const { getRetryPrompt } = require("../prompts/retryPrompt");
+  const { getRetryPrompt } = require("../../prompts/retryPrompt");
   const prompt = getRetryPrompt(question, failedSql, errorMessage);
 
   try {
@@ -273,7 +271,7 @@ async function fixSQLFromError(question, failedSql, errorMessage) {
     console.log("[SQL Agent] Fixed SQL:", sql);
 
     // LEARN FROM SUCCESS: Record this fix in the knowledge base
-    const { recordLearnedFix } = require("./knowledgeBase");
+    const { recordLearnedFix } = require("../knowledge/knowledgeBase");
     recordLearnedFix(question, sql);
 
     return sql;

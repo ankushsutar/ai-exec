@@ -1,5 +1,5 @@
 const axios = require("axios");
-const config = require("../config/env");
+const config = require("../../config/env");
 
 /**
  * Uses a combination of entity-based heuristics and LLM analysis to determine intent.

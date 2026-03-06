@@ -1,6 +1,6 @@
 const axios = require("axios");
-const config = require("../config/env");
-const { getBestFewShotExample } = require("./knowledgeBase");
+const config = require("../../config/env");
+const { getBestFewShotExample } = require("../knowledge/knowledgeBase");
 const { generateEmbedding } = require("./ollamaService");
 
 /**

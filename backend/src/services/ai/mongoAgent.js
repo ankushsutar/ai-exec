@@ -1,8 +1,8 @@
 const axios = require("axios");
-const config = require("../config/env");
+const config = require("../../config/env");
 const { generateEmbedding } = require("./ollamaService");
-const { getTopSchemasString } = require("./vectorStore");
-const { getBestFewShotExample } = require("./knowledgeBase");
+const { getTopSchemasString } = require("../data/vectorStore");
+const { getBestFewShotExample } = require("../knowledge/knowledgeBase");
 
 // DYNAMIC DATE EVALUATION
 // Recursively walk the query object and convert "new Date(...)" strings to real Date objects
@@ -143,7 +143,7 @@ async function generateMQLFromPrompt(
     topSchemas = "Unknown Collection Schema";
   }
 
-  const { getMongoPrompt } = require("../prompts/mongoPrompt");
+  const { getMongoPrompt } = require("../../prompts/mongoPrompt");
   const { routeModel } = require("./modelRouter");
 
   // GOLDEN EXAMPLE BYPASS: If we have an exact match (score > 0.85), use it directly

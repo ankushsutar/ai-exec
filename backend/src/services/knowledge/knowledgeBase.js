@@ -1,10 +1,10 @@
 const fs = require("fs");
 const path = require("path");
-const { generateEmbedding } = require("./ollamaService");
-const { cosineSimilarity } = require("./vectorStore");
+const { generateEmbedding } = require("../ai/ollamaService");
+const { cosineSimilarity } = require("../data/vectorStore");
 
 // A curated list of high-quality examples to guide the small LLM.
-const GOLDEN_EXAMPLES = require("../../storage/golden_examples.json");
+const GOLDEN_EXAMPLES = require("../../../storage/golden_examples.json");
 const ERROR_KB_FILE = path.join(__dirname, "../../storage/error_kb.json");
 
 let embeddedExamples = [];

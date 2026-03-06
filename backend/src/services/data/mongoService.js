@@ -1,5 +1,5 @@
 const { MongoClient } = require("mongodb");
-const config = require("../config/env");
+const config = require("../../config/env");
 
 let client;
 let db;

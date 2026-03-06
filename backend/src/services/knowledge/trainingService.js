@@ -2,7 +2,7 @@ const axios = require("axios");
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
-const config = require("../config/env");
+const config = require("../../config/env");
 
 const CACHE_FILE = path.join(__dirname, "../../storage/knowledge_cache.json");
 

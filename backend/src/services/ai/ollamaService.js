@@ -1,5 +1,5 @@
 const axios = require("axios");
-const config = require("../config/env");
+const config = require("../../config/env");
 
 // Extract the base URL from the /api/generate url
 const OLLAMA_BASE_URL = config.ollamaUrl.replace("/api/generate", "");
@@ -14,7 +14,7 @@ async function getLLMSummaryStream(analyticsData, res, question = "") {
       metricName: analyticsData?.valueKey || "value",
     };
 
-    const { getSummaryPrompt } = require("../prompts/summaryPrompt");
+    const { getSummaryPrompt } = require("../../prompts/summaryPrompt");
     const prompt = getSummaryPrompt(question, analyticsData);
 
     const response = await axios.post(
@@ -53,7 +53,10 @@ async function getLLMSummaryStream(analyticsData, res, question = "") {
 
 async function generateEmbedding(text) {
   try {
-    const { getCachedEmbedding, setCachedEmbedding } = require("./vectorStore");
+    const {
+      getCachedEmbedding,
+      setCachedEmbedding,
+    } = require("../data/vectorStore");
     const cached = getCachedEmbedding(text);
     if (cached) return cached;
 

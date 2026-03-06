@@ -25,26 +25,28 @@ app.get("/health", (req, res) => {
 // Error Handling Middleware
 app.use(errorHandler);
 
-const { extractDatabaseSchema } = require("./src/services/dbService");
+const { extractDatabaseSchema } = require("./src/services/data/dbService");
 const {
   extractAllTableNames,
   getAICuratedTables,
-} = require("./src/services/schemaPruner");
-const { generateEmbedding } = require("./src/services/ollamaService");
-const { addTableEmbedding } = require("./src/services/vectorStore");
-const { initializeKnowledgeBase } = require("./src/services/knowledgeBase");
+} = require("./src/services/knowledge/schemaPruner");
+const { generateEmbedding } = require("./src/services/ai/ollamaService");
+const { addTableEmbedding } = require("./src/services/data/vectorStore");
+const {
+  initializeKnowledgeBase,
+} = require("./src/services/knowledge/knowledgeBase");
 const {
   generateSchemaSummary,
   loadCache,
   saveCache,
-} = require("./src/services/trainingService");
+} = require("./src/services/knowledge/trainingService");
 
 // Start Server
 app.listen(config.port, async () => {
   console.log(`Server is running on port ${config.port}`);
 
   try {
-    const { loadStore, saveStore } = require("./src/services/vectorStore");
+    const { loadStore, saveStore } = require("./src/services/data/vectorStore");
     const isStoreLoaded = loadStore();
 
     if (!isStoreLoaded) {
@@ -87,7 +89,7 @@ app.listen(config.port, async () => {
       const {
         listCollections,
         extractMongoSchema,
-      } = require("./src/services/mongoService");
+      } = require("./src/services/data/mongoService");
       try {
         const mongoCollections = await listCollections();
         const mongoSchemaString = await extractMongoSchema(mongoCollections);

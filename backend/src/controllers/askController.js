@@ -1,6 +1,6 @@
-const { orchestrateHybridQuery } = require("../services/hybridBroker");
-const { processAnalytics } = require("../utils/analyticsEngine");
-const { getLLMSummaryStream } = require("../services/ollamaService");
+const { orchestrateHybridQuery } = require("../services/ai/hybridBroker");
+const { processAnalytics } = require("../utils/dataProcessor");
+const { getLLMSummaryStream } = require("../services/ai/ollamaService");
 
 async function handleAskData(req, res, next) {
   try {
@@ -11,7 +11,7 @@ async function handleAskData(req, res, next) {
     console.time(`TotalRequest_${requestId}`);
     console.log("Received Question:", question);
 
-    const { logProductionQuery } = require("../services/datasetService");
+    const { logProductionQuery } = require("../services/data/datasetService");
     logProductionQuery(question, "DYNAMIC", { requestId });
 
     let dbData, analytics;

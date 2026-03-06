@@ -1,9 +1,9 @@
 const { generateSQLFromPrompt } = require("./sqlAgent");
-const { executeDynamicQuery } = require("./dbService");
-const { connect: connectMongo } = require("./mongoService");
+const { executeDynamicQuery } = require("../data/dbService");
+const { connect: connectMongo } = require("../data/mongoService");
 const { generateMQLFromPrompt } = require("./mongoAgent");
 const { dispatchIntent } = require("./intentDispatcher");
-const { extractBIParams } = require("./biParamExtractor");
+const { extractBIParams } = require("../analytics/biParamExtractor");
 
 /**
  * The Intelligent Broker that orchestrates across Postgres and MongoDB.
@@ -45,7 +45,7 @@ async function orchestrateHybridQuery(question, requestId) {
 
   if (intent && intent.startsWith("MONGODB_BI_")) {
     console.log(`[Hybrid Broker] Direct BI Library bypass detected: ${intent}`);
-    const analyticsQueryLibrary = require("./analyticsQueryLibrary");
+    const analyticsQueryLibrary = require("../analytics/analyticsQueryLibrary");
     const db = await connectMongo();
 
     // Look for the latest successful transaction to anchor "Last X days" queries

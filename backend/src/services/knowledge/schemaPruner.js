@@ -1,6 +1,6 @@
 const axios = require("axios");
-const config = require("../config/env");
-const db = require("../config/db");
+const config = require("../../config/env");
+const db = require("../../config/db");
 
 async function extractAllTableNames() {
   try {
