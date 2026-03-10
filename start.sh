@@ -3,7 +3,7 @@
 echo "Starting AI Executive Intelligence Platform..."
 
 # Start the backend in the background
-echo "-> Starting Backend on port 3000..."
+echo "-> Starting Backend..."
 cd backend
 npm start &
 BACKEND_PID=$!
@@ -14,6 +14,7 @@ cd ..
 # Start the frontend in the background
 echo "-> Starting Frontend on port 4200..."
 cd frontend
+export NG_CLI_ANALYTICS=false
 npm start &
 FRONTEND_PID=$!
 
