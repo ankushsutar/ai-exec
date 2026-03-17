@@ -27,10 +27,24 @@ async function handleAskData(req, res, next) {
         console.time(`Orchestration_Time_${requestId}_att${attempt}`);
         dbData = await orchestrateHybridQuery(question, requestId);
         console.timeEnd(`Orchestration_Time_${requestId}_att${attempt}`);
-
-        console.log("Fetched dbData length:", dbData?.length);
         break;
       } catch (err) {
+        if (err.message === "UNSUPPORTED_QUERY") {
+          return res.json({
+            kpis: [],
+            chartData: [],
+            tableData: [],
+            columns: [],
+            intent: "UNKNOWN",
+            summary: "I'm sorry, but I specialize in AI-Exec Analytics (Transactions, Device Health, and Merchants). I don't support that type of question yet. Try asking about revenue trends or device battery levels!",
+            suggestions: [
+              "Show top 5 devices by revenue",
+              "Which devices have low battery?",
+              "Show last 7 days revenue trend",
+              "System summary for today"
+            ]
+          });
+        }
         console.error(
           `Hybrid Orchestration error on attempt ${attempt}:`,
           err.message,

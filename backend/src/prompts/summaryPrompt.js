@@ -12,25 +12,19 @@ function getSummaryPrompt(question, analyticsData) {
     metric.toLowerCase().includes("amount") ||
     metric.toLowerCase().includes("amt");
 
-  return `You are a professional Data Analyst summarizing dashboard metrics.
-User Question: "${question}"
+  return `TASK: Summarize the following data in ONE concise paragraph.
 
-DATA TO SUMMARIZE:
-Primary Metric Name: ${metric}
-Metric Type: ${isCurrency ? "Currency (INR)" : "Numeric Count"}
-Key Statistics:
+DATA:
+- Metric: ${metric} (${isCurrency ? "Currency INR" : "Numeric Count"})
+- Statistics:
 ${kpis}
+- Trend: ${trend}
 
-Trend Data (Label=Value):
-${trend}
-
-INSTRUCTIONS:
-1. Write EXACTLY ONE concise paragraph summarizing the findings.
-2. **IMPORTANT:** Only use Indian Currency (INR or ₹) if the Primary Metric represents money (Revenue, Amount).
-3. If the Primary Metric is "Volume" or "Count", DO NOT use currency symbols. Report them as plain numbers.
-4. Call out specific dates/labels and their actual values from the data.
-5. DO NOT hallucinate. Only use the values provided above.
-6. Focus on the "${metric}" trend.
+RULES:
+1. ONLY talk about the labels and values provided above.
+2. If money: Use INR/₹. Otherwise: No currency.
+3. Be professional and direct. Max 3 sentences.
+4. If labels are IDs (like 104085), DO NOT guess names. Use the IDs.
 
 SUMMARY:`;
 }

@@ -6,9 +6,15 @@ const { getBestFewShotExample } = require("../knowledge/knowledgeBase");
 
 async function generateSQLFromPrompt(
   question,
-  originalQuestion = null,
+  intentResult = {},
   requestId = "N/A",
 ) {
+  // If intent is not related to metadata/merchants, return null or throw
+  if (intentResult.intent && intentResult.intent === "TRANSACTION_QUERY") {
+    console.warn("[SQL Agent] TRANSACTION_QUERY should not be handled by SQL Agent.");
+    return null;
+  }
+
   const { getCache, setCache } = require("../data/cacheService");
   const cachedSql = getCache(question);
   if (cachedSql) {

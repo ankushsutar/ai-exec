@@ -3,12 +3,17 @@ const config = require("../../config/env");
 const { generateEmbedding } = require("./ollamaService");
 const { getTopSchemasString } = require("../data/vectorStore");
 const { getBestFewShotExample } = require("../knowledge/knowledgeBase");
+const analyticsQueryLibrary = require("../analytics/analyticsQueryLibrary");
+const { getLibraryMetadata } = require("../analytics/libraryRegistry");
+const AI_CONFIG = require("../../config/aiConfig");
 
 // DYNAMIC DATE EVALUATION
 // Recursively walk the query object and convert "new Date(...)" strings to real Date objects
 const evaluateDates = (obj) => {
   if (Array.isArray(obj)) {
     return obj.map(evaluateDates);
+  } else if (obj instanceof Date) {
+    return obj;
   } else if (obj !== null && typeof obj === "object") {
     const newObj = {};
     for (const [key, value] of Object.entries(obj)) {
@@ -47,8 +52,7 @@ const evaluateDates = (obj) => {
  * into a Golden Example's optimized structure.
  */
 async function dynamicizeMQL(userQuestion, goldenExample) {
-  const { routeModel } = require("./modelRouter");
-  const { model } = routeModel(userQuestion, { forceSmall: true }); // Always use fastest model for mapping
+  const { model } = { model: AI_CONFIG.MODELS.MAPPING }; // Use centralized config
 
   const mappingPrompt = `
 You are a Data Logic Mapper. 
@@ -80,7 +84,7 @@ UPDATED MQL JSON:`;
         format: "json",
         options: { temperature: 0 },
       },
-      { timeout: 10000 },
+      { timeout: AI_CONFIG.TIMEOUTS.MAPPING },
     );
 
     return JSON.parse(response.data.response);
@@ -113,7 +117,7 @@ function applyMandatorySafeguards(result) {
   // 2. Auto-add $limit if missing (already in main flow, but good here)
   const hasLimit = result.query.some((stage) => stage.$limit);
   if (!hasLimit) {
-    result.query.push({ $limit: 50 });
+    result.query.push({ $limit: AI_CONFIG.DEFAULTS.LIMIT });
   }
 
   return result;
@@ -126,11 +130,17 @@ function applyMandatorySafeguards(result) {
 async function generateMQLFromPrompt(
   question,
   filterContext = {},
+  intentResult = {},
   requestId = "N/A",
 ) {
   console.log(
     `[Mongo Agent] [#${requestId}] Prompting LLM for MQL conversion...`,
   );
+
+  let targetCollection = "transactionActionHistoryInfo";
+  if (intentResult.intent === "DEVICE_STATS_QUERY") {
+    targetCollection = "deviceStatHistoryInfo";
+  }
 
   let topSchemas = "";
   let fewShotExample = "";
@@ -138,6 +148,45 @@ async function generateMQLFromPrompt(
     const questionEmbedding = await generateEmbedding(question);
     topSchemas = getTopSchemasString(questionEmbedding, question, 3, "mongodb");
     fewShotExample = getBestFewShotExample(questionEmbedding, "mql", 0.7);
+
+    // LIBRARY BYPASS: If a pre-built library function is identified, use it
+    if (intentResult.libraryFunction && analyticsQueryLibrary[intentResult.libraryFunction]) {
+      console.log(`[Mongo Agent] Library Hit: Using pre-built pipeline "${intentResult.libraryFunction}"`);
+      const libFn = analyticsQueryLibrary[intentResult.libraryFunction];
+      
+      const metadata = getLibraryMetadata(intentResult.libraryFunction);
+      if (metadata) {
+        targetCollection = metadata.collection;
+      }
+
+      // Handle functions that might need arguments (limit, year, month, days)
+      let query;
+      const entities = intentResult.entities || {};
+      
+      if (intentResult.libraryFunction === "getTopDevicesByRevenue" || intentResult.libraryFunction === "getLargestTransactions") {
+        query = libFn(entities.limit || 10, entities.year, entities.month);
+      } else if (intentResult.libraryFunction === "getRevenueLast7Days" || intentResult.libraryFunction === "getDailyTransactionVolume" || intentResult.libraryFunction === "getRevenueTrendPerDay") {
+        query = libFn(null, entities.days || 7);
+      } else if (intentResult.libraryFunction === "getHighValueTransactions") {
+        query = libFn(entities.threshold || 10000, entities.limit || 20);
+      } else {
+        query = typeof libFn === "function" ? libFn() : libFn;
+      }
+
+      // Merge filterContext if present (e.g. deviceIds)
+      if (Object.keys(filterContext).length > 0) {
+        if (query[0] && query[0].$match) {
+          Object.assign(query[0].$match, filterContext);
+        } else {
+          query.unshift({ $match: filterContext });
+        }
+      }
+
+      return {
+        collection: targetCollection,
+        query: evaluateDates(query)
+      };
+    }
   } catch (e) {
     console.error("[Mongo Agent] Schema retrieval failed:", e.message);
     topSchemas = "Unknown Collection Schema";
@@ -203,16 +252,14 @@ async function generateMQLFromPrompt(
   }
 
   // Routing for full LLM generation
-  const { model } = routeModel(question, {
-    forceLlama: !fewShotExample || fewShotExample.score < 0.6,
-    engine: "mongodb",
-  });
+  const model = AI_CONFIG.MODELS.MQL_GEN;
 
   const prompt = getMongoPrompt(
     question,
     topSchemas,
     filterContext,
     fewShotExample,
+    targetCollection,
   );
 
   try {
@@ -229,7 +276,7 @@ async function generateMQLFromPrompt(
           top_p: 0.1,
         },
       },
-      { timeout: 60000 },
+      { timeout: AI_CONFIG.TIMEOUTS.QUERY_GEN },
     ); // Increased to 60s for Llama 3.2
 
     let result = JSON.parse(response.data.response);
@@ -278,7 +325,7 @@ async function generateMQLFromPrompt(
     // Auto-add $limit 50 if no limit stage exists
     const hasLimit = result.query.some((stage) => stage.$limit);
     if (!hasLimit) {
-      result.query.push({ $limit: 50 });
+      result.query.push({ $limit: AI_CONFIG.DEFAULTS.LIMIT });
     }
 
     // POST-PROCESSING HEURISTICS
@@ -307,6 +354,8 @@ async function generateMQLFromPrompt(
 
     result.query = evaluateDates(result.query);
 
+    result.collection = targetCollection;
+    
     console.log(`[Mongo Agent] Selected Collection: ${result.collection}`);
     console.log(
       "[Mongo Agent] Final Evaluated Query:",

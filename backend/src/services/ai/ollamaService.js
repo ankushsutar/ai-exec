@@ -1,5 +1,6 @@
 const axios = require("axios");
 const config = require("../../config/env");
+const AI_CONFIG = require("../../config/aiConfig");
 
 // Extract the base URL from the /api/generate url
 const OLLAMA_BASE_URL = config.ollamaUrl.replace("/api/generate", "");
@@ -20,7 +21,7 @@ async function getLLMSummaryStream(analyticsData, res, question = "") {
     const response = await axios.post(
       config.ollamaUrl,
       {
-        model: "qwen2.5:0.5b", // Summaries remain on the fastest model
+        model: AI_CONFIG.MODELS.SUMMARIZER, // Summaries remain on the fastest model
         prompt: prompt,
         stream: true,
         options: {
@@ -29,7 +30,7 @@ async function getLLMSummaryStream(analyticsData, res, question = "") {
           top_p: 0.1,
         },
         keep_alive: 0,
-        timeout: 30000, // 30 second timeout
+        timeout: AI_CONFIG.TIMEOUTS.SUMMARY, // 30 second timeout
       },
       {
         responseType: "stream",
@@ -64,11 +65,11 @@ async function generateEmbedding(text) {
     const response = await axios.post(
       EMBEDDING_URL,
       {
-        model: "qwen2.5:0.5b",
+        model: AI_CONFIG.MODELS.CLASSIFIER,
         prompt: text,
         keep_alive: 0,
       },
-      { timeout: 30000 },
+      { timeout: AI_CONFIG.TIMEOUTS.SUMMARY },
     ); // 30 second timeout
 
     const embedding = response.data.embedding;
@@ -83,4 +84,43 @@ async function generateEmbedding(text) {
   }
 }
 
-module.exports = { getLLMSummaryStream, generateEmbedding };
+async function generateIntent(question) {
+  try {
+    const { getIntentClassifierPrompt } = require("../../prompts/intentClassifierPrompt");
+    const prompt = getIntentClassifierPrompt(question);
+
+    const response = await axios.post(config.ollamaUrl, {
+      model: AI_CONFIG.MODELS.CLASSIFIER,
+      prompt: prompt,
+      format: "json",
+      stream: false,
+      options: { temperature: 0 },
+    }, { timeout: AI_CONFIG.TIMEOUTS.CLASSIFIER });
+
+    return JSON.parse(response.data.response);
+  } catch (error) {
+    console.error("[Ollama Service] Intent generation failed:", error.message);
+    return { intent: "UNKNOWN", dataSources: ["postgres"], entities: {}, needsMerchantLookup: false };
+  }
+}
+
+async function generateQuery(prompt, engine = "mongo") {
+  try {
+    const response = await axios.post(config.ollamaUrl, {
+      model: AI_CONFIG.MODELS.MQL_GEN,
+      prompt: prompt,
+      format: "json",
+      stream: false,
+      options: { temperature: 0 },
+    }, { timeout: AI_CONFIG.TIMEOUTS.QUERY_GEN });
+
+    return JSON.parse(response.data.response);
+  } catch (error) {
+    console.error(`[Ollama Service] ${engine} query generation failed:`, error.message);
+    throw error;
+  }
+}
+
+
+
+module.exports = { getLLMSummaryStream, generateEmbedding, generateIntent, generateQuery };

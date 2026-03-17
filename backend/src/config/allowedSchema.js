@@ -29,16 +29,6 @@ const ALLOWED_MONGO_COLLECTIONS = [
   "systemDailySummaryInfo",
   "systemSummaryInfo",
   "transactionActionHistoryInfo",
-  "userSummaryInfo",
-  "deviceStatHistoryInfo",
-  "deviceModeHistoryInfo",
-  "deviceNetworkInfo",
-  "deviceEventLogHistoryInfo",
-  "deviceConnectivityMonthlyInfo",
-  "deviceConnectivityMonthlyHistoryInfo",
-  "deviceConnectivityHistoryInfo",
-  "deviceConfigHistoryInfo",
-  "advertisementActionHistoryInfo",
 ];
 
 module.exports = { ALLOWED_POSTGRES_TABLES, ALLOWED_MONGO_COLLECTIONS };

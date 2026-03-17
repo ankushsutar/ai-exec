@@ -35,23 +35,26 @@ This folder contains our "Internal Workforce"—specialized modules that handle 
 
 | Service File                   | Role                     | CEO Translation                                                                                                         |
 | :----------------------------- | :----------------------- | :---------------------------------------------------------------------------------------------------------------------- |
-| **`analyticsEngine.js`**       | Dashboard Specialist     | Automatically gathers all critical KPIs to build the visual graphs for the leadership dashboard.                        |
-| **`analyticsQueryLibrary.js`** | Formula Vault            | A secured library of 20+ pre-verified business logic formulas to guarantee 100% financial accuracy.                     |
-| **`hybridBroker.js`**          | The Orchestrator         | The "middle-man" that knows how to pull data from both Postgres and Mongo at the same time to answer complex questions. |
-| **`intentDispatcher.js`**      | The Traffic Cop          | Decides instantly whether a question needs a fast-path formula or a slow-path deep AI analysis.                         |
-| **`sqlAgent.js`**              | PostgreSQL Analyst       | The AI expert specialized in searching for names, hierarchies, and relational metadata.                                 |
-| **`mongoAgent.js`**            | MongoDB Analyst          | The AI expert specialized in analyzing millions of transaction logs and performance metrics.                            |
-| **`vectorStore.js`**           | The Concept Memory       | Allows the AI to "remember" concepts and search for relevant data patterns by meaning rather than just keywords.        |
-| **`knowledgeBase.js`**         | The "Golden" Memory      | Stores perfect query examples from the past to ensure the AI always follows the best historical patterns.               |
-| **`modelRouter.js`**           | Cost & Efficiency Expert | Automatically picks the cheapest and fastest AI model (e.g., Llama vs Qwen) based on the question's difficulty.         |
-| **`dbService.js`**             | SQL Pipeline             | The reliable high-speed connection bridge to our PostgreSQL (Relational) database.                                      |
-| **`mongoService.js`**          | NoSQL Pipeline           | The reliable high-speed connection bridge to our MongoDB (Big Data) database.                                           |
-| **`ollamaService.js`**         | AI Bridge                | The communication layer that talks directly to the local AI models running on our servers.                              |
-| **`schemaPruner.js`**          | Context Filter           | Keeps the AI focused by "cleaning up" the database map and only showing it what it needs to see.                        |
-| **`cacheService.js`**          | Results Locker           | Remembers the answers to common questions so we don't have to calculate them twice (saving time and compute).           |
-| **`trainingService.js`**       | Continuous Learner       | Implements logic to help the system learn from new data and refine its own accuracy over time.                          |
-| **`datasetService.js`**        | Data Librarian           | Manages the specific datasets used to fine-tune or ground the AI models for better performance.                         |
-| **`intentClassifier.js`**      | Semantic Linguist        | An advanced module that understands the "intent" of a user's question with surgical precision.                          |
+| Service File                          | Role                     | CEO Translation                                                                                                         |
+| :------------------------------------ | :----------------------- | :---------------------------------------------------------------------------------------------------------------------- |
+| **`analyticsQueryLibrary.js`**        | Formula Vault            | A secured library of 20+ pre-verified business logic formulas to guarantee 100% financial accuracy.                     |
+| **`biParamExtractor.js`**             | Pattern Whisperer        | Automatically extracts dates, amounts, and limits from plain English questions without needing expensive AI processing.  |
+| **`dashboardService.js`**             | Business Intelligence    | The specialized engine that calculates mission-critical metrics and trends for the leadership portal.                    |
+| **`hybridBroker.js`**                 | The Orchestrator         | The "middle-man" that knows how to pull data from both Postgres and Mongo at the same time to answer complex questions. |
+| **`intentDispatcher.js`**             | The Traffic Cop          | Decides instantly whether a question needs a fast-path formula or a slow-path deep AI analysis.                         |
+| **`sqlAgent.js`**                     | PostgreSQL Analyst       | The AI expert specialized in searching for names, hierarchies, and relational metadata.                                 |
+| **`mongoAgent.js`**                   | MongoDB Analyst          | The AI expert specialized in analyzing millions of transaction logs and performance metrics.                            |
+| **`vectorStore.js`**                  | The Concept Memory       | Allows the AI to "remember" concepts and search for relevant data patterns by meaning rather than just keywords.        |
+| **`knowledgeBase.js`**                | The "Golden" Memory      | Stores perfect query examples from the past to ensure the AI always follows the best historical patterns.               |
+| **`modelRouter.js`**                  | Cost & Efficiency Expert | Automatically picks the cheapest and fastest AI model (e.g., Llama vs Qwen) based on the question's difficulty.         |
+| **`dbService.js`**                    | SQL Pipeline             | The reliable high-speed connection bridge to our PostgreSQL (Relational) database.                                      |
+| **`mongoService.js`**                 | NoSQL Pipeline           | The reliable high-speed connection bridge to our MongoDB (Big Data) database.                                           |
+| **`ollamaService.js`**                | AI Bridge                | The communication layer that talks directly to the local AI models running on our servers.                              |
+| **`schemaPruner.js`**                 | Context Filter           | Keeps the AI focused by "cleaning up" the database map and only showing it what it needs to see.                        |
+| **`cacheService.js`**                 | Results Locker           | Remembers the answers to common questions so we don't have to calculate them twice (saving time and compute).           |
+| **`trainingService.js`**              | Continuous Learner       | Implements logic to help the system learn from new data and refine its own accuracy over time.                          |
+| **`datasetService.js`**               | Data Librarian           | Manages the specific datasets used to fine-tune or ground the AI models for better performance.                         |
+| **`intentClassifier.js`**             | Semantic Linguist        | An advanced module that understands the "intent" of a user's question with surgical precision.                          |
 
 ---
 

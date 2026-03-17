@@ -92,9 +92,26 @@ async function extractMongoSchema(collectionNames) {
   return combinedSchema.trim();
 }
 
+/**
+ * Executes a MongoDB aggregation or find query.
+ */
+async function runMongoQuery(collectionName, query) {
+  const database = await connect();
+  const collection = database.collection(collectionName);
+  
+  console.log(`[Mongo Service] Executing query on "${collectionName}":`, JSON.stringify(query));
+  
+  if (Array.isArray(query)) {
+    return await collection.aggregate(query).toArray();
+  } else {
+    return await collection.find(query).limit(50).toArray();
+  }
+}
+
 module.exports = {
   connect,
   listCollections,
   inferCollectionSchema,
   extractMongoSchema,
+  runMongoQuery,
 };

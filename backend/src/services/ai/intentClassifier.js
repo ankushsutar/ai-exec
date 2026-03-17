@@ -4,111 +4,47 @@ const { getBestFewShotExample } = require("../knowledge/knowledgeBase");
 const { generateEmbedding } = require("./ollamaService");
 
 /**
- * Classifies a user question into an (Entity, Intent) pair.
- * Uses Semantic Search (Knowledge Base) for speed and LLM as fallback.
+ * Classifies a user question into specific intents and data sources.
+ * Returns structured JSON with intent, dataSources, and entities.
  */
 async function classifyIntent(question) {
-  try {
-    const questionEmbedding = await generateEmbedding(question);
-
-    // 1. Try Knowledge Base first (Highest Speed)
-    // We check all types (sql, mql, hybrid) to find the best blueprint
-    const types = ["sql", "mql", "hybrid"];
-    let bestMatch = null;
-    let highestScore = -1;
-
-    for (const type of types) {
-      const match = getBestFewShotExample(questionEmbedding, type, 0.85); // High threshold for auto-bypass
-      if (match && match.score > highestScore) {
-        highestScore = match.score;
-        bestMatch = match;
-      }
-    }
-
-    if (bestMatch && bestMatch.intent) {
-      // ENTITY DISAMBIGUATION: Check if the best match's entity is actually in the question
-      // This prevents "User" questions from hitting "Merchant" blueprints blindly.
-      const lowercaseQ = question.toLowerCase();
-      const entityKeywords = {
-        Merchant: ["merchant", "business", "store"],
-        User: ["user", "customer", "person", "name"],
-        Device: ["device", "terminal", "machine", "pos"],
-        Transaction: ["transaction", "txn", "sale", "order"],
-      };
-
-      const expectedEntity = bestMatch.entity;
-      const otherEntities = Object.keys(entityKeywords).filter(
-        (e) => e !== expectedEntity,
-      );
-
-      // If a different entity is CLEARLY mentioned, but not the expected one, we trigger LLM fallback
-      const hasConflict = otherEntities.some(
-        (e) =>
-          entityKeywords[e].some((k) => lowercaseQ.includes(k)) &&
-          !entityKeywords[expectedEntity].some((k) => lowercaseQ.includes(k)),
-      );
-
-      if (highestScore > 0.95 || !hasConflict) {
-        console.log(
-          `[Intent Classifier] Semantic Hit: ${bestMatch.intent} (${bestMatch.entity}) [Confidence: ${highestScore.toFixed(2)}]`,
-        );
-        return {
-          intent: bestMatch.intent,
-          entity: bestMatch.entity,
-          type: bestMatch.type,
-          blueprint: bestMatch,
-          confidence: highestScore,
-        };
-      } else {
-        console.warn(
-          `[Intent Classifier] Semantic Collision detected (${expectedEntity} match but question looks different). Falling back.`,
-        );
-      }
-    }
-
-    // 2. LLM Fallback (Deeper Reasoning)
-    console.log(
-      "[Intent Classifier] Semantic miss, falling back to LLM classification...",
-    );
-    const classificationPrompt = `
-Identify the "Entity" and "Intent" for the following user question.
-
-USER QUESTION: "${question}"
-
-CATEGORIES:
-Entities: ["Transaction", "Merchant", "Device", "User", "System"]
-Intents: ["TREND", "VOLUME", "LIST", "LOOKUP", "STATS", "REVENUE", "SUMMARY"]
-
-INSTRUCTIONS:
-- Return ONLY a JSON object with keys "entity" and "intent".
-- Be precise.
-
-JSON:`;
-
-    const { routeModel } = require("./modelRouter");
-    const { model } = routeModel(question, { forceSmall: true });
-
-    const response = await axios.post(config.ollamaUrl, {
-      model: model,
-      prompt: classificationPrompt,
-      format: "json",
-      stream: false,
-      options: { temperature: 0 },
-    });
-
-    const result = JSON.parse(response.data.response);
-    console.log(
-      `[Intent Classifier] LLM Categorized: ${result.intent} on ${result.entity}`,
-    );
-
+  const lowercaseQ = question.toLowerCase();
+  
+  // HEURISTIC SAFETY VALVE: Reject non-transactional technical probing early
+  const telemetryKeywords = ["battery", "signal", "reboot", "firmware", "config", "mode"];
+  const analyticKeywords = ["summary", "overall", "metrics", "revenue", "transaction", "sales"];
+  
+  const isTelemetry = telemetryKeywords.some(kw => lowercaseQ.includes(kw));
+  const isAnalytic = analyticKeywords.some(kw => lowercaseQ.includes(kw));
+  const isCollectionProbe = lowercaseQ.includes("info") || lowercaseQ.includes("collection");
+  
+  if (isTelemetry && !isAnalytic) {
+    console.log(`[Intent Classifier] Early rejection: Non-transactional keyword detected.`);
     return {
-      intent: result.intent,
-      entity: result.entity,
-      confidence: 0.7, // Default confidence for LLM classification
+      reasoning: "Heuristic rejection: detected telemetry keyword without analytic context.",
+      intent: "UNKNOWN",
+      dataSources: ["mongo"],
+      entities: {},
+      needsMerchantLookup: false
     };
+  }
+
+  try {
+    const { generateIntent } = require("./ollamaService");
+    
+    console.log(`[Intent Classifier] Classifying question: "${question}"`);
+    const result = await generateIntent(question);
+    
+    console.log(`[Intent Classifier] Classified: ${result.intent} on ${JSON.stringify(result.dataSources)}`);
+    return result;
   } catch (error) {
     console.error("[Intent Classifier] Classification failed:", error.message);
-    return null;
+    return {
+      intent: "UNKNOWN",
+      dataSources: ["postgres"],
+      entities: {},
+      needsMerchantLookup: false
+    };
   }
 }
 
