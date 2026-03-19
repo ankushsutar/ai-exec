@@ -1,85 +1,63 @@
-# AI-Exec: Technical Architecture Guide
+# AI-Exec: Technical Architecture Guide (V3)
 
-This document provides a deep dive into the AI-Exec system architecture, designed to provide high-accuracy natural language querying across multiple database technologies.
+This document provides a deep dive into the V3 architecture, optimized for high-accuracy natural language analytics.
 
 ## 1. System Overview
 
-AI-Exec is an Intelligent Query Engine that transforms natural language questions into executable queries (SQL for PostgreSQL, MQL for MongoDB). It uses a hybrid RAG approach to handle complex schemas with small Language Models (LLMs) like `qwen2.5:0.5b`.
+AI-Exec V3 is a **Capability-Driven Intelligence Engine**. Instead of letting AI generate raw database queries from scratch for every question, it maps user intents to a **Library of Verified Capabilities**.
 
 ### Tech Stack
 
-- **Frontend**: Angular (Standalone Components), Highcharts for visualization, TailwindCSS for styling.
+- **Frontend**: Angular (Standalone), TailwindCSS, Highcharts.
 - **Backend**: Node.js, Express.
-- **Databases**: PostgreSQL (Relational) & MongoDB (Document-based).
-- **AI/LLM**: Ollama (Local LLM), `qwen2.5:0.5b` model for both embeddings and generation.
+- **Database**: PostgreSQL (Metadata) & MongoDB (Transaction History).
+- **Core AI**: Local Ollama Stack.
+    - **Brain (Dispatching)**: `llama3.2` (Best for JSON & Parameters).
+    - **Summarizer**: `qwen2.5:0.5b` (Best for real-time streaming speed).
+    - **Logic Agents**: `llama3.2` (Best for SQL & MongoDB syntax).
 
 ---
 
-## 2. Multi-Database AI Pipeline
+## 2. The Unified Analytics Pipeline
 
-The system uses a **Dynamic Router** to identify where the requested data resides.
+V3 replaces the multi-agent router with a centralized **Action Dispatcher**.
 
 ```mermaid
 graph TD
-    A[User Question] --> B[Dynamic Router - Intelligent Broker]
-    B -- "Relational" --> C[SQL Agent]
-    B -- "NoSQL" --> D[Mongo Agent]
-    B -- "Hybrid" --> E[Cross-Database Stitcher]
-
-    C --> F[PostgreSQL]
-    D --> G[MongoDB]
-    E --> F
-    E --> G
-
-    F --> H[Unified Analytics Engine]
-    G --> H
-    H --> I[Summary LLM - qwen2.5:0.5b]
-    I --> J[User Response]
+    A[User Question] --> B[Action Dispatcher]
+    B -- "Match" --> C[Capability Registry]
+    C -- "Execute" --> D[Analytics Query Library]
+    D -- "Pipeline" --> E[MongoDB / SQL]
+    E -- "Data" --> F[Data Processor]
+    F -- "KPIs/Charts" --> G[Summary Service]
+    G --> H[User UI]
 ```
 
-### Request Flow Sequence
+### Request Flow
 
-1. **Intelligence Brokering**: The Router analyzes the question against the Vector Store to determine target databases.
-2. **Specialized Generation**: Either `sqlAgent.js` (SQL) or a future `mongoAgent.js` (MQL) generates the database-specific query.
-3. **Execution & Analytics**: Data is fetched and normalized by the `analyticsEngine.js`.
-4. **Streaming Summary**: The results are summarized by the LLM and streamed to the UI.
-
----
-
-## 3. Core Engine Components
-
-### 3.1. Hybrid RAG Vector Store (`vectorStore.js`)
-
-Handles database schema retrieval for high-context questions.
-
-- **Support**: Maps both SQL Table schemas and MongoDB Collection samples.
-- **Search**: Hybrid search combining Cosine Similarity and Keyword Boosting.
-- **Keyword Logic**: Splits camelCase names (e.g., `userInfo` -> `user`) to prioritize relevant sources.
-
-### 3.2. Dynamic Query Agents
-
-- **SQL Agent (`sqlAgent.js`)**: Optimized for deterministic PostgreSQL output with auto-identifier quoting.
-- **Future Mongo Agent**: Designed for high-performance MongoDB Aggregation pipeline generation.
-
-### 3.3. Analytics Engine (`analyticsEngine.js`)
-
-Extracts business value from raw results, regardless of the source database.
-
-- **KPI Generation**: Automatically calculates Totals, Averages, and Extreme values.
-- **Visual Mapping**: identifies "Label" and "Value" pairs for chart generation.
+1.  **Unified Dispatch**: `actionDispatcher.js` uses an LLM to identify the target action and extract parameters (dates, limits, thresholds).
+2.  **Date Normalization**: `dateNormalizer.js` converts natural language time into deterministic `Date` objects.
+3.  **Library Invocation**: The system pulls the corresponding verified aggregation pipeline from `analyticsQueryLibrary.js`.
+4.  **Data Processing**: `dataProcessor.js` transforms raw DB results into structured KPIs and chart objects.
+5.  **Streaming Synthesis**: The LLM generates a final executive summary using the processed data.
 
 ---
 
-## 4. Reliability & Edge Case Handling
+## 3. Key Components
 
-- **Automatic Retries**: `askController.js` implements a 3-attempt retry loop with error-feedback grounding.
-- **Unique Observability**: Every request has a unique ID for tracing concurrent overlapping sessions.
-- **Service Timeouts**: 30-second timeouts on all LLM calls prevent server hangs.
+### 3.1. Action Dispatcher (`actionDispatcher.js`)
+The "Brain" of V3. It combines classification and parameter extraction into a single high-reliability LLM call. It is hardened against halluncinations by strictly adhering to the `capabilityRegistry`.
+
+### 3.2. Analytics Query Library (`analyticsQueryLibrary.js`)
+The "Source of Truth" for business logic. It contains over 30 production-grade MongoDB aggregation pipelines that handle complex filtering, grouping, and conversion.
+
+### 3.3. Capability Registry (`capabilityRegistry.js`)
+A centralized JavaScript registry that defines every supported action, its associated library function, and its expected parameters.
 
 ---
 
-## 5. Security & Isolation
+## 4. Reliability & Guardrails
 
-- **Read-Only Intent**: Strict system prompts prevent data mutation (INSERT/UPDATE/DELETE).
-- **Rate Limiting**: `express-rate-limit` protects endpoints from abuse.
-- **Local Isolation**: All AI processing is local; no data perimeters are breached.
+- **Deterministic Logic**: Critical path calculations are hard-coded in the library, not generated by AI.
+- **Parameter Validation**: Dispatchers validate parameter types (e.g., ensuring a "limit" is a number).
+- **Graceful Failover**: If no analytical capability matches, the system fails over to a broader "SQL Search" mode for generic metadata lookups.

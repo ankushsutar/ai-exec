@@ -1,80 +1,73 @@
-# AI-Exec: Project Structure & Architecture
+# AI-Exec: Project Structure & Architecture (V3)
 
-This document provides a complete overview of the AI-Exec codebase, including the directory layout and the technical architecture of the Intelligent Query Engine.
+This document provides a complete overview of the V3 AI-Exec codebase, reflecting the transition to a Unified Action architecture.
 
 ## 1. Directory Structure
 
 ```text
 ai-exec/
-├── backend/                # Node.js/Express Backend
+├── backend/                # Node.js/Express Backend (Unified V3)
 │   ├── src/
 │   │   ├── config/         # Database and LLM configurations
 │   │   ├── controllers/    # Request handlers (askController.js)
-│   │   ├── middleware/     # Auth, Rate Limiting, Error Handling
 │   │   ├── routes/         # API Route definitions
-│   │   ├── services/       # Core Logic (LLM Agents, DB Brokers)
-│   │   │   ├── hybridBroker.js     # Orchestrates across PG/Mongo
-│   │   │   ├── sqlAgent.js         # PG Query Generator
-│   │   │   ├── mongoAgent.js       # Mongo Pipeline Generator
-│   │   │   ├── intentDispatcher.js # Query router
-│   │   │   └── ollamaService.js    # LLM & Embedding provider
-│   │   └── utils/          # Analytics Engine & Helpers
-│   ├── server.js           # Entry point
-│   ├── seed.js             # Basic seed script
-│   └── seedTransactions.js # Mongo transaction seeder
+│   │   ├── services/       # Core V3 Logic
+│   │   │   ├── ai/
+│   │   │   │   ├── actionDispatcher.js # THE BRAIN (Unified Intent & Params)
+│   │   │   │   ├── queryPlanner.js     # Orchestration of plan/execution
+│   │   │   │   ├── hybridBroker.js     # Entry point for cross-db queries
+│   │   │   │   ├── sqlAgent.js         # PG Specialist
+│   │   │   │   └── mongoAgent.js       # Mongo Specialist
+│   │   │   ├── data/
+│   │   │   │   ├── mongoService.js     # Secure Mongo Driver
+│   │   │   │   └── dbService.js        # Secure SQL Driver
+│   │   │   └── analytics/
+│   │   │       ├── analyticsQueryLibrary.js # 30+ Verified Formulas
+│   │   │       └── capabilityRegistry.js    # Source of Truth for Actions
+│   │   └── utils/
+│   │       ├── dateNormalizer.js   # Deterministic NLP Time Parsing
+│   │       └── dataProcessor.js    # KPI & Chart Extraction
+│   ├── server.js           # Production Entry Point
+│   └── package.json        # Dependencies
 ├── frontend/               # Angular Standalone Frontend
-│   ├── src/
-│   │   ├── app/            # Components (Dashboard, Tables, Charts)
-│   │   ├── styles.scss     # Global styles (TailwindCSS)
-│   │   └── main.ts         # Angular Bootstrapping
-│   └── tailwind.config.js  # Styling configuration
-├── .gemini/                # Antigravity brain and logs
-├── Architecture.md         # Technical architecture overview
-├── Database_Study.md       # Research on DB scaling
-├── README.md               # Getting started guide
-├── start.sh                # Linux startup script (concurrently)
-└── start.ps1               # Windows startup script
+│   └── src/app/features/   # Main UX components (Chat, Dashboards)
+└── start.sh                # Linux startup script
 ```
 
 ---
 
 ## 2. Technical Architecture
 
-AI-Exec is an enterprise-grade data intelligence engine designed to transform natural language into executable database queries with high precision.
+AI-Exec V3 uses a **Unified Action Dispatcher** to transform natural language into executable capabilities with high precision using the **capabilityRegistry**.
 
-### 2.1. Core Pipeline
-
-The system uses a **Dynamic Router** (Intellegent Broker) to identify data locality and route queries to specialized agents.
+### 2.1. V3 Dispatch Flow
 
 ```mermaid
-graph TD
-    A[User Question] --> B[Intent Dispatcher]
-    B -- "SQL" --> C[SQL Agent]
-    B -- "MONGODB" --> D[Mongo Agent]
-    B -- "HYBRID" --> E[Hybrid Broker]
-
-    C --> F[PostgreSQL]
-    D --> G[MongoDB]
-    E --> F
-    E --> G
-
-    F --> H[Analytics Engine]
-    G --> H
-    H --> I[Summary LLM]
-    I --> J[Streaming User Response]
+graph LR
+    A[User Question] --> B[Hybrid Broker]
+    B --> C[Query Planner]
+    C --> D[Action Dispatcher]
+    D -- "Lookup" --> E[Capability Registry]
+    D -- "Logic" --> F[Analytics Library]
+    F --> G[Database]
+    G --> H[Data Processor]
+    H --> I[LLM Summary]
+    I --> J[User Response]
 ```
 
-### 2.2. Key Components
+### 2.2. Core Components
 
-- **Hybrid Broker (`hybridBroker.js`)**: The "brain" that coordinates between PostgreSQL (metadata) and MongoDB (high-volume transactions).
-- **SQL Agent (`sqlAgent.js`)**: Generates strictly formatted PostgreSQL `SELECT` queries with automatic identifier quoting and self-correction logic.
-- **Mongo Agent (`mongoAgent.js`)**: Generates optimized MongoDB aggregation pipelines from natural language.
-- **Analytics Engine (`analyticsEngine.js`)**: Dynamically extracts KPIs and visual data (charts/tables) from raw results.
-- **Vector Store & RAG**: Grounded in the database schema using local embeddings to prevent hallucinations.
+- **Action Dispatcher (`actionDispatcher.js`)**: The single intelligence hop. It identifies the action (e.g., `TOTAL_REVENUE`), extracts parameters (e.g., `jan 2025`), and normalizes dates in one operation.
+- **Analytics Library (`analyticsQueryLibrary.js`)**: A library of hard-coded aggregation pipelines. This ensures that a request for "Revenue" always uses the correct `$match` and `$group` logic, preventing AI "logic drift."
+- **Date Normalizer (`dateNormalizer.js`)**: Converts relative time ("last week", "yesterday") into absolute Date objects, ensuring 100% temporal accuracy.
+- **Capability Registry (`capabilityRegistry.js`)**: The centralized configuration of every analytical function the system can perform.
 
-### 2.3. Safety & Reliability
+### 2.3. Safety & Precision
 
-- **Read-Only Operations**: System prompts strictly forbid mutation queries (INSERT/UPDATE/DELETE).
-- **Self-Correction**: The SQL Agent detects execution errors and automatically attempts to fix the query using the LLM.
-- **Deterministic Limits**: All queries are capped at `LIMIT 50` to safeguard performance.
-- **Local AI**: Uses local Ollama services (`qwen2.5:0.5b`) for privacy and data security.
+- **No Hallucinations**: By mapping questions to *pre-written* code in the library, the AI never "invents" field names or aggregation logic.
+- **Strict Typing**: Parameters are typed (number, string, date) at the dispatcher level.
+### 2.4. Local AI Model Strategy
+
+To optimize for both accuracy and speed, AI-Exec V3 uses a split-model approach:
+- **Llama 3.2**: Primary model for the **Action Dispatcher** and **Query Generation**. Chosen for its high precision in following complex JSON instructions and database schemas.
+- **Qwen 2.5 (0.5b)**: Primary model for **Executive Summarization**. Chosen for its extreme inference speed, allowing for real-time streaming of summaries to the UI.
