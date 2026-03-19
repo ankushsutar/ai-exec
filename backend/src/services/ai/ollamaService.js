@@ -84,10 +84,10 @@ async function generateEmbedding(text) {
   }
 }
 
-async function generateIntent(question) {
+async function generateIntent(question, retrievedFunctions = "") {
   try {
     const { getIntentClassifierPrompt } = require("../../prompts/intentClassifierPrompt");
-    const prompt = getIntentClassifierPrompt(question);
+    const prompt = getIntentClassifierPrompt(question, retrievedFunctions);
 
     const response = await axios.post(config.ollamaUrl, {
       model: AI_CONFIG.MODELS.CLASSIFIER,

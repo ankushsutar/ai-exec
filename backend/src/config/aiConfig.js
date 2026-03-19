@@ -9,8 +9,8 @@
 module.exports = {
   // MODEL DEFINITIONS
   MODELS: {
-    CLASSIFIER: "qwen2.5:0.5b",    // Fastest for intent detection
-    MAPPING: "qwen2.5:0.5b",       // Fast for parameter mapping
+    CLASSIFIER: "llama3.2",        // Upgraded for better instruction following in V3
+    MAPPING: "llama3.2",           // Consistency for parameter mapping
     SUMMARIZER: "qwen2.5:0.5b",    // Fastest for real-time summaries
     SQL_GEN: "llama3.2",           // Balanced for SQL
     MQL_GEN: "llama3.2",           // Balanced for MongoDB Aggregations
@@ -27,7 +27,7 @@ module.exports = {
 
   // PIPELINE DEFAULTS
   DEFAULTS: {
-    LIMIT: 50,
+    LIMIT: 100,
     TEMPERATURE: 0,
   }
 };

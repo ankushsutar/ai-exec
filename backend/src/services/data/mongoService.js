@@ -93,18 +93,51 @@ async function extractMongoSchema(collectionNames) {
 }
 
 /**
+ * ABSOLUTE LOGIC SHIELD: Recursively replaces hallucinated fields (like "date")
+ * with the correct schema fields (like "createdAt") for specific collections.
+ */
+function translateQueryFields(obj, collectionName) {
+  if (collectionName !== "transactionActionHistoryInfo") return obj;
+
+  if (obj instanceof Date) return obj;
+
+  if (Array.isArray(obj)) {
+    return obj.map(item => translateQueryFields(item, collectionName));
+  } else if (obj !== null && typeof obj === "object") {
+    const newObj = {};
+    for (let [key, value] of Object.entries(obj)) {
+      // Direct Field Aliasing (only if not a reserved MongoDB operator key)
+      const reservedKeys = ["date", "format", "timezone", "onNull"];
+      let newKey = key;
+      if (!reservedKeys.includes(key)) {
+        if (key === "date") newKey = "createdAt"; // This won't hit now, but for safety
+        if (key === "timestamp") newKey = "createdAt";
+        if (key === "amount") newKey = "txnAmt";
+      }
+      
+      newObj[newKey] = translateQueryFields(value, collectionName);
+    }
+    return newObj;
+  }
+  return obj;
+}
+
+/**
  * Executes a MongoDB aggregation or find query.
  */
 async function runMongoQuery(collectionName, query) {
   const database = await connect();
   const collection = database.collection(collectionName);
   
-  console.log(`[Mongo Service] Executing query on "${collectionName}":`, JSON.stringify(query));
+  // Apply Logic Shield before execution
+  const translatedQuery = translateQueryFields(query, collectionName);
   
-  if (Array.isArray(query)) {
-    return await collection.aggregate(query).toArray();
+  console.log(`[Mongo Service] Executing query on "${collectionName}":`, JSON.stringify(translatedQuery));
+  
+  if (Array.isArray(translatedQuery)) {
+    return await collection.aggregate(translatedQuery).toArray();
   } else {
-    return await collection.find(query).limit(50).toArray();
+    return await collection.find(translatedQuery).limit(100).toArray();
   }
 }
 

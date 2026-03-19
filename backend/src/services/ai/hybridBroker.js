@@ -1,35 +1,24 @@
-const { generateSQLFromPrompt } = require("./sqlAgent");
-const { executeDynamicQuery } = require("../data/dbService");
-const { connect: connectMongo } = require("../data/mongoService");
-const { generateMQLFromPrompt } = require("./mongoAgent");
-const { dispatchIntent } = require("./intentDispatcher");
-const { extractBIParams } = require("../analytics/biParamExtractor");
+const { planAndExecute } = require("./queryPlanner");
 
 /**
- * The Intelligent Broker that orchestrates across Postgres and MongoDB.
+ * The Intelligent Broker that orchestrates across Postgres and MongoDB (V3).
  */
 async function orchestrateHybridQuery(question, requestId) {
   console.log(`[Hybrid Broker] Orchestrating query for #${requestId}`);
 
-  // STEP 1: Determine intent using LLM (Intelligent Dispatcher)
-  const intentResult = await dispatchIntent(question);
-  let intent = intentResult?.intent;
-
-  if (!intentResult || intent === "UNKNOWN") {
-    console.log(`[Hybrid Broker] Intent is UNKNOWN. Aborting execution.`);
-    throw new Error("UNSUPPORTED_QUERY");
-  }
-
-  // STEP 2: Execute via Query Planner
-  const { planAndExecute } = require("./queryPlanner");
   try {
-    const results = await planAndExecute(question, intentResult);
+    // V3 Architecture: Unified Planning and Execution
+    const results = await planAndExecute(question);
+    
+    if (!results || (Array.isArray(results) && results.length === 0)) {
+      console.log(`[Hybrid Broker] No results for #${requestId}.`);
+    }
+
     return results;
   } catch (error) {
-    console.error(`[Hybrid Broker] Execution failed: ${error.message}`);
+    console.error(`[Hybrid Broker] Orchestration failed for #${requestId}: ${error.message}`);
+    throw error;
   }
 }
-
-
 
 module.exports = { orchestrateHybridQuery };

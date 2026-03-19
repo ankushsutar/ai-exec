@@ -46,5 +46,293 @@
     "question": "Show overall system summary",
     "intent": "DYNAMIC",
     "requestId": "7110"
+  },
+  {
+    "timestamp": "2026-03-18T09:42:26.302Z",
+    "question": "Show overall system summary",
+    "intent": "DYNAMIC",
+    "requestId": "6301"
+  },
+  {
+    "timestamp": "2026-03-18T09:42:51.531Z",
+    "question": "Top 5 devices by revenue in Jan 2025",
+    "intent": "DYNAMIC",
+    "requestId": "1530"
+  },
+  {
+    "timestamp": "2026-03-18T09:43:13.929Z",
+    "question": "Best performing device for Feb 2025",
+    "intent": "DYNAMIC",
+    "requestId": "3929"
+  },
+  {
+    "timestamp": "2026-03-18T09:47:06.188Z",
+    "question": "Daily transaction volume last 30 days",
+    "intent": "DYNAMIC",
+    "requestId": "6188"
+  },
+  {
+    "timestamp": "2026-03-18T09:47:30.196Z",
+    "question": "what is the average transaction amount",
+    "intent": "DYNAMIC",
+    "requestId": "0196"
+  },
+  {
+    "timestamp": "2026-03-18T09:47:57.852Z",
+    "question": "hi",
+    "intent": "DYNAMIC",
+    "requestId": "7852"
+  },
+  {
+    "timestamp": "2026-03-19T05:27:45.923Z",
+    "question": "Show overall system summary",
+    "intent": "DYNAMIC",
+    "requestId": "5923"
+  },
+  {
+    "timestamp": "2026-03-19T05:29:14.755Z",
+    "question": "Top 5 devices by revenue in Jan 2025",
+    "intent": "DYNAMIC",
+    "requestId": "4755"
+  },
+  {
+    "timestamp": "2026-03-19T05:33:38.517Z",
+    "question": "Best performing device for Feb 2025",
+    "intent": "DYNAMIC",
+    "requestId": "8517"
+  },
+  {
+    "timestamp": "2026-03-19T06:03:34.812Z",
+    "question": "How much revenue did we make in January 2025",
+    "intent": "DYNAMIC",
+    "requestId": "4811"
+  },
+  {
+    "timestamp": "2026-03-19T06:10:27.295Z",
+    "question": "Top 5 devices by revenue in Jan 2025",
+    "intent": "DYNAMIC",
+    "requestId": "7295"
+  },
+  {
+    "timestamp": "2026-03-19T06:12:16.325Z",
+    "question": "show revenue for january 2025",
+    "intent": "DYNAMIC",
+    "requestId": "6325"
+  },
+  {
+    "timestamp": "2026-03-19T06:12:57.998Z",
+    "question": "show me the volume for jan 2025",
+    "intent": "DYNAMIC",
+    "requestId": "7998"
+  },
+  {
+    "timestamp": "2026-03-19T06:19:40.612Z",
+    "question": "Revenue trend for the last 14 days",
+    "intent": "DYNAMIC",
+    "requestId": "0612"
+  },
+  {
+    "timestamp": "2026-03-19T06:21:13.645Z",
+    "question": "show me revenue for jan 2025",
+    "intent": "DYNAMIC",
+    "requestId": "3645"
+  },
+  {
+    "timestamp": "2026-03-19T07:11:20.988Z",
+    "question": "show me revenue for jan 2025",
+    "intent": "DYNAMIC",
+    "requestId": "0988"
+  },
+  {
+    "timestamp": "2026-03-19T07:35:51.022Z",
+    "question": "show me revenue for jan 2026",
+    "intent": "DYNAMIC",
+    "requestId": "1021"
+  },
+  {
+    "timestamp": "2026-03-19T07:39:33.304Z",
+    "question": "show revenue for jan 2025",
+    "intent": "DYNAMIC",
+    "requestId": "3304"
+  },
+  {
+    "timestamp": "2026-03-19T07:43:32.443Z",
+    "question": "show revenue trend for jan 2025",
+    "intent": "DYNAMIC",
+    "requestId": "2442"
+  },
+  {
+    "timestamp": "2026-03-19T07:44:04.842Z",
+    "question": "Transactions above ₹50,000",
+    "intent": "DYNAMIC",
+    "requestId": "4842"
+  },
+  {
+    "timestamp": "2026-03-19T07:52:11.116Z",
+    "question": "show me revenue for jan 2025",
+    "intent": "DYNAMIC",
+    "requestId": "1116"
+  },
+  {
+    "timestamp": "2026-03-19T07:56:23.341Z",
+    "question": "show me revenue for jan 2025",
+    "intent": "DYNAMIC",
+    "requestId": "3341"
+  },
+  {
+    "timestamp": "2026-03-19T09:53:43.599Z",
+    "question": "show revenue for jan 2025",
+    "intent": "DYNAMIC",
+    "requestId": "3599"
+  },
+  {
+    "timestamp": "2026-03-19T09:54:41.343Z",
+    "question": "show revenue for feb 2025",
+    "intent": "DYNAMIC",
+    "requestId": "1343"
+  },
+  {
+    "timestamp": "2026-03-19T09:55:06.386Z",
+    "question": "revenue for jan 2025 and feb 2025",
+    "intent": "DYNAMIC",
+    "requestId": "6386"
+  },
+  {
+    "timestamp": "2026-03-19T09:55:32.381Z",
+    "question": "which month has the highest revenue",
+    "intent": "DYNAMIC",
+    "requestId": "2381"
+  },
+  {
+    "timestamp": "2026-03-19T09:56:04.291Z",
+    "question": "show all the top 5 transactions in jan 2025",
+    "intent": "DYNAMIC",
+    "requestId": "4291"
+  },
+  {
+    "timestamp": "2026-03-19T09:56:26.415Z",
+    "question": "transaction volume in jan 2025",
+    "intent": "DYNAMIC",
+    "requestId": "6415"
+  },
+  {
+    "timestamp": "2026-03-19T09:56:55.495Z",
+    "question": "transaction revenue for last 6 months ",
+    "intent": "DYNAMIC",
+    "requestId": "5495"
+  },
+  {
+    "timestamp": "2026-03-19T09:57:10.161Z",
+    "question": "whats your name",
+    "intent": "DYNAMIC",
+    "requestId": "0161"
+  },
+  {
+    "timestamp": "2026-03-19T09:57:20.835Z",
+    "question": "Best performing device for Feb 2025",
+    "intent": "DYNAMIC",
+    "requestId": "0835"
+  },
+  {
+    "timestamp": "2026-03-19T10:04:45.181Z",
+    "question": "show revenue for jan 2025",
+    "intent": "DYNAMIC",
+    "requestId": "5180"
+  },
+  {
+    "timestamp": "2026-03-19T10:05:13.328Z",
+    "question": "show revenue for jan 2026",
+    "intent": "DYNAMIC",
+    "requestId": "3328"
+  },
+  {
+    "timestamp": "2026-03-19T10:05:36.252Z",
+    "question": "transactions trennd in feb 2025\\",
+    "intent": "DYNAMIC",
+    "requestId": "6252"
+  },
+  {
+    "timestamp": "2026-03-19T10:05:58.088Z",
+    "question": "what is the highest amount of transaction ",
+    "intent": "DYNAMIC",
+    "requestId": "8088"
+  },
+  {
+    "timestamp": "2026-03-19T11:20:17.697Z",
+    "question": "transaction volume for jan 2025",
+    "intent": "DYNAMIC",
+    "requestId": "7696"
+  },
+  {
+    "timestamp": "2026-03-19T11:36:18.590Z",
+    "question": "transaction volume for jan 2025",
+    "intent": "DYNAMIC",
+    "requestId": "8590"
+  },
+  {
+    "timestamp": "2026-03-19T11:44:56.216Z",
+    "question": "show arevenue for jan 2025",
+    "intent": "DYNAMIC",
+    "requestId": "6216"
+  },
+  {
+    "timestamp": "2026-03-19T11:45:51.676Z",
+    "question": "show me transactioon in jan 2025",
+    "intent": "DYNAMIC",
+    "requestId": "1676"
+  },
+  {
+    "timestamp": "2026-03-19T11:46:23.924Z",
+    "question": "show me all the transactions in jan 2025",
+    "intent": "DYNAMIC",
+    "requestId": "3924"
+  },
+  {
+    "timestamp": "2026-03-19T11:46:43.297Z",
+    "question": "Show me the sales for the last 6 months",
+    "intent": "DYNAMIC",
+    "requestId": "3297"
+  },
+  {
+    "timestamp": "2026-03-19T11:47:07.575Z",
+    "question": "Revenue trend per day for Feb 2025",
+    "intent": "DYNAMIC",
+    "requestId": "7575"
+  },
+  {
+    "timestamp": "2026-03-19T11:51:57.307Z",
+    "question": "Show all the top 5 transactions in Jan 2025",
+    "intent": "DYNAMIC",
+    "requestId": "7307"
+  },
+  {
+    "timestamp": "2026-03-19T11:52:20.765Z",
+    "question": "Show all the top 5 transactions in feb 2025",
+    "intent": "DYNAMIC",
+    "requestId": "0765"
+  },
+  {
+    "timestamp": "2026-03-19T11:52:39.584Z",
+    "question": "Top 10 devices by revenue in 2025",
+    "intent": "DYNAMIC",
+    "requestId": "9584"
+  },
+  {
+    "timestamp": "2026-03-19T11:52:59.660Z",
+    "question": "Transaction volume trends for the last 60 days",
+    "intent": "DYNAMIC",
+    "requestId": "9660"
+  },
+  {
+    "timestamp": "2026-03-19T11:53:29.682Z",
+    "question": "Transaction volume trends in jan 2025",
+    "intent": "DYNAMIC",
+    "requestId": "9682"
+  },
+  {
+    "timestamp": "2026-03-19T11:54:02.165Z",
+    "question": "Which devices have the most failed transactions",
+    "intent": "DYNAMIC",
+    "requestId": "2165"
   }
 ]

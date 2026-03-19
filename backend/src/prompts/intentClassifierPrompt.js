@@ -3,58 +3,42 @@
  * Used to categorize user questions into specific intents and data sources.
  */
 
-const getIntentClassifierPrompt = (question) => {
+const getIntentClassifierPrompt = (question, retrievedFunctions = "") => {
   const now = new Date();
   const dateStr = now.toISOString().split("T")[0];
   const dayName = now.toLocaleDateString("en-US", { weekday: "long" });
 
   return `
-Task: Classify the user's question into one of the following INTENTS for an AI Analytics platform.
+Task: Classify the user's question into one of the following INTENTS.
+If it's an analytics or device-related question, also identify the CAPABILITY_ID.
 
 CURRENT DATE: ${dateStr} (${dayName})
-PRIMARY COLLECTION: "transactionActionHistoryInfo" (Revenue, Sales, Success Rates)
 
 ALLOWED INTENTS:
-1. TRANSACTION_QUERY: Queries about revenue, sales, success, or transaction counts.
-2. ANALYTICS_QUERY: Specific reports (Top devices by revenue, trends, hourly distribution, system summaries).
-3. UNKNOWN: EVERYTHING ELSE.
+1. ANALYTICS_QUERY: Queries about revenue, sales, success, counts, trends, or specific reports.
+2. DEVICE_STATS_QUERY: Queries about device hardware, network, battery, storage, firmware.
+3. MERCHANT_QUERY: Queries about a specific merchant's devices or info.
+4. UNKNOWN: Everything else.
 
-STRICT MAPPING RULES:
-- "trend" or "graph" -> getRevenueTrendPerDay
-- "top" or "highest revenue" -> getTopDevicesByRevenue
-- "revenue" + "today/yesterday" -> getSystemSummary
-- "how many transactions" or "count" -> getDailyTransactionVolume
-- "success rate" or "failure" -> getTransactionSuccessRate
-- "average value" -> getAverageTransactionValue
+AVAILABLE CAPABILITIES:
+${retrievedFunctions}
 
-PREBUILT FUNCTIONS:
-- getSystemSummary (Used for overall totals and revenue today)
-- getRevenueTrendPerDay (Used for trends and graphs)
-- getTopDevicesByRevenue (Used for ranking devices by money)
-- getDailyTransactionVolume (Used for transaction counts)
-- getTransactionSuccessRate (Used for success % and failure)
-- getAverageTransactionValue (Used for avg txn amount)
-- getHighestRevenueDeviceByMonth (Used for monthly top device)
-
-EXAMPLES:
-- "Overall system summary" -> { "reasoning": "User wants a general overview.", "intent": "ANALYTICS_QUERY", "libraryFunction": "getSystemSummary" }
-- "Revenue trend 30 days" -> { "reasoning": "User wants a revenue graph/trend.", "intent": "ANALYTICS_QUERY", "libraryFunction": "getRevenueTrendPerDay", "entities": { "days": 30 } }
-- "How many transactions yesterday?" -> { "reasoning": "User wants a count of transactions.", "intent": "TRANSACTION_QUERY", "libraryFunction": "getDailyTransactionVolume", "entities": { "days": 1 } }
-- "Which device made most money Jan 2025?" -> { "reasoning": "User wants the top device for a specific month.", "intent": "ANALYTICS_QUERY", "libraryFunction": "getHighestRevenueDeviceByMonth", "entities": { "year": 2025, "month": 1 } }
+INSTRUCTIONS:
+1. Determine the high-level Intent.
+2. **CRITICAL: If the question is NOT related to business analytics, transactions, or hardware stats (e.g. "whats your name", "tell me a joke"), you MUST return Intent: "UNKNOWN".**
+3. If Intent is ANALYTICS_QUERY or DEVICE_STATS_QUERY, pick the BEST matching Capability ID from the list above.
+4. Extract merchant name if mentioned.
 
 QUESTION: "${question}"
 
 RESPONSE FORMAT (JSON ONLY):
 {
   "reasoning": "short explanation",
-  "intent": "TRANSACTION_QUERY" | "ANALYTICS_QUERY" | "UNKNOWN",
-  "libraryFunction": "string or null",
-  "dataSources": ["mongo"],
+  "intent": "ANALYTICS_QUERY" | "DEVICE_STATS_QUERY" | "MERCHANT_QUERY" | "UNKNOWN",
+  "capabilityId": "string or null",
+  "dataSources": ["mongo" | "postgres"],
   "entities": {
-    "year": number or null,
-    "month": number or null,
-    "days": number or null,
-    "limit": number or null
+    "merchant": "string or null"
   }
 }
 JSON:`;

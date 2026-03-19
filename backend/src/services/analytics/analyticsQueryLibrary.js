@@ -1,29 +1,45 @@
 const analyticsQueryLibrary = {
-  // 1 Total revenue
-  getTotalRevenue: () => [
-    { $match: { actionStatus: 1, txnAmt: { $exists: true, $ne: null } } },
-    {
-      $group: {
-        _id: null,
-        totalRevenue: { $sum: "$txnAmt" },
-        count: { $sum: 1 },
-      },
-    },
-    { $project: { _id: 0, totalRevenue: 1, count: 1 } },
-  ],
+  // Helper for consistent date filtering across all functions
+  _getRangeMatch: (range) => {
+    if (range && range.start && range.end) {
+      return { $gte: new Date(range.start), $lte: new Date(range.end) };
+    }
+    return null;
+  },
 
-  // 2 Revenue last N days from last record or current time (days defaults to 7)
-  getRevenueLast7Days: (referenceDate = null, days = 7) => {
-    const end = referenceDate ? new Date(referenceDate) : new Date();
-    const start = new Date(end.getTime() - (days - 1) * 24 * 60 * 60 * 1000);
+  // 1 Total revenue
+  getTotalRevenue: (range = null) => {
+    const match = { actionStatus: 1, txnAmt: { $exists: true, $ne: null } };
+    const dateFilter = analyticsQueryLibrary._getRangeMatch(range);
+    if (dateFilter) match.createdAt = dateFilter;
+
     return [
+      { $match: match },
       {
-        $match: {
-          actionStatus: 1,
-          createdAt: { $gte: start, $lte: end },
-          txnAmt: { $exists: true, $ne: null },
+        $group: {
+          _id: null,
+          totalRevenue: { $sum: "$txnAmt" },
+          count: { $sum: 1 },
         },
       },
+      { $project: { _id: 0, totalRevenue: 1, count: 1 } },
+    ];
+  },
+
+  // 2 Revenue last N days from last record or current time (days defaults to 7)
+  getRevenueLast7Days: (referenceDate = null, days = 7, year = null, month = null) => {
+    const match = { actionStatus: 1, txnAmt: { $exists: true, $ne: null } };
+    const dateFilter = analyticsQueryLibrary._getDateMatch(year, month);
+    if (dateFilter) {
+      match.createdAt = dateFilter;
+    } else {
+      const end = referenceDate ? new Date(referenceDate) : new Date();
+      const start = new Date(end.getTime() - (days - 1) * 24 * 60 * 60 * 1000);
+      match.createdAt = { $gte: start, $lte: end };
+    }
+
+    return [
+      { $match: match },
       {
         $group: {
           _id: null,
@@ -36,17 +52,19 @@ const analyticsQueryLibrary = {
   },
 
   // 3 Revenue trend per day from last record or current time
-  getRevenueTrendPerDay: (days = 30, referenceDate = null) => {
-    const end = referenceDate ? new Date(referenceDate) : new Date();
-    const start = new Date(end.getTime() - (days - 1) * 24 * 60 * 60 * 1000);
+  getRevenueTrendPerDay: (days = 30, referenceDate = null, year = null, month = null) => {
+    const match = { actionStatus: 1, txnAmt: { $exists: true, $ne: null } };
+    const dateFilter = analyticsQueryLibrary._getDateMatch(year, month);
+    if (dateFilter) {
+      match.createdAt = dateFilter;
+    } else {
+      const end = referenceDate ? new Date(referenceDate) : new Date();
+      const start = new Date(end.getTime() - (days - 1) * 24 * 60 * 60 * 1000);
+      match.createdAt = { $gte: start, $lte: end };
+    }
+
     return [
-      {
-        $match: {
-          actionStatus: 1,
-          createdAt: { $gte: start, $lte: end },
-          txnAmt: { $exists: true, $ne: null },
-        },
-      },
+      { $match: match },
       {
         $group: {
           _id: {
@@ -62,88 +80,122 @@ const analyticsQueryLibrary = {
   },
 
   // 4 Revenue per device
-  getRevenuePerDevice: () => [
-    {
-      $match: {
-        actionStatus: 1,
-        txnAmt: { $exists: true, $ne: null },
-        deviceId: { $ne: null },
+  getRevenuePerDevice: (year = null, month = null) => {
+    const match = {
+      actionStatus: 1,
+      txnAmt: { $exists: true, $ne: null },
+      deviceId: { $ne: null },
+    };
+    const dateFilter = analyticsQueryLibrary._getRangeMatch(range);
+    if (dateFilter) match.createdAt = dateFilter;
+
+    return [
+      { $match: match },
+      {
+        $group: {
+          _id: "$deviceId",
+          revenue: { $sum: "$txnAmt" },
+          count: { $sum: 1 },
+          lastTransactionDate: { $max: "$createdAt" },
+        },
       },
-    },
-    {
-      $group: {
-        _id: "$deviceId",
-        revenue: { $sum: "$txnAmt" },
-        count: { $sum: 1 },
-        lastTransactionDate: { $max: "$createdAt" },
+      { $sort: { revenue: -1 } },
+      { $limit: 100 },
+      {
+        $project: {
+          _id: 0,
+          deviceId: "$_id",
+          revenue: 1,
+          count: 1,
+          date: "$lastTransactionDate",
+        },
       },
-    },
-    { $sort: { revenue: -1 } },
-    {
-      $project: {
-        _id: 0,
-        deviceId: "$_id",
-        revenue: 1,
-        count: 1,
-        date: "$lastTransactionDate",
-      },
-    },
-  ],
+    ];
+  },
 
   // 5 Transaction success rate
-  getTransactionSuccessRate: () => [
-    {
-      $group: {
-        _id: null,
-        totalTransactions: { $sum: 1 },
-        successfulTransactions: {
-          $sum: { $cond: [{ $eq: ["$actionStatus", 1] }, 1, 0] },
+  getTransactionSuccessRate: (year = null, month = null) => {
+    const match = {};
+    const dateFilter = analyticsQueryLibrary._getRangeMatch(range);
+    if (dateFilter) match.createdAt = dateFilter;
+
+    return [
+      { $match: match },
+      {
+        $group: {
+          _id: null,
+          totalTransactions: { $sum: 1 },
+          successfulTransactions: {
+            $sum: { $cond: [{ $eq: ["$actionStatus", 1] }, 1, 0] },
+          },
         },
       },
-    },
-    {
-      $project: {
-        _id: 0,
-        totalTransactions: 1,
-        successfulTransactions: 1,
-        successRate: {
-          $multiply: [
-            { $divide: ["$successfulTransactions", "$totalTransactions"] },
-            100,
-          ],
+      {
+        $project: {
+          _id: 0,
+          totalTransactions: 1,
+          successfulTransactions: 1,
+          successRate: {
+            $multiply: [
+              {
+                $divide: [
+                  "$successfulTransactions",
+                  { $cond: [{ $eq: ["$totalTransactions", 0] }, 1, "$totalTransactions"] },
+                ],
+              },
+              100,
+            ],
+          },
         },
       },
-    },
-  ],
+    ];
+  },
 
   // 6 Failure analysis
-  getFailureAnalysis: () => [
-    { $match: { actionStatus: { $ne: 1 } } },
-    { $group: { _id: "$actionErrCode", count: { $sum: 1 } } },
-    { $sort: { count: -1 } },
-    { $project: { _id: 0, errorCode: "$_id", count: 1 } },
-  ],
+  getFailureAnalysis: (year = null, month = null) => {
+    const match = { actionStatus: { $ne: 1 } };
+    const dateFilter = analyticsQueryLibrary._getRangeMatch(range);
+    if (dateFilter) match.createdAt = dateFilter;
 
-  // 7 Average transaction value
-  getAverageTransactionValue: () => [
-    { $match: { actionStatus: 1, txnAmt: { $exists: true, $ne: null } } },
-    { $group: { _id: null, avgValue: { $avg: "$txnAmt" } } },
-    { $project: { _id: 0, avgValue: 1 } },
-  ],
+    return [
+      { $match: match },
+      { $group: { _id: "$actionErrCode", count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+      { $project: { _id: 0, errorCode: "$_id", count: 1 } },
+    ];
+  },
+
+  // 7 Average transaction value (optionally filtered by year/month)
+  getAverageTransactionValue: (year = null, month = null) => {
+    const match = { actionStatus: 1, txnAmt: { $exists: true, $ne: null } };
+    const dateFilter = analyticsQueryLibrary._getRangeMatch(range);
+    if (dateFilter) match.createdAt = dateFilter;
+    return [
+      { $match: match },
+      { $group: { _id: null, avgValue: { $avg: "$txnAmt" } } },
+      { $project: { _id: 0, avgValue: 1 } },
+    ];
+  },
 
   // 8 Hourly transaction distribution
-  getHourlyTransactionDistribution: () => [
-    { $match: { actionStatus: 1 } },
-    {
-      $group: {
-        _id: { hour: { $hour: "$createdAt" } },
-        count: { $sum: 1 },
-        revenue: { $sum: "$txnAmt" },
+  getHourlyTransactionDistribution: (year = null, month = null) => {
+    const match = { actionStatus: 1 };
+    const dateFilter = analyticsQueryLibrary._getRangeMatch(range);
+    if (dateFilter) match.createdAt = dateFilter;
+
+    return [
+      { $match: match },
+      {
+        $group: {
+          _id: { hour: { $hour: "$createdAt" } },
+          count: { $sum: 1 },
+          revenue: { $sum: "$txnAmt" },
+        },
       },
-    },
-    { $sort: { "_id.hour": 1 } },
-    { $project: { _id: 0, hour: "$_id.hour", count: 1, revenue: 1 } },
-  ],
+      { $sort: { "_id.hour": 1 } },
+      { $project: { _id: 0, hour: "$_id.hour", count: 1, revenue: 1 } },
+    ];
+  },
 
   // 9 Active devices last 24h
   getActiveDevicesLast24h: () => {
@@ -155,18 +207,16 @@ const analyticsQueryLibrary = {
     ];
   },
 
-  // 10 Top devices by revenue (optionally filtered by year/month)
+  // 10 Top devices by revenue
   getTopDevicesByRevenue: (limit = 10, year = null, month = null) => {
     const match = {
       actionStatus: 1,
       txnAmt: { $exists: true, $ne: null },
       deviceId: { $ne: null },
     };
-    if (year && month) {
-      const start = new Date(Date.UTC(year, month - 1, 1));
-      const end = new Date(Date.UTC(year, month, 0, 23, 59, 59, 999));
-      match.createdAt = { $gte: start, $lte: end };
-    }
+    const dateFilter = analyticsQueryLibrary._getRangeMatch(range);
+    if (dateFilter) match.createdAt = dateFilter;
+
     return [
       { $match: match },
       {
@@ -194,7 +244,8 @@ const analyticsQueryLibrary = {
   // 11 Device transaction frequency
   getDeviceTransactionFrequency: () => [
     { $match: { actionStatus: 1, deviceId: { $ne: null } } },
-    { $group: { _id: "$deviceId", transactionCount: { $sum: 1 } } },
+    { $sort: { transactionCount: -1 } },
+    { $limit: 100 },
     {
       $group: {
         _id: null,
@@ -212,41 +263,51 @@ const analyticsQueryLibrary = {
   ],
 
   // 12 Transaction mode distribution
-  getTransactionModeDistribution: () => [
-    { $match: { actionStatus: 1, transactionMode: { $exists: true } } },
-    {
-      $group: {
-        _id: "$transactionMode",
-        count: { $sum: 1 },
-        revenue: { $sum: "$txnAmt" },
+  getTransactionModeDistribution: (year = null, month = null) => {
+    const match = { actionStatus: 1, transactionMode: { $exists: true } };
+    const dateFilter = analyticsQueryLibrary._getRangeMatch(range);
+    if (dateFilter) match.createdAt = dateFilter;
+
+    return [
+      { $match: match },
+      {
+        $group: {
+          _id: "$transactionMode",
+          count: { $sum: 1 },
+          revenue: { $sum: "$txnAmt" },
+        },
       },
-    },
-    { $sort: { count: -1 } },
-    { $project: { _id: 0, transactionMode: "$_id", count: 1, revenue: 1 } },
-  ],
+      { $sort: { count: -1 } },
+      { $project: { _id: 0, transactionMode: "$_id", count: 1, revenue: 1 } },
+    ];
+  },
 
   // 13 Transaction type distribution
-  getTransactionTypeDistribution: () => [
-    { $match: { actionStatus: 1, transactionType: { $exists: true } } },
-    {
-      $group: {
-        _id: "$transactionType",
-        count: { $sum: 1 },
-        revenue: { $sum: "$txnAmt" },
-      },
-    },
-    { $sort: { count: -1 } },
-    { $project: { _id: 0, transactionType: "$_id", count: 1, revenue: 1 } },
-  ],
+  getTransactionTypeDistribution: (year = null, month = null) => {
+    const match = { actionStatus: 1, transactionType: { $exists: true } };
+    const dateFilter = analyticsQueryLibrary._getRangeMatch(range);
+    if (dateFilter) match.createdAt = dateFilter;
 
-  // 14 Largest transactions (optionally filtered by year/month)
-  getLargestTransactions: (limit = 10, year = null, month = null) => {
+    return [
+      { $match: match },
+      {
+        $group: {
+          _id: "$transactionType",
+          count: { $sum: 1 },
+          revenue: { $sum: "$txnAmt" },
+        },
+      },
+      { $sort: { count: -1 } },
+      { $project: { _id: 0, transactionType: "$_id", count: 1, revenue: 1 } },
+    ];
+  },
+
+  // 14 Individual Top Transactions (Records)
+  getLargestTransactions: (limit = 10, range = null) => {
     const match = { actionStatus: 1, txnAmt: { $exists: true, $ne: null } };
-    if (year && month) {
-      const start = new Date(Date.UTC(year, month - 1, 1));
-      const end = new Date(Date.UTC(year, month, 0, 23, 59, 59, 999));
-      match.createdAt = { $gte: start, $lte: end };
-    }
+    const dateFilter = analyticsQueryLibrary._getRangeMatch(range);
+    if (dateFilter) match.createdAt = dateFilter;
+
     return [
       { $match: match },
       { $sort: { txnAmt: -1 } },
@@ -258,10 +319,13 @@ const analyticsQueryLibrary = {
   },
 
   // 15 Daily transaction volume
-  getDailyTransactionVolume: (days = 30) => {
-    const startDate = new Date(Date.now() - (days - 1) * 24 * 60 * 60 * 1000);
+  getDailyTransactionVolume: (range = null) => {
+    const match = { actionStatus: 1 };
+    const dateFilter = analyticsQueryLibrary._getRangeMatch(range);
+    if (dateFilter) match.createdAt = dateFilter;
+
     return [
-      { $match: { actionStatus: 1, createdAt: { $gte: startDate } } },
+      { $match: match },
       {
         $group: {
           _id: {
@@ -275,8 +339,7 @@ const analyticsQueryLibrary = {
     ];
   },
 
-  // 16 Highest revenue device by month
-  getHighestRevenueDeviceByMonth: (year, month) => {
+  getHighestRevenueDeviceByMonth: (limit = 1, year = null, month = null) => {
     // Note: month is 1-indexed (1 = January, 12 = December)
     const startDate = new Date(Date.UTC(year, month - 1, 1));
     const endDate = new Date(Date.UTC(year, month, 1));
@@ -310,78 +373,162 @@ const analyticsQueryLibrary = {
   },
 
   // 17 Average Revenue Per Active Device (ARPAD)
-  getAverageRevenuePerDevice: () => [
-    {
-      $match: {
-        actionStatus: 1,
-        txnAmt: { $exists: true, $ne: null },
-        deviceId: { $ne: null },
-      },
-    },
-    { $group: { _id: "$deviceId", totalDeviceRevenue: { $sum: "$txnAmt" } } },
-    {
-      $group: {
-        _id: null,
-        avgRevenuePerDevice: { $avg: "$totalDeviceRevenue" },
-        activeDevices: { $sum: 1 },
-      },
-    },
-    { $project: { _id: 0, avgRevenuePerDevice: 1, activeDevices: 1 } },
-  ],
+  getAverageRevenuePerDevice: (year = null, month = null) => {
+    const match = {
+      actionStatus: 1,
+      txnAmt: { $exists: true, $ne: null },
+      deviceId: { $ne: null },
+    };
+    const dateFilter = analyticsQueryLibrary._getRangeMatch(range);
+    if (dateFilter) match.createdAt = dateFilter;
 
-  // 18 Devices with highest failure volume (Actionable Ops Metric)
-  getDevicesWithHighestFailures: (limit = 10) => [
-    { $match: { actionStatus: { $ne: 1 }, deviceId: { $ne: null } } },
-    {
-      $group: {
-        _id: "$deviceId",
-        failureCount: { $sum: 1 },
-        lastFailureDate: { $max: "$createdAt" },
+    return [
+      { $match: match },
+      { $group: { _id: "$deviceId", totalDeviceRevenue: { $sum: "$txnAmt" } } },
+      {
+        $group: {
+          _id: null,
+          avgRevenuePerDevice: { $avg: "$totalDeviceRevenue" },
+          activeDevices: { $sum: 1 },
+        },
       },
-    },
-    { $sort: { failureCount: -1 } },
-    { $limit: limit },
-    {
-      $project: {
-        _id: 0,
-        deviceId: "$_id",
-        failureCount: 1,
-        date: "$lastFailureDate",
+      { $project: { _id: 0, avgRevenuePerDevice: 1, activeDevices: 1 } },
+    ];
+  },
+
+  // 18 Devices with highest failure volume
+  getDevicesWithHighestFailures: (limit = 10, year = null, month = null) => {
+    const match = { actionStatus: { $ne: 1 }, deviceId: { $ne: null } };
+    const dateFilter = analyticsQueryLibrary._getRangeMatch(range);
+    if (dateFilter) match.createdAt = dateFilter;
+
+    return [
+      { $match: match },
+      {
+        $group: {
+          _id: "$deviceId",
+          failureCount: { $sum: 1 },
+          lastFailureDate: { $max: "$createdAt" },
+        },
       },
-    },
-  ],
+      { $sort: { failureCount: -1 } },
+      { $limit: limit },
+      {
+        $project: {
+          _id: 0,
+          deviceId: "$_id",
+          failureCount: 1,
+          date: "$lastFailureDate",
+        },
+      },
+    ];
+  },
 
   // 19 High-Value Transactions (Risk/VIP Monitoring)
-  getHighValueTransactions: (threshold = 10000, limit = 20) => [
-    { $match: { actionStatus: 1, txnAmt: { $gte: threshold } } },
-    { $sort: { txnAmt: -1, createdAt: -1 } },
-    { $limit: limit },
-    {
-      $project: {
-        _id: 0,
-        deviceId: 1,
-        txnAmt: 1,
-        createdAt: 1,
-        transactionMode: 1,
-      },
-    },
-  ],
+  getHighValueTransactions: (threshold = 10000, limit = 20, year = null, month = null) => {
+    const match = { actionStatus: 1, txnAmt: { $gte: threshold } };
+    const dateFilter = analyticsQueryLibrary._getRangeMatch(range);
+    if (dateFilter) match.createdAt = dateFilter;
 
-  // 20 Revenue by Day of Week (Operational staffing/marketing)
-  getRevenueByDayOfWeek: () => [
-    { $match: { actionStatus: 1, txnAmt: { $exists: true, $ne: null } } },
-    {
-      $group: {
-        _id: { dayOfWeek: { $dayOfWeek: "$createdAt" } },
-        revenue: { $sum: "$txnAmt" },
-        count: { $sum: 1 },
+    return [
+      { $match: match },
+      { $sort: { txnAmt: -1, createdAt: -1 } },
+      { $limit: limit },
+      {
+        $project: {
+          _id: 0,
+          deviceId: 1,
+          txnAmt: 1,
+          createdAt: 1,
+          transactionMode: 1,
+        },
       },
-    },
-    { $sort: { "_id.dayOfWeek": 1 } },
-    { $project: { _id: 0, dayOfWeek: "$_id.dayOfWeek", revenue: 1, count: 1 } },
-  ],
+    ];
+  },
 
-  // 21 Overall System Summary
+  // 20 Revenue by Day of Week
+  getRevenueByDayOfWeek: (year = null, month = null) => {
+    const match = { actionStatus: 1, txnAmt: { $exists: true, $ne: null } };
+    const dateFilter = analyticsQueryLibrary._getRangeMatch(range);
+    if (dateFilter) match.createdAt = dateFilter;
+
+    return [
+      { $match: match },
+      {
+        $group: {
+          _id: { dayOfWeek: { $dayOfWeek: "$createdAt" } },
+          revenue: { $sum: "$txnAmt" },
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { "_id.dayOfWeek": 1 } },
+      { $project: { _id: 0, dayOfWeek: "$_id.dayOfWeek", revenue: 1, count: 1 } },
+    ];
+  },
+
+  // 21 Average Audio Playback Latency
+  getAverageAudioLatency: (year = null, month = null) => {
+    const match = { actionStatus: 20, tMsgTimeElapsed: { $exists: true, $ne: null } };
+    const dateFilter = analyticsQueryLibrary._getRangeMatch(range);
+    if (dateFilter) match.createdAt = dateFilter;
+
+    return [
+      { $match: match },
+      {
+        $group: {
+          _id: null,
+          avgLatencyMs: { $avg: "$tMsgTimeElapsed" },
+          maxLatencyMs: { $max: "$tMsgTimeElapsed" },
+          count: { $sum: 1 },
+        },
+      },
+      { $project: { _id: 0, avgLatencyMs: 1, maxLatencyMs: 1, count: 1 } },
+    ];
+  },
+
+  // 22 Success Rate by Transaction Mode
+  getSuccessRateByMode: (year = null, month = null) => {
+    const match = {};
+    const dateFilter = analyticsQueryLibrary._getRangeMatch(range);
+    if (dateFilter) match.createdAt = dateFilter;
+
+    return [
+      { $match: match },
+      {
+        $group: {
+          _id: { actionId: "$actionId", mode: "$transactionMode" },
+          hasSent: { $max: { $cond: [{ $eq: ["$actionStatus", 1] }, 1, 0] } },
+          hasResponse: { $max: { $cond: [{ $eq: ["$actionStatus", 20] }, 1, 0] } },
+        },
+      },
+      { $match: { "_id.mode": { $ne: null } } },
+      {
+        $group: {
+          _id: "$_id.mode",
+          totalRequests: { $sum: "$hasSent" },
+          totalResponses: { $sum: "$hasResponse" },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          transactionMode: "$_id",
+          totalRequests: 1,
+          totalResponses: 1,
+          successRate: {
+            $cond: [
+              { $eq: ["$totalRequests", 0] },
+              0,
+              { $multiply: [{ $divide: ["$totalResponses", "$totalRequests"] }, 100] },
+            ],
+          },
+        },
+      },
+      { $sort: { successRate: -1 } },
+    ];
+  },
+
+  // 23 Overall System Summary
   getSystemSummary: () => [
     { $sort: { createdAt: -1 } },
     { $limit: 1 },

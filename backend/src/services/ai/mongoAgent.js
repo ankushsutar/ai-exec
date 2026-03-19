@@ -109,6 +109,12 @@ function applyMandatorySafeguards(result) {
     const matchStage = result.query.find((s) => s.$match);
     if (matchStage) {
       matchStage.$match.actionStatus = 1;
+      
+      // 1.1 Field Alias: AI often guesses "date", but schema uses "createdAt"
+      if (matchStage.$match.date && !matchStage.$match.createdAt) {
+        matchStage.$match.createdAt = matchStage.$match.date;
+        delete matchStage.$match.date;
+      }
     } else {
       result.query.unshift({ $match: { actionStatus: 1 } });
     }
@@ -138,6 +144,8 @@ async function generateMQLFromPrompt(
   );
 
   let targetCollection = "transactionActionHistoryInfo";
+  
+  // UNIFIED INTENT HANDLING: Everything transaction or device-stat related is an ANALYTICS_QUERY
   if (intentResult.intent === "DEVICE_STATS_QUERY") {
     targetCollection = "deviceStatHistoryInfo";
   }
@@ -159,16 +167,15 @@ async function generateMQLFromPrompt(
         targetCollection = metadata.collection;
       }
 
-      // Handle functions that might need arguments (limit, year, month, days)
+      // Handle functions that might need arguments dynamically using registry metadata
       let query;
       const entities = intentResult.entities || {};
       
-      if (intentResult.libraryFunction === "getTopDevicesByRevenue" || intentResult.libraryFunction === "getLargestTransactions") {
-        query = libFn(entities.limit || 10, entities.year, entities.month);
-      } else if (intentResult.libraryFunction === "getRevenueLast7Days" || intentResult.libraryFunction === "getDailyTransactionVolume" || intentResult.libraryFunction === "getRevenueTrendPerDay") {
-        query = libFn(null, entities.days || 7);
-      } else if (intentResult.libraryFunction === "getHighValueTransactions") {
-        query = libFn(entities.threshold || 10000, entities.limit || 20);
+      if (metadata && metadata.params && metadata.params.length > 0) {
+        // Map extracted entities to the function parameters in the correct order
+        // ES6 default parameters will trigger if the entity is undefined
+        const args = metadata.params.map(param => entities[param]);
+        query = libFn(...args);
       } else {
         query = typeof libFn === "function" ? libFn() : libFn;
       }
@@ -182,10 +189,12 @@ async function generateMQLFromPrompt(
         }
       }
 
-      return {
+      const result = {
         collection: targetCollection,
         query: evaluateDates(query)
       };
+
+      return applyMandatorySafeguards(result);
     }
   } catch (e) {
     console.error("[Mongo Agent] Schema retrieval failed:", e.message);
@@ -350,11 +359,9 @@ async function generateMQLFromPrompt(
 
     result.query = JSON.parse(queryStr);
 
-    result = applyMandatorySafeguards(result);
-
-    result.query = evaluateDates(result.query);
-
     result.collection = targetCollection;
+    result = applyMandatorySafeguards(result);
+    result.query = evaluateDates(result.query);
     
     console.log(`[Mongo Agent] Selected Collection: ${result.collection}`);
     console.log(
@@ -368,4 +375,4 @@ async function generateMQLFromPrompt(
   }
 }
 
-module.exports = { generateMQLFromPrompt };
+module.exports = { generateMQLFromPrompt, applyMandatorySafeguards };
