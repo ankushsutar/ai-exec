@@ -57,7 +57,12 @@ async function dispatchAction(question) {
     // Map parameters based on registry definition
     const args = capability.params.map(p => {
       if (p === "timeRange") return range;
-      return result.parameters[p] || null;
+      // If the parameter is missing or null, use undefined to let the library's default take over
+      const val = result.parameters[p];
+      if (val === null || val === undefined || val === "null" || val === "") {
+        return undefined;
+      }
+      return val;
     });
 
     const pipeline = libFn(...args);

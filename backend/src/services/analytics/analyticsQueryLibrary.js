@@ -27,9 +27,9 @@ const analyticsQueryLibrary = {
   },
 
   // 2 Revenue last N days from last record or current time (days defaults to 7)
-  getRevenueLast7Days: (referenceDate = null, days = 7, year = null, month = null) => {
+  getRevenueLast7Days: (range = null, referenceDate = null, days = 7) => {
     const match = { actionStatus: 1, txnAmt: { $exists: true, $ne: null } };
-    const dateFilter = analyticsQueryLibrary._getDateMatch(year, month);
+    const dateFilter = analyticsQueryLibrary._getRangeMatch(range);
     if (dateFilter) {
       match.createdAt = dateFilter;
     } else {
@@ -52,9 +52,9 @@ const analyticsQueryLibrary = {
   },
 
   // 3 Revenue trend per day from last record or current time
-  getRevenueTrendPerDay: (days = 30, referenceDate = null, year = null, month = null) => {
+  getRevenueTrendPerDay: (range = null, days = 30, referenceDate = null) => {
     const match = { actionStatus: 1, txnAmt: { $exists: true, $ne: null } };
-    const dateFilter = analyticsQueryLibrary._getDateMatch(year, month);
+    const dateFilter = analyticsQueryLibrary._getRangeMatch(range);
     if (dateFilter) {
       match.createdAt = dateFilter;
     } else {
@@ -80,7 +80,7 @@ const analyticsQueryLibrary = {
   },
 
   // 4 Revenue per device
-  getRevenuePerDevice: (year = null, month = null) => {
+  getRevenuePerDevice: (range = null) => {
     const match = {
       actionStatus: 1,
       txnAmt: { $exists: true, $ne: null },
@@ -114,7 +114,7 @@ const analyticsQueryLibrary = {
   },
 
   // 5 Transaction success rate
-  getTransactionSuccessRate: (year = null, month = null) => {
+  getTransactionSuccessRate: (range = null) => {
     const match = {};
     const dateFilter = analyticsQueryLibrary._getRangeMatch(range);
     if (dateFilter) match.createdAt = dateFilter;
@@ -152,7 +152,7 @@ const analyticsQueryLibrary = {
   },
 
   // 6 Failure analysis
-  getFailureAnalysis: (year = null, month = null) => {
+  getFailureAnalysis: (range = null) => {
     const match = { actionStatus: { $ne: 1 } };
     const dateFilter = analyticsQueryLibrary._getRangeMatch(range);
     if (dateFilter) match.createdAt = dateFilter;
@@ -165,8 +165,8 @@ const analyticsQueryLibrary = {
     ];
   },
 
-  // 7 Average transaction value (optionally filtered by year/month)
-  getAverageTransactionValue: (year = null, month = null) => {
+  // 7 Average transaction value (optionally filtered by range)
+  getAverageTransactionValue: (range = null) => {
     const match = { actionStatus: 1, txnAmt: { $exists: true, $ne: null } };
     const dateFilter = analyticsQueryLibrary._getRangeMatch(range);
     if (dateFilter) match.createdAt = dateFilter;
@@ -178,7 +178,7 @@ const analyticsQueryLibrary = {
   },
 
   // 8 Hourly transaction distribution
-  getHourlyTransactionDistribution: (year = null, month = null) => {
+  getHourlyTransactionDistribution: (range = null) => {
     const match = { actionStatus: 1 };
     const dateFilter = analyticsQueryLibrary._getRangeMatch(range);
     if (dateFilter) match.createdAt = dateFilter;
@@ -208,7 +208,7 @@ const analyticsQueryLibrary = {
   },
 
   // 10 Top devices by revenue
-  getTopDevicesByRevenue: (limit = 10, year = null, month = null) => {
+  getTopDevicesByRevenue: (limit = 10, range = null) => {
     const match = {
       actionStatus: 1,
       txnAmt: { $exists: true, $ne: null },
@@ -263,7 +263,7 @@ const analyticsQueryLibrary = {
   ],
 
   // 12 Transaction mode distribution
-  getTransactionModeDistribution: (year = null, month = null) => {
+  getTransactionModeDistribution: (range = null) => {
     const match = { actionStatus: 1, transactionMode: { $exists: true } };
     const dateFilter = analyticsQueryLibrary._getRangeMatch(range);
     if (dateFilter) match.createdAt = dateFilter;
@@ -283,7 +283,7 @@ const analyticsQueryLibrary = {
   },
 
   // 13 Transaction type distribution
-  getTransactionTypeDistribution: (year = null, month = null) => {
+  getTransactionTypeDistribution: (range = null) => {
     const match = { actionStatus: 1, transactionType: { $exists: true } };
     const dateFilter = analyticsQueryLibrary._getRangeMatch(range);
     if (dateFilter) match.createdAt = dateFilter;
@@ -373,7 +373,7 @@ const analyticsQueryLibrary = {
   },
 
   // 17 Average Revenue Per Active Device (ARPAD)
-  getAverageRevenuePerDevice: (year = null, month = null) => {
+  getAverageRevenuePerDevice: (range = null) => {
     const match = {
       actionStatus: 1,
       txnAmt: { $exists: true, $ne: null },
@@ -397,7 +397,7 @@ const analyticsQueryLibrary = {
   },
 
   // 18 Devices with highest failure volume
-  getDevicesWithHighestFailures: (limit = 10, year = null, month = null) => {
+  getDevicesWithHighestFailures: (limit = 10, range = null) => {
     const match = { actionStatus: { $ne: 1 }, deviceId: { $ne: null } };
     const dateFilter = analyticsQueryLibrary._getRangeMatch(range);
     if (dateFilter) match.createdAt = dateFilter;
@@ -425,7 +425,7 @@ const analyticsQueryLibrary = {
   },
 
   // 19 High-Value Transactions (Risk/VIP Monitoring)
-  getHighValueTransactions: (threshold = 10000, limit = 20, year = null, month = null) => {
+  getHighValueTransactions: (threshold = 10000, limit = 20, range = null) => {
     const match = { actionStatus: 1, txnAmt: { $gte: threshold } };
     const dateFilter = analyticsQueryLibrary._getRangeMatch(range);
     if (dateFilter) match.createdAt = dateFilter;
@@ -447,7 +447,7 @@ const analyticsQueryLibrary = {
   },
 
   // 20 Revenue by Day of Week
-  getRevenueByDayOfWeek: (year = null, month = null) => {
+  getRevenueByDayOfWeek: (range = null) => {
     const match = { actionStatus: 1, txnAmt: { $exists: true, $ne: null } };
     const dateFilter = analyticsQueryLibrary._getRangeMatch(range);
     if (dateFilter) match.createdAt = dateFilter;
@@ -467,7 +467,7 @@ const analyticsQueryLibrary = {
   },
 
   // 21 Average Audio Playback Latency
-  getAverageAudioLatency: (year = null, month = null) => {
+  getAverageAudioLatency: (range = null) => {
     const match = { actionStatus: 20, tMsgTimeElapsed: { $exists: true, $ne: null } };
     const dateFilter = analyticsQueryLibrary._getRangeMatch(range);
     if (dateFilter) match.createdAt = dateFilter;
@@ -487,7 +487,7 @@ const analyticsQueryLibrary = {
   },
 
   // 22 Success Rate by Transaction Mode
-  getSuccessRateByMode: (year = null, month = null) => {
+  getSuccessRateByMode: (range = null) => {
     const match = {};
     const dateFilter = analyticsQueryLibrary._getRangeMatch(range);
     if (dateFilter) match.createdAt = dateFilter;

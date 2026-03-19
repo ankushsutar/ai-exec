@@ -334,5 +334,17 @@
     "question": "Which devices have the most failed transactions",
     "intent": "DYNAMIC",
     "requestId": "2165"
+  },
+  {
+    "timestamp": "2026-03-19T11:56:01.142Z",
+    "question": "Success rate by mode (UPI vs Card) for jan 2025.",
+    "intent": "DYNAMIC",
+    "requestId": "1142"
+  },
+  {
+    "timestamp": "2026-03-19T12:07:32.142Z",
+    "question": "Total revenue for Jan 2025",
+    "intent": "DYNAMIC",
+    "requestId": "2142"
   }
 ]

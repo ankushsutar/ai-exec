@@ -64,7 +64,7 @@ const CAPABILITIES = [
     id: "DEVICE_FAILURE_ALERTS",
     libraryFunction: "getDevicesWithHighestFailures",
     description: "Operational list of devices failing transactions frequently.",
-    params: ["limit", "year", "month"],
+    params: ["limit", "timeRange"],
     keywords: ["failing devices", "most failures", "broken", "errors"]
   },
   {

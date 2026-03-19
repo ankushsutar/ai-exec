@@ -40,18 +40,15 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     }
 
     suggestions = [
-        "Show overall system summary",
-        "Revenue trend for the last 14 days",
-        "Top 5 devices by revenue in Jan 2025",
-        "Transactions above ₹50,000",
-        "Best performing device for Feb 2025",
+        "Total revenue for Jan 2025",
         "Daily transaction volume last 30 days",
-        "Show me the top 10 devices with the most network failures",
-        "What is the average battery level across all devices right now?",
-        "Which firmware version has the highest download failure rate?",
-        "Show me devices that rebooted more than 5 times today",
-        "Average signal strength by network operator",
-        "List devices where audio transactions failed to play"
+        "Top 5 transactions in Feb 2025",
+        "List transactions above 10,000 for Jan 2025",
+        "Best performing device for Jan 2025",
+        "Success rate by payment mode last month",
+        "Devices with highest failure volume",
+        "Hourly transaction distribution for today",
+        "What is the average transaction value this week?",
     ];
 
     ngOnInit(): void {
@@ -168,7 +165,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
                 } else {
                     this.isLoading = false;
                     if (this.messages[msgIndex] && this.messages[msgIndex].data) {
-                        this.messages[msgIndex].data!.summary = "I could not understand the question. Try asking 'How many devices are in deviceConfigInfo?' or 'Show top 5 merchants by revenue from transactionInfo'.";
+                        this.messages[msgIndex].data!.summary = "I could not understand the question. Try asking 'Total revenue for Jan 2025' or 'Show top 5 transactions above 10000'.";
                         this.cdr.detectChanges();
                     }
                 }
