@@ -2,6 +2,11 @@
 
 echo "Starting AI Executive Intelligence Platform..."
 
+# Clean up existing processes on targeted ports
+echo "-> Cleaning up existing processes..."
+lsof -ti:3001 | xargs kill -9 2>/dev/null || true
+lsof -ti:4200 | xargs kill -9 2>/dev/null || true
+
 # Start the backend in the background
 echo "-> Starting Backend..."
 cd backend
