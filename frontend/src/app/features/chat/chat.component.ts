@@ -40,15 +40,16 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     }
 
     suggestions = [
-        "Total revenue for Jan 2025",
+        "Total revenue for this month",
+        "Show me the devices which has revenue less than 1500000",
+        "Which 5 devices have the most transactions?",
+        "Show volume for UPI vs Card transactions",
         "Daily transaction volume last 30 days",
-        "Top 5 transactions in Feb 2025",
-        "List transactions above 10,000 for Jan 2025",
-        "Best performing device for Jan 2025",
-        "Success rate by payment mode last month",
-        "Devices with highest failure volume",
-        "Hourly transaction distribution for today",
-        "What is the average transaction value this week?",
+        "Top 10 devices by revenue",
+        "Peak hours of transaction volume last 7 days",
+        "top performing device in feb 2025",
+        "top perfroming device in feb 2026",
+        "daily transaction volume in jan 2026",
     ];
 
     ngOnInit(): void {

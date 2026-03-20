@@ -25,15 +25,18 @@ INSTRUCTIONS:
 3. Extract parameters carefully:
    - timeRange: e.g. "jan 2025", "last week".
    - threshold: MUST BE A JSON NUMBER (e.g. 5000).
-   - limit: MUST BE A JSON NUMBER (e.g. 10).
+   - operator: "gt" (above/more), "lt" (below/less), "eq" (equal).
+   - limit: MUST BE A JSON NUMBER.
+   - metric: "revenue", "volume", "transactionCount", "latency", "avg_value".
+   - dimension: "deviceId", "transactionMode", "hour".
 4. If it's a data question but NO Action ID fits, use "DYNAMIC_QUERY".
 5. For pure greetings, use "UNKNOWN".
 
 CRITICAL: Never return numbers as strings.
 
 EXAMPLES:
-Q: "List transactions above 5000 last month" -> {"actionId": "HIGH_VALUE_XNS", "parameters": {"threshold": 5000, "timeRange": "last month"}}
-Q: "show me transactions for device box_123 yesterday" -> {"actionId": "DYNAMIC_QUERY", "parameters": {"timeRange": "yesterday"}}
+Q: "List transactions above 5000 last month" -> {"actionId": "HIGH_VALUE_XNS", "parameters": {"threshold": 5000, "timeRange": "last month", "operator": "gt"}}
+Q: "devices with revenue less than 1500000" -> {"actionId": "TOP_DEVICES_REVENUE", "parameters": {"metric": "revenue", "dimension": "deviceId", "threshold": 1500000, "operator": "lt", "limit": 10}}
 
 QUESTION: "${question}"
 
@@ -43,6 +46,9 @@ RESPONSE FORMAT (JSON ONLY):
   "parameters": {
     "timeRange": "string or null",
     "threshold": number or null,
+    "operator": "gt" | "lt" | "eq",
+    "metric": "string or null",
+    "dimension": "string or null",
     "limit": number or null,
     "merchant": "string or null"
   },

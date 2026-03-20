@@ -30,35 +30,35 @@ const CAPABILITIES = [
   },
   {
     id: "AVERAGE_TRANSACTION_VALUE",
-    libraryFunction: "getAverageTransactionValue",
-    description: "Average amount (mean txnAmt) per transaction (ticket size).",
-    params: ["timeRange"],
+    libraryFunction: "getGeneralizedAggregate",
+    description: "Average amount (mean txnAmt) per transaction, with optional grouping or filtering.",
+    params: ["metric", "dimension", "threshold", "operator", "limit", "timeRange"],
     keywords: ["average value", "ticket size", "mean amount"]
   },
 
   // --- VOLUME & COUNTS ---
   {
     id: "TRANSACTION_VOLUME",
-    libraryFunction: "getDailyTransactionVolume",
-    description: "Count of transactions (number of sales) in a time range.",
-    params: ["timeRange"],
-    keywords: ["volume", "count", "number of transactions", "how many sales"]
+    libraryFunction: "getGeneralizedAggregate",
+    description: "Count of transactions (number of sales), with optional grouping by device, mode, etc.",
+    params: ["metric", "dimension", "threshold", "operator", "limit", "timeRange"],
+    keywords: ["volume", "count", "number of transactions", "how many sales", "transactions per device"]
   },
   {
     id: "HOURLY_DISTRIBUTION",
-    libraryFunction: "getHourlyTransactionDistribution",
-    description: "Transaction density per hour (heat map).",
-    params: ["timeRange"],
+    libraryFunction: "getGeneralizedAggregate",
+    description: "Transaction density per hour (heat map), with optional filtering.",
+    params: ["metric", "dimension", "threshold", "operator", "limit", "timeRange"],
     keywords: ["hourly", "time of day", "peak hours", "distribution"]
   },
 
   // --- DEVICE PERFORMANCE ---
   {
     id: "TOP_DEVICES_REVENUE",
-    libraryFunction: "getTopDevicesByRevenue",
-    description: "List of devices ranked by total revenue generated (Best performing).",
-    params: ["limit", "timeRange"],
-    keywords: ["top devices", "best performing", "highest revenue devices", "best device", "performing well"]
+    libraryFunction: "getGeneralizedAggregate",
+    description: "List of devices ranked by revenue, with optional threshold filtering (e.g. revenue > 10000).",
+    params: ["metric", "dimension", "threshold", "operator", "limit", "timeRange"],
+    keywords: ["top devices", "best performing", "revenue less than", "revenue more than", "revenue above"]
   },
   {
     id: "DEVICE_FAILURE_ALERTS",

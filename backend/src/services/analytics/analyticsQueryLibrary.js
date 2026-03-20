@@ -870,6 +870,55 @@ const analyticsQueryLibrary = {
       },
     },
   ],
+  // 35 Generalized Aggregate (Dynamic Dimensions & Metrics)
+  getGeneralizedAggregate: (metric = "revenue", dimension = "deviceId", threshold = null, operator = "gt", limit = 10, range = null) => {
+    const match = { actionStatus: 1 };
+    const dateFilter = analyticsQueryLibrary._getRangeMatch(range);
+    if (dateFilter) match.createdAt = dateFilter;
+
+    const metricMap = {
+      revenue: { $sum: "$txnAmt" },
+      volume: { $sum: 1 },
+      transactionCount: { $sum: 1 },
+      avg_value: { $avg: "$txnAmt" },
+      avg_ticket_size: { $avg: "$txnAmt" },
+      latency: { $avg: "$tMsgTimeElapsed" },
+    };
+
+    const groupField = dimension === "hour" ? { hour: { $hour: "$createdAt" } } : `$${dimension}`;
+    const valueKey = metric === "revenue" ? "revenue" : metric === "volume" ? "count" : metric;
+
+    const pipeline = [
+      { $match: match },
+      {
+        $group: {
+          _id: groupField,
+          [valueKey]: metricMap[metric] || metricMap.revenue,
+          lastDate: { $max: "$createdAt" },
+        },
+      },
+    ];
+
+    // Add threshold filtering (HAVING clause)
+    if (threshold !== null && threshold !== undefined && threshold !== "null") {
+      const mongoOp = operator === "lt" ? "$lt" : operator === "lte" ? "$lte" : operator === "gt" ? "$gt" : "$gte";
+      pipeline.push({ $match: { [valueKey]: { [mongoOp]: Number(threshold) } } });
+    }
+
+    pipeline.push({ $sort: { [valueKey]: -1 } });
+    if (limit && limit !== "null") pipeline.push({ $limit: Number(limit) });
+
+    pipeline.push({
+      $project: {
+        _id: 0,
+        [dimension]: "$_id",
+        [valueKey]: 1,
+        date: "$lastDate",
+      },
+    });
+
+    return pipeline;
+  },
 };
 
 module.exports = analyticsQueryLibrary;

@@ -1,10 +1,14 @@
 function getSummaryPrompt(question, analyticsData) {
   const metric = analyticsData?.valueKey || "metric";
+  const now = new Date();
+  const dateStr = now.toISOString().split("T")[0];
+
   const kpis = (analyticsData?.kpis || [])
     .map((k) => `- ${k.name}: ${k.value}`)
     .join("\n");
+
   const trend = (analyticsData?.chartData || [])
-    .map((p) => `${p.label}=${p.value}`)
+    .map((p) => `[${p.label}: ${p.value}]`)
     .join(", ");
 
   const isCurrency =
@@ -12,19 +16,25 @@ function getSummaryPrompt(question, analyticsData) {
     metric.toLowerCase().includes("amount") ||
     metric.toLowerCase().includes("amt");
 
-  return `TASK: Summarize the following data in ONE concise paragraph.
+  return `TASK: Summarize the following data in 1-2 concise, professional sentences.
 
-DATA:
-- Metric: ${metric} (${isCurrency ? "Currency INR" : "Numeric Count"})
-- Statistics:
-${kpis}
-- Trend: ${trend}
+CONTEXT:
+- Today's Date: ${dateStr}
+- User Question: "${question}"
 
-RULES:
-1. ONLY talk about the labels and values provided above.
-2. If money: Use INR/₹. Otherwise: No currency.
-3. Be professional and direct. Max 3 sentences.
-4. If labels are IDs (like 104085), DO NOT guess names. Use the IDs.
+DATA POINTS:
+- Metric Type: ${metric} (${isCurrency ? "Currency INR" : "Numeric Count"})
+- Key Statistics:
+${kpis || "None"}
+- Data Series/Trend:
+${trend || "None"}
+
+STRICT GROUNDING RULES:
+1. DO NOT invent or change dates/years. Use exactly what is in the DATA POINTS (e.g., if it says 2026, do not output 2023).
+2. ONLY mention values provided. If the data is empty, say "No data found for this query."
+3. If money: Use ₹ prefix. Format with Indian numbering if possible (e.g. ₹1,50,000).
+4. Do not guess names for IDs. Use the IDs directly.
+5. Absolute honesty: If you identify a drop or peak, mention the specific label (date/ID).
 
 SUMMARY:`;
 }
