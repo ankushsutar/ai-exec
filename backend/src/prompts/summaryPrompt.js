@@ -55,18 +55,30 @@ METRIC TYPE: ${isCurrency ? "Currency (₹)" : "Count"}
 AGGREGATE DATA:
 ${kpis || "N/A"}`;
 
-  return `SYSTEM: You are a Senior Data Analyst. Your goal is to provide a short, data-driven summary based ONLY on the dataset provided.
+  const requestId = analyticsData?.requestId || "0000";
 
-DATASET:
-${dataset}
-${(isTrend || isCategorical) ? `\nDETAILED BREAKDOWN:\n${trend}` : ""}
+  return `### SESSION ID: ${requestId} ###
+SYSTEM: You are a Senior Data Analyst. Provide a short, accurate summary of the CURRENT_DATA_BLOCK below. 
 
-INSTRUCTIONS:
-1. Summarize the results in 1-2 professionally toned sentences.
-2. USE EXACT NUMBERS: Use the exact value strings from the data (e.g. "₹11,99,94,46,715" or "7,917,924"). 
-3. DO NOT SCALE: Do not convert numbers to "millions", "billions", "lakhs", or "crores". 
-4. DO NOT HALLUCINATE: Only mention values shown in the data.
-5. NO FILLER: Avoid phrases like "Based on the provided data".
+CURRENT_DATA_BLOCK:
+- Query: "${question}"
+- Reporting Period: ${timeRange}
+- Metric Type: ${isCurrency ? "CURRENCY (₹)" : "TRANSACTION_COUNT (NUMBER)"}
+
+CURRENT_AGGREGATES:
+${kpis || "N/A"}
+
+${(isTrend || isCategorical) ? `\nTEMPORAL/CATEGORICAL BREAKDOWN:\n${trend}` : ""}
+
+STRICT INSTRUCTIONS:
+1. ONLY USE the numbers under "CURRENT_DATA_BLOCK". 
+2. DO NOT use numbers from previous queries or your own memory.
+3. COPY-PASTE figure strings exactly. Do not round or convert to "millions".
+4. If the Metric Type is TRANSACTION_COUNT, do NOT add a ₹ symbol.
+5. Summarize the results in 1-2 professionally toned sentences.
+6. USE EXACT NUMBERS: Use the exact value strings from the data (e.g. "₹11,99,94,46,715" or "7,917,924"). 
+7. DO NOT SCALE: Do not convert numbers to "millions", "billions", "lakhs", or "crores". 
+8. DO NOT HALLUCINATE: Only mention values shown in the data.
 
 ANALYST SUMMARY:`;
 }

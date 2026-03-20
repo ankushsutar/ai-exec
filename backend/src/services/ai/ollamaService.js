@@ -24,14 +24,19 @@ async function getLLMSummaryStream(analyticsData, res, question = "") {
     }
 
     // 1. Strip out the massive payload to prevent LLM context overload
+    // We only need the summary data (KPIs and ChartData)
     const sanitizedData = {
       kpis: kpis,
       chartData: analyticsData?.chartData || [],
       metricName: analyticsData?.valueKey || "value",
+      parameters: analyticsData?.parameters || {},
+      isTrend: analyticsData?.isTrend,
+      isCategorical: analyticsData?.isCategorical,
+      requestId: Date.now().toString().slice(-4), // Add salt to prevent context caching/leakage
     };
 
     const { getSummaryPrompt } = require("../../prompts/summaryPrompt");
-    const prompt = getSummaryPrompt(question, analyticsData);
+    const prompt = getSummaryPrompt(question, sanitizedData);
 
     const response = await axios.post(
       config.ollamaUrl,

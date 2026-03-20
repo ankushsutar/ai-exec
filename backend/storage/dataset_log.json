@@ -1774,5 +1774,119 @@
     "question": "Total revenue for feb 2026",
     "intent": "DYNAMIC",
     "requestId": "3431"
+  },
+  {
+    "timestamp": "2026-03-20T14:18:33.327Z",
+    "question": "Daily transaction volume last 30 days",
+    "intent": "DYNAMIC",
+    "requestId": "3327"
+  },
+  {
+    "timestamp": "2026-03-20T14:23:37.436Z",
+    "question": "Daily transaction volume last 30 days",
+    "intent": "DYNAMIC",
+    "requestId": "7436"
+  },
+  {
+    "timestamp": "2026-03-20T14:24:10.253Z",
+    "question": "Which 5 devices have the most transactions?",
+    "intent": "DYNAMIC",
+    "requestId": "0252"
+  },
+  {
+    "timestamp": "2026-03-20T14:25:22.754Z",
+    "question": "Top 10 devices by revenue",
+    "intent": "DYNAMIC",
+    "requestId": "2754"
+  },
+  {
+    "timestamp": "2026-03-20T14:26:14.180Z",
+    "question": "all time revenue",
+    "intent": "DYNAMIC",
+    "requestId": "4180"
+  },
+  {
+    "timestamp": "2026-03-20T14:26:42.098Z",
+    "question": "revenue for last 6 months",
+    "intent": "DYNAMIC",
+    "requestId": "2098"
+  },
+  {
+    "timestamp": "2026-03-20T14:27:00.896Z",
+    "question": "revenue this year",
+    "intent": "DYNAMIC",
+    "requestId": "0896"
+  },
+  {
+    "timestamp": "2026-03-20T14:27:14.431Z",
+    "question": "revenue for year 2024",
+    "intent": "DYNAMIC",
+    "requestId": "4430"
+  },
+  {
+    "timestamp": "2026-03-20T14:27:29.398Z",
+    "question": "all time volume",
+    "intent": "DYNAMIC",
+    "requestId": "9398"
+  },
+  {
+    "timestamp": "2026-03-20T14:28:31.591Z",
+    "question": "Peak hours of transaction volume last 7 days",
+    "intent": "DYNAMIC",
+    "requestId": "1591"
+  },
+  {
+    "timestamp": "2026-03-20T14:29:03.127Z",
+    "question": "Peak hours of transaction volume for last month",
+    "intent": "DYNAMIC",
+    "requestId": "3127"
+  },
+  {
+    "timestamp": "2026-03-20T14:29:47.742Z",
+    "question": "Show me the devices which has revenue less than 1500000",
+    "intent": "DYNAMIC",
+    "requestId": "7742"
+  },
+  {
+    "timestamp": "2026-03-20T14:30:42.955Z",
+    "question": "Show me the devices which has revenue greater than 1500000",
+    "intent": "DYNAMIC",
+    "requestId": "2954"
+  },
+  {
+    "timestamp": "2026-03-20T14:31:42.530Z",
+    "question": "top performing device in feb 2025",
+    "intent": "DYNAMIC",
+    "requestId": "2530"
+  },
+  {
+    "timestamp": "2026-03-20T14:32:38.904Z",
+    "question": "Show volume for UPI vs Card transactions",
+    "intent": "DYNAMIC",
+    "requestId": "8904"
+  },
+  {
+    "timestamp": "2026-03-20T14:33:48.356Z",
+    "question": "why does the count not matching with all time volume",
+    "intent": "DYNAMIC",
+    "requestId": "8356"
+  },
+  {
+    "timestamp": "2026-03-20T14:34:47.467Z",
+    "question": "all time volume",
+    "intent": "DYNAMIC",
+    "requestId": "7467"
+  },
+  {
+    "timestamp": "2026-03-20T14:35:45.772Z",
+    "question": "show me successful transactions in feb 2026",
+    "intent": "DYNAMIC",
+    "requestId": "5772"
+  },
+  {
+    "timestamp": "2026-03-20T14:36:46.621Z",
+    "question": "Which 5 devices have the most transactions?",
+    "intent": "DYNAMIC",
+    "requestId": "6621"
   }
 ]
