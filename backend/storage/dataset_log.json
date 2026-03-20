@@ -634,5 +634,119 @@
     "question": "Best performing device for Jan 2025",
     "intent": "DYNAMIC",
     "requestId": "4895"
+  },
+  {
+    "timestamp": "2026-03-20T06:05:24.030Z",
+    "question": "Total revenue for Jan 2025",
+    "intent": "DYNAMIC",
+    "requestId": "4029"
+  },
+  {
+    "timestamp": "2026-03-20T06:05:42.930Z",
+    "question": "Daily transaction volume last 30 days",
+    "intent": "DYNAMIC",
+    "requestId": "2930"
+  },
+  {
+    "timestamp": "2026-03-20T06:07:40.773Z",
+    "question": "Total revenue for feb 2025",
+    "intent": "DYNAMIC",
+    "requestId": "0773"
+  },
+  {
+    "timestamp": "2026-03-20T06:07:58.374Z",
+    "question": "Best performing device for Jan 2025",
+    "intent": "DYNAMIC",
+    "requestId": "8374"
+  },
+  {
+    "timestamp": "2026-03-20T06:08:22.374Z",
+    "question": "Daily transaction volume last 30 days",
+    "intent": "DYNAMIC",
+    "requestId": "2373"
+  },
+  {
+    "timestamp": "2026-03-20T06:08:41.113Z",
+    "question": "List transactions above 10,000 for Jan 2025",
+    "intent": "DYNAMIC",
+    "requestId": "1113"
+  },
+  {
+    "timestamp": "2026-03-20T06:09:07.769Z",
+    "question": "List transactions above 80,000 for Jan 2025",
+    "intent": "DYNAMIC",
+    "requestId": "7769"
+  },
+  {
+    "timestamp": "2026-03-20T06:09:28.459Z",
+    "question": "List transactions above 50,000 for Jan 2025",
+    "intent": "DYNAMIC",
+    "requestId": "8458"
+  },
+  {
+    "timestamp": "2026-03-20T06:09:38.556Z",
+    "question": "Top 5 transactions in Feb 2025",
+    "intent": "DYNAMIC",
+    "requestId": "8555"
+  },
+  {
+    "timestamp": "2026-03-20T06:39:52.276Z",
+    "question": "show overall system summary",
+    "intent": "DYNAMIC",
+    "requestId": "2276"
+  },
+  {
+    "timestamp": "2026-03-20T06:41:21.757Z",
+    "question": "show me revenue for dev 2025",
+    "intent": "DYNAMIC",
+    "requestId": "1756"
+  },
+  {
+    "timestamp": "2026-03-20T06:41:37.096Z",
+    "question": "show me revenue for dec 2025",
+    "intent": "DYNAMIC",
+    "requestId": "7096"
+  },
+  {
+    "timestamp": "2026-03-20T06:43:01.697Z",
+    "question": "what is the transaction failure rate overall",
+    "intent": "DYNAMIC",
+    "requestId": "1697"
+  },
+  {
+    "timestamp": "2026-03-20T07:06:43.335Z",
+    "question": "What is the total revenue for last month?",
+    "intent": "DYNAMIC",
+    "requestId": "3335"
+  },
+  {
+    "timestamp": "2026-03-20T07:07:28.213Z",
+    "question": "top 5 devices by revenue",
+    "intent": "DYNAMIC",
+    "requestId": "8213"
+  },
+  {
+    "timestamp": "2026-03-20T07:13:08.147Z",
+    "question": "What is the total revenue for last month?",
+    "intent": "DYNAMIC",
+    "requestId": "8147"
+  },
+  {
+    "timestamp": "2026-03-20T07:13:37.974Z",
+    "question": "top 5 devices by revenue",
+    "intent": "DYNAMIC",
+    "requestId": "7974"
+  },
+  {
+    "timestamp": "2026-03-20T07:13:57.153Z",
+    "question": "Show me transactions for device BOX_123 yesterday",
+    "intent": "DYNAMIC",
+    "requestId": "7153"
+  },
+  {
+    "timestamp": "2026-03-20T07:14:45.553Z",
+    "question": "average signal strength for each operator",
+    "intent": "DYNAMIC",
+    "requestId": "5553"
   }
 ]

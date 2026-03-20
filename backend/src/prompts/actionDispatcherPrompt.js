@@ -27,10 +27,11 @@ INSTRUCTIONS:
    - threshold: The number if "above X" or "exceeding X" is mentioned.
    - limit: The count if "top N" or "first N" is mentioned.
 4. If it's pure greeting/chitchat, use "UNKNOWN".
+5. If it's a specific data question but NO Action ID in the registry fits, use "DYNAMIC_QUERY".
 
 EXAMPLES:
 Q: "List transactions above 5000 last month" -> {"actionId": "HIGH_VALUE_XNS", "parameters": {"threshold": 5000, "timeRange": "last month"}}
-Q: "top 5 devices" -> {"actionId": "TOP_DEVICES_REVENUE", "parameters": {"limit": 5}}
+Q: "show me transactions for device box_123 yesterday" -> {"actionId": "DYNAMIC_QUERY", "parameters": {"timeRange": "yesterday"}}
 
 QUESTION: "${question}"
 

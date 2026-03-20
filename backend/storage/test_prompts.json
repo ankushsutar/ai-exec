@@ -1,0 +1,87 @@
+[
+  {
+    "query": "What is the total revenue for Jan 2025?",
+    "expectedAction": "TOTAL_REVENUE",
+    "category": "Revenue"
+  },
+  {
+    "query": "how much money did we make last week?",
+    "expectedAction": "TOTAL_REVENUE",
+    "category": "Revenue"
+  },
+  {
+    "query": "show me revenue trend for the last 30 days",
+    "expectedAction": "REVENUE_TREND",
+    "category": "Trends"
+  },
+  {
+    "query": "daily sales graph for last month",
+    "expectedAction": "REVENUE_TREND",
+    "category": "Trends"
+  },
+  {
+    "query": "list transactions above 10000",
+    "expectedAction": "HIGH_VALUE_XNS",
+    "category": "Filtering"
+  },
+  {
+    "query": "show me the largest sales in the last 7 days",
+    "expectedAction": "LIST_TOP_TRANSACTIONS",
+    "category": "Ranked"
+  },
+  {
+    "query": "top 5 devices by revenue",
+    "expectedAction": "TOP_DEVICES_REVENUE",
+    "category": "Devices"
+  },
+  {
+    "query": "which devices are failing most often?",
+    "expectedAction": "DEVICE_FAILURE_ALERTS",
+    "category": "Ops"
+  },
+  {
+    "query": "what is the success rate by mode for today?",
+    "expectedAction": "SUCCESS_RATE_BY_MODE",
+    "category": "Ops"
+  },
+  {
+    "query": "average ticket size for yesterday",
+    "expectedAction": "AVERAGE_TRANSACTION_VALUE",
+    "category": "Metrics"
+  },
+  {
+    "query": "peak hours of transaction volume",
+    "expectedAction": "HOURLY_DISTRIBUTION",
+    "category": "Metrics"
+  },
+  {
+    "query": "revenue by day of week for this month",
+    "expectedAction": "DAY_OF_WEEK_REVENUE",
+    "category": "Trends"
+  },
+  {
+    "query": "audio delay for the last 24 hours",
+    "expectedAction": "AUDIO_LATENCY",
+    "category": "Ops"
+  },
+  {
+    "query": "show me transactions for device BOX_123 yesterday",
+    "expectedAction": "AD_HOC_GENERATION",
+    "category": "Ad-hoc (Fallback)"
+  },
+  {
+    "query": "list all failures for merchant 'Cafe Coffee Day'",
+    "expectedAction": "AD_HOC_GENERATION",
+    "category": "Ad-hoc (Fallback)"
+  },
+  {
+    "query": "average battery level of all devices",
+    "expectedAction": "AD_HOC_GENERATION",
+    "category": "Ad-hoc (Fallback)"
+  },
+  {
+    "query": "hi how are you",
+    "expectedAction": "UNKNOWN",
+    "category": "Safety"
+  }
+]

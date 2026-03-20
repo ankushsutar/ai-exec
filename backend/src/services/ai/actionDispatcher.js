@@ -13,6 +13,7 @@ const { normalizeDateRange } = require("../../utils/dateNormalizer");
 const analyticsQueryLibrary = require("../analytics/analyticsQueryLibrary");
 const { runMongoQuery } = require("../data/mongoService");
 const { getActionDispatcherPrompt } = require("../../prompts/actionDispatcherPrompt");
+const { generateMQLFromPrompt } = require("./mongoAgent");
 
 async function dispatchAction(question) {
   console.log(`[Action Dispatcher] Processing: "${question}"`);
@@ -34,19 +35,32 @@ async function dispatchAction(question) {
     const result = JSON.parse(response.data.response);
     console.log(`[Action Dispatcher] Selected Action: ${result.actionId} with Params:`, JSON.stringify(result.parameters));
 
-    if (result.actionId === "UNKNOWN") {
-      return { intent: "UNKNOWN", results: [] };
-    }
 
     // 2. NORMALIZE DATE RANGE
     const range = normalizeDateRange(result.parameters.timeRange);
     console.log(`[Action Dispatcher] Normalized Range: ${range.start?.toISOString()} to ${range.end?.toISOString()}`);
 
     // 3. EXECUTE CAPABILITY
-    const capability = getCapabilityById(result.actionId);
-    if (!capability) {
-      console.warn(`[Action Dispatcher] Capability not found in registry: ${result.actionId}`);
-      return { intent: "UNKNOWN", results: [] };
+    let capability = getCapabilityById(result.actionId);
+    
+    // FALLBACK: If UNKNOWN or DYNAMIC_QUERY, use mongoAgent to generate query
+    if (!capability || result.actionId === "DYNAMIC_QUERY") {
+      console.log(`[Action Dispatcher] No pre-built capability for "${result.actionId}". Falling back to Ad-hoc Analyst...`);
+      try {
+        const dynamicResult = await generateMQLFromPrompt(question, {}, { intent: "ANALYTICS_QUERY" });
+        const data = await runMongoQuery(dynamicResult.collection, dynamicResult.query);
+        
+        return {
+          intent: "ANALYTICS_QUERY",
+          capabilityId: "AD_HOC_GENERATION",
+          results: data,
+          parameters: result.parameters,
+          generatedQuery: dynamicResult.query
+        };
+      } catch (genError) {
+        console.error("[Action Dispatcher] Ad-hoc generation failed:", genError.message);
+        return { intent: "UNKNOWN", results: [] };
+      }
     }
 
     const libFn = analyticsQueryLibrary[capability.libraryFunction];

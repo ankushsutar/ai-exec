@@ -202,7 +202,6 @@ async function generateMQLFromPrompt(
   }
 
   const { getMongoPrompt } = require("../../prompts/mongoPrompt");
-  const { routeModel } = require("./modelRouter");
 
   // GOLDEN EXAMPLE BYPASS: If we have an exact match (score > 0.85), use it directly
   if (fewShotExample && fewShotExample.score > 0.85) {
