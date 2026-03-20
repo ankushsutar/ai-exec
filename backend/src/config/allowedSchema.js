@@ -12,22 +12,9 @@
  * and restart the server so the embeddings are rebuilt.
  */
 
-const ALLOWED_POSTGRES_TABLES = [
-  "userInfo",
-  "userGroupInfo",
-  "merchantInfo",
-  "merchantRelationInfo",
-  "deviceBriefInfo",
-  "deviceIdentInfo",
-  "deviceRelationInfo",
-  "terminalRelationInfo",
-  "groupInfo",
-  "groupHierarchyInfo",
-];
+const ALLOWED_POSTGRES_TABLES = [];
 
 const ALLOWED_MONGO_COLLECTIONS = [
-  "systemDailySummaryInfo",
-  "systemSummaryInfo",
   "transactionActionHistoryInfo",
 ];
 

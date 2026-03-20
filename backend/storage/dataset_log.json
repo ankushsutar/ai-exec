@@ -748,5 +748,29 @@
     "question": "average signal strength for each operator",
     "intent": "DYNAMIC",
     "requestId": "5553"
+  },
+  {
+    "timestamp": "2026-03-20T07:35:05.621Z",
+    "question": "Total revenue for Jan 2025",
+    "intent": "DYNAMIC",
+    "requestId": "5621"
+  },
+  {
+    "timestamp": "2026-03-20T07:36:53.065Z",
+    "question": "which device has the highest revenue",
+    "intent": "DYNAMIC",
+    "requestId": "3065"
+  },
+  {
+    "timestamp": "2026-03-20T07:37:41.039Z",
+    "question": "which device has lowest revenue",
+    "intent": "DYNAMIC",
+    "requestId": "1039"
+  },
+  {
+    "timestamp": "2026-03-20T07:38:53.457Z",
+    "question": "show me the devices which has revenue less than 1500000",
+    "intent": "DYNAMIC",
+    "requestId": "3456"
   }
 ]

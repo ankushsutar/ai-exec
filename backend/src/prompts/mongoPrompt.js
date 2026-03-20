@@ -45,6 +45,7 @@ Instructions:
 - **CRITICAL: For "highest" or "top" queries, sort by "txnAmt": -1. For "lowest", sort by "txnAmt": 1.**
 - **CRITICAL: YOU MUST USE THE FIELD "createdAt" FOR ALL DATE FILTERS. DO NOT USE "date".**
 - **CRITICAL: For ALL date/time filters, YOU MUST wrap values with new Date(). e.g., { "createdAt": { "$gte": "new Date('2026-02-16T00:00:00.000Z')" } }.**
+- **CRITICAL: $limit and $skip MUST ALWAYS BE NUMBERS. DO NOT use strings.**
 - **CRITICAL: When grouping by day, always add a final $project stage to flatten technical _id fields (e.g., { "$project": { "_id": 0, "date": "$_id.day", "revenue": "$revenue" } }).**
 ${filterContext._targetCollection ? `- **CRITICAL: YOU MUST USE THE COLLECTION "${filterContext._targetCollection}" for this query.**` : ""}
 
@@ -53,6 +54,7 @@ NEGATIVE CONSTRAINTS:
 - **DO NOT** use any collection not in the ALLOWED COLLECTIONS list above.
 - **CRITICAL: Never mix 0 (exclusion) and 1 (inclusion) in a $project stage.**
 - **CRITICAL: Use a single "$" for document fields (e.g., "$txnAmt").**
+- **CRITICAL: In $group, "txnAmt" should be "$txnAmt".**
 
 OUTPUT FORMAT:
 Return ONLY a JSON object with "collection" and "query" keys.

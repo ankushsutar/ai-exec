@@ -24,10 +24,12 @@ INSTRUCTIONS:
    - "list", "records", "individual" (without threshold) -> LIST_TOP_TRANSACTIONS.
 3. Extract parameters carefully:
    - timeRange: e.g. "jan 2025", "last week".
-   - threshold: The number if "above X" or "exceeding X" is mentioned.
-   - limit: The count if "top N" or "first N" is mentioned.
-4. If it's pure greeting/chitchat, use "UNKNOWN".
-5. If it's a specific data question but NO Action ID in the registry fits, use "DYNAMIC_QUERY".
+   - threshold: MUST BE A JSON NUMBER (e.g. 5000).
+   - limit: MUST BE A JSON NUMBER (e.g. 10).
+4. If it's a data question but NO Action ID fits, use "DYNAMIC_QUERY".
+5. For pure greetings, use "UNKNOWN".
+
+CRITICAL: Never return numbers as strings.
 
 EXAMPLES:
 Q: "List transactions above 5000 last month" -> {"actionId": "HIGH_VALUE_XNS", "parameters": {"threshold": 5000, "timeRange": "last month"}}
