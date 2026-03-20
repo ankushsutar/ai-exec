@@ -1222,5 +1222,155 @@
     "question": "all time revenue",
     "intent": "DYNAMIC",
     "requestId": "6032"
+  },
+  {
+    "timestamp": "2026-03-20T11:08:15.212Z",
+    "question": "revenue generated in year 2026",
+    "intent": "DYNAMIC",
+    "requestId": "5212"
+  },
+  {
+    "timestamp": "2026-03-20T11:19:05.566Z",
+    "question": "Total revenue for this month",
+    "intent": "DYNAMIC",
+    "requestId": "5565"
+  },
+  {
+    "timestamp": "2026-03-20T11:19:26.382Z",
+    "question": "Daily transaction volume last 30 days",
+    "intent": "DYNAMIC",
+    "requestId": "6382"
+  },
+  {
+    "timestamp": "2026-03-20T11:19:58.324Z",
+    "question": "all time revenue",
+    "intent": "DYNAMIC",
+    "requestId": "8324"
+  },
+  {
+    "timestamp": "2026-03-20T11:25:05.373Z",
+    "question": "all time revenue",
+    "intent": "DYNAMIC",
+    "requestId": "5372"
+  },
+  {
+    "timestamp": "2026-03-20T11:25:57.577Z",
+    "question": "revnue generated in last 6 months",
+    "intent": "DYNAMIC",
+    "requestId": "7577"
+  },
+  {
+    "timestamp": "2026-03-20T11:26:46.681Z",
+    "question": "show me the revenue for current year",
+    "intent": "DYNAMIC",
+    "requestId": "6681"
+  },
+  {
+    "timestamp": "2026-03-20T11:28:59.596Z",
+    "question": "all time revenue",
+    "intent": "DYNAMIC",
+    "requestId": "9596"
+  },
+  {
+    "timestamp": "2026-03-20T11:29:36.897Z",
+    "question": "revenue in 2025",
+    "intent": "DYNAMIC",
+    "requestId": "6897"
+  },
+  {
+    "timestamp": "2026-03-20T11:32:03.211Z",
+    "question": "all time revenue",
+    "intent": "DYNAMIC",
+    "requestId": "3211"
+  },
+  {
+    "timestamp": "2026-03-20T11:33:47.804Z",
+    "question": "all time revenue",
+    "intent": "DYNAMIC",
+    "requestId": "7803"
+  },
+  {
+    "timestamp": "2026-03-20T11:34:55.091Z",
+    "question": "all time revenue",
+    "intent": "DYNAMIC",
+    "requestId": "5090"
+  },
+  {
+    "timestamp": "2026-03-20T11:35:21.375Z",
+    "question": "revenue in 2025",
+    "intent": "DYNAMIC",
+    "requestId": "1375"
+  },
+  {
+    "timestamp": "2026-03-20T11:36:49.821Z",
+    "question": "all time revenue",
+    "intent": "DYNAMIC",
+    "requestId": "9821"
+  },
+  {
+    "timestamp": "2026-03-20T11:37:29.148Z",
+    "question": "all time revenue",
+    "intent": "DYNAMIC",
+    "requestId": "9147"
+  },
+  {
+    "timestamp": "2026-03-20T11:38:04.773Z",
+    "question": "revenue in 2025",
+    "intent": "DYNAMIC",
+    "requestId": "4773"
+  },
+  {
+    "timestamp": "2026-03-20T11:39:19.176Z",
+    "question": "all time revenue",
+    "intent": "DYNAMIC",
+    "requestId": "9176"
+  },
+  {
+    "timestamp": "2026-03-20T11:40:01.575Z",
+    "question": "revenue in year 2025",
+    "intent": "DYNAMIC",
+    "requestId": "1575"
+  },
+  {
+    "timestamp": "2026-03-20T11:40:25.861Z",
+    "question": "revenue for current year",
+    "intent": "DYNAMIC",
+    "requestId": "5861"
+  },
+  {
+    "timestamp": "2026-03-20T11:40:50.719Z",
+    "question": "revenue for year 2024",
+    "intent": "DYNAMIC",
+    "requestId": "0719"
+  },
+  {
+    "timestamp": "2026-03-20T11:41:03.037Z",
+    "question": "top perfroming device in feb 2026",
+    "intent": "DYNAMIC",
+    "requestId": "3037"
+  },
+  {
+    "timestamp": "2026-03-20T11:41:21.139Z",
+    "question": "top perfroming device in jan 2026",
+    "intent": "DYNAMIC",
+    "requestId": "1139"
+  },
+  {
+    "timestamp": "2026-03-20T11:42:03.966Z",
+    "question": "Daily transaction volume last 30 days",
+    "intent": "DYNAMIC",
+    "requestId": "3966"
+  },
+  {
+    "timestamp": "2026-03-20T11:42:49.701Z",
+    "question": "Which 5 devices have the most transactions?",
+    "intent": "DYNAMIC",
+    "requestId": "9701"
+  },
+  {
+    "timestamp": "2026-03-20T11:43:17.889Z",
+    "question": "Show volume for UPI vs Card transactions",
+    "intent": "DYNAMIC",
+    "requestId": "7888"
   }
 ]

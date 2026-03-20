@@ -46,6 +46,8 @@ async function handleAskData(req, res, next) {
     // Enrich with intent and capabilities for the summarizer
     analytics.intent = plannerResult.intent;
     analytics.systemCapabilities = plannerResult.systemCapabilities;
+    analytics.parameters = plannerResult.parameters;
+    analytics.capabilityId = plannerResult.capabilityId;
 
     console.log("\nSending dynamic data response back to client.");
     console.timeEnd(`TotalRequest_${requestId}`);

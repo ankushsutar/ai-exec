@@ -267,8 +267,8 @@ function processAnalytics(data) {
 
     totalSum += val;
 
-    // Only populate chart if we have more than 1 row or explicitly distinct columns
-    if (data.length > 1 || keys.length > 1) {
+    // Only populate chart if we have more than 1 row (Time-series or multiple categories)
+    if (data.length > 1) {
       chartData.push({ label: label, value: val });
     }
 

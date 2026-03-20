@@ -46,26 +46,34 @@ Concise 1 sentence response.
 ASSISTANT:`;
   }
 
-  // 2. Data Present Case (Executive Insight Mode)
-  return `TASK: Provide a high-level EXECUTIVE INSIGHT based on the following data in 1-2 professional sentences.
+  const timeRange = analyticsData?.parameters?.timeRange || "the requested period";
+  const isTrend = (analyticsData?.chartData || []).length > 1;
+
+  // 2. Data Present Case (Business Analyst Insight Mode)
+  return `SYSTEM: You are a Senior Business Analyst. Your task is to provide a PRECISE, DATA-DRIVEN insight based ONLY on the provided dataset.
 
 CONTEXT:
-- Today's Date: ${dateStr}
-- User Question: "${question}"
+- User Query: "${question}"
+- Reporting Period: ${timeRange}
+- Comparison Data: NONE (Do NOT compare to past periods unless multiple months/years are listed below)
 
-DATA POINTS:
-- Metric: ${metric} (${isCurrency ? "Currency INR" : "Numeric Count"})
-${kpis ? `\nGLOBAL STATISTICS:\n${kpis}` : ""}
-${trend ? `\nTREND / TIME-SERIES DATA:\n${trend}` : ""}
+DATASET:
+- Main Metric: ${isCurrency ? "Total Revenue (₹)" : "Transaction Volume (Count)"}
+${kpis ? `\nGLOBAL AGGREGATES:\n${kpis}` : ""}
+${isTrend ? `\nTEMPORAL DATA POINTS (TREND):\n${trend}` : ""}
 
-STRICT INSIGHT RULES:
-1. GO BEYOND the table: Do not just list the values. Identify the PEAK value/date, or mention if there is a notable growth/drop.
-2. If it's a trend: Mention which period (day/month) was the strongest.
-3. Keep it brief: No generic intros like "I have analyzed...". Start directly with the insight.
-4. Professional Grounding: Use exactly the numbers and dates provided. If money: Use ₹ prefix.
-5. If the user asked "Why", and no reason is obvious, stick to identifying the data patterns.
+INSIGHT GUIDELINES (STRICT):
+1. NO HALLUCINATIONS: Do NOT invent growth percentages, historical averages, or "previous year" comparisons. Only report on the data provided in the GLOBAL AGGREGATES and TEMPORAL DATA POINTS lists.
+2. NO PERIOD CONFUSION: The "Reporting Period" is ${timeRange}. If the dataset contains individual dates, those are just timestamps—do NOT say the total is for a specific day if the user asked for a year.
+3. STRUCTURE: 
+   ${isTrend 
+     ? `- Summarize the total for ${timeRange} and identify the PEAK and TROUGH points within the trend.` 
+     : `- State the overall total for ${timeRange} as a definitive aggregate.`
+   }
+4. TONE: Professional, objective, and ultra-concise. No "fluff" or conversational intro.
+5. NO TECHNICAL LEAKAGE: Do NOT use phrases like "Metric: Numeric Count" or "Target Metric". 
 
-EXECUTIVE INSIGHT:`;
+ANALYST INSIGHT:`;
 }
 
 module.exports = { getSummaryPrompt };
