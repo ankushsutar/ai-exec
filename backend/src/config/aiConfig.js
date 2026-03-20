@@ -11,7 +11,7 @@ module.exports = {
   MODELS: {
     CLASSIFIER: "llama3.2",        // Upgraded for better instruction following in V3
     MAPPING: "llama3.2",           // Consistency for parameter mapping
-    SUMMARIZER: "qwen2.5:0.5b",    // Fastest for real-time summaries
+    SUMMARIZER: "llama3.2",    // Switched to Llama 3.2 for better instruction following and fewer hallucinations
     SQL_GEN: "llama3.2",           // Balanced for SQL
     MQL_GEN: "llama3.2",           // Balanced for MongoDB Aggregations
     COMPLEX_REASONER: "qwen2.5",   // More capable model for complex planning

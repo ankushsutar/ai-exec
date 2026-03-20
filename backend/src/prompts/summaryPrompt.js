@@ -47,33 +47,28 @@ ASSISTANT:`;
   }
 
   const timeRange = analyticsData?.parameters?.timeRange || "the requested period";
-  const isTrend = (analyticsData?.chartData || []).length > 1;
+  const isTrend = analyticsData?.isTrend;
+  const isCategorical = analyticsData?.isCategorical;
 
-  // 2. Data Present Case (Business Analyst Insight Mode)
-  return `SYSTEM: You are a Senior Business Analyst. Your task is to provide a PRECISE, DATA-DRIVEN insight based ONLY on the provided dataset.
+  const dataset = `TIME PERIOD: ${timeRange}
+METRIC TYPE: ${isCurrency ? "Currency (₹)" : "Count"}
+AGGREGATE DATA:
+${kpis || "N/A"}`;
 
-CONTEXT:
-- User Query: "${question}"
-- Reporting Period: ${timeRange}
-- Comparison Data: NONE (Do NOT compare to past periods unless multiple months/years are listed below)
+  return `SYSTEM: You are a Senior Data Analyst. Your goal is to provide a short, data-driven summary based ONLY on the dataset provided.
 
 DATASET:
-- Main Metric: ${isCurrency ? "Total Revenue (₹)" : "Transaction Volume (Count)"}
-${kpis ? `\nGLOBAL AGGREGATES:\n${kpis}` : ""}
-${isTrend ? `\nTEMPORAL DATA POINTS (TREND):\n${trend}` : ""}
+${dataset}
+${(isTrend || isCategorical) ? `\nDETAILED BREAKDOWN:\n${trend}` : ""}
 
-INSIGHT GUIDELINES (STRICT):
-1. NO HALLUCINATIONS: Do NOT invent growth percentages, historical averages, or "previous year" comparisons. Only report on the data provided in the GLOBAL AGGREGATES and TEMPORAL DATA POINTS lists.
-2. NO PERIOD CONFUSION: The "Reporting Period" is ${timeRange}. If the dataset contains individual dates, those are just timestamps—do NOT say the total is for a specific day if the user asked for a year.
-3. STRUCTURE: 
-   ${isTrend 
-     ? `- Summarize the total for ${timeRange} and identify the PEAK and TROUGH points within the trend.` 
-     : `- State the overall total for ${timeRange} as a definitive aggregate.`
-   }
-4. TONE: Professional, objective, and ultra-concise. No "fluff" or conversational intro.
-5. NO TECHNICAL LEAKAGE: Do NOT use phrases like "Metric: Numeric Count" or "Target Metric". 
+INSTRUCTIONS:
+1. Summarize the results in 1-2 professionally toned sentences.
+2. USE EXACT NUMBERS: Use the exact value strings from the data (e.g. "₹11,99,94,46,715" or "7,917,924"). 
+3. DO NOT SCALE: Do not convert numbers to "millions", "billions", "lakhs", or "crores". 
+4. DO NOT HALLUCINATE: Only mention values shown in the data.
+5. NO FILLER: Avoid phrases like "Based on the provided data".
 
-ANALYST INSIGHT:`;
+ANALYST SUMMARY:`;
 }
 
 module.exports = { getSummaryPrompt };

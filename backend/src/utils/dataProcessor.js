@@ -54,19 +54,30 @@ function processAnalytics(data) {
     }
 
     // 2. CURRENCY FORMATTING (txnAmt, amount, etc)
-    if (
+    const isCurrencyKey =
       key.toLowerCase().includes("amt") ||
       key.toLowerCase().includes("amount") ||
-      key.toLowerCase().includes("revenue")
-    ) {
+      key.toLowerCase().includes("revenue");
+
+    const isCountKey =
+      key.toLowerCase().includes("count") ||
+      key.toLowerCase().includes("volume") ||
+      key.toLowerCase().includes("total");
+
+    if (isCurrencyKey || isCountKey) {
       const num = parseFloat(val);
       if (!isNaN(num)) {
-        const currency = row.currency || row._currency || "INR";
-        return new Intl.NumberFormat("en-IN", {
-          style: "currency",
-          currency: currency,
-          maximumFractionDigits: 0,
-        }).format(num);
+        if (isCurrencyKey) {
+          const currency = row.currency || row._currency || "INR";
+          return new Intl.NumberFormat("en-IN", {
+            style: "currency",
+            currency: currency,
+            maximumFractionDigits: 0,
+          }).format(num);
+        } else {
+          // Plain number formatting for counts/volumes (no currency symbol)
+          return new Intl.NumberFormat("en-US").format(num); 
+        }
       }
     }
 
@@ -328,12 +339,21 @@ function processAnalytics(data) {
   const finalChartData =
     valueKey && valueKey.toLowerCase().includes("id") ? [] : chartData;
 
+  const isTimeLabel =
+    labelKey.toLowerCase().includes("date") ||
+    labelKey.toLowerCase().includes("time") ||
+    labelKey.toLowerCase().includes("day") ||
+    labelKey.toLowerCase().includes("month") ||
+    labelKey.toLowerCase().includes("hour");
+
   return {
     kpis,
     chartData: finalChartData,
     tableData: data,
     columns: Object.keys(data[0]),
     valueKey: valueKey,
+    isTrend: isTimeLabel && finalChartData.length > 1,
+    isCategorical: !isTimeLabel && finalChartData.length > 1,
   };
 }
 

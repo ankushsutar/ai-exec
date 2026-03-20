@@ -8,9 +8,24 @@ const EMBEDDING_URL = `${OLLAMA_BASE_URL}/api/embeddings`;
 
 async function getLLMSummaryStream(analyticsData, res, question = "") {
   try {
-    // Strip out the massive tableData payload to prevent LLM context overload and hallucination
+    const tableData = analyticsData?.tableData || [];
+    const kpis = analyticsData?.kpis || [];
+    const timeRange = analyticsData?.parameters?.timeRange || "the requested period";
+
+    // --- PROCEDURAL SUMMARY FALLBACK ---
+    // If it's a simple 1-row aggregate (e.g. Total Revenue, Count), generate it procedurally
+    // This avoids the 0.5b model's tendency to hallucinate scale (millions/billions) or repeat examples.
+    if (tableData.length === 1 && kpis.length > 0) {
+      const summaryParts = kpis.map(k => `${k.name}: ${k.value}`);
+      const proceduralSummary = `The result for "${question}" (${timeRange}) is: ${summaryParts.join(", ")}.`;
+      
+      res.write(JSON.stringify({ response: proceduralSummary, done: true }) + "\n");
+      return res.end();
+    }
+
+    // 1. Strip out the massive payload to prevent LLM context overload
     const sanitizedData = {
-      kpis: analyticsData?.kpis || [],
+      kpis: kpis,
       chartData: analyticsData?.chartData || [],
       metricName: analyticsData?.valueKey || "value",
     };
@@ -21,7 +36,7 @@ async function getLLMSummaryStream(analyticsData, res, question = "") {
     const response = await axios.post(
       config.ollamaUrl,
       {
-        model: AI_CONFIG.MODELS.SUMMARIZER, // Summaries remain on the fastest model
+        model: AI_CONFIG.MODELS.SUMMARIZER, 
         prompt: prompt,
         stream: true,
         options: {
@@ -30,7 +45,7 @@ async function getLLMSummaryStream(analyticsData, res, question = "") {
           top_p: 0.1,
         },
         keep_alive: 0,
-        timeout: AI_CONFIG.TIMEOUTS.SUMMARY, // 30 second timeout
+        timeout: AI_CONFIG.TIMEOUTS.SUMMARY, 
       },
       {
         responseType: "stream",
