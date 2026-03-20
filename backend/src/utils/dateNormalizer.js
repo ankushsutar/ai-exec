@@ -56,14 +56,28 @@ function normalizeDateRange(timeStr) {
     return { start, end };
   }
 
-  // 4. Specific Year (e.g. "in 2024")
-  const yearMatch = q.match(/\b(20\d{2})\b/);
-  if (yearMatch) {
-    const year = parseInt(yearMatch[1], 10);
-    start = new Date(Date.UTC(year, 0, 1));
-    end = new Date(Date.UTC(year, 11, 31, 23, 59, 59, 999));
+  // 4. Specific Expressions (this month, this week, this year)
+  if (q.includes("this month") || q.includes("current month")) {
+    start = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
+    end = new Date(now);
     return { start, end };
   }
+
+  if (q.includes("this week")) {
+    const day = now.getUTCDay();
+    const diff = now.getUTCDate() - day + (day === 0 ? -6 : 1);
+    start = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), diff, 0, 0, 0, 0));
+    end = new Date(now);
+    return { start, end };
+  }
+
+  if (q.includes("this year")) {
+    start = new Date(Date.UTC(now.getUTCFullYear(), 0, 1));
+    end = new Date(now);
+    return { start, end };
+  }
+
+  // 5. Specific Year (e.g. "in 2024")
 
   // Default: Fallback to last 30 days if unrecognized but mentions "time"
   start = new Date();

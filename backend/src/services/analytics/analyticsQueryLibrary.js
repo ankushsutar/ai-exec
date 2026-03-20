@@ -871,7 +871,7 @@ const analyticsQueryLibrary = {
     },
   ],
   // 35 Generalized Aggregate (Dynamic Dimensions & Metrics)
-  getGeneralizedAggregate: (metric = "revenue", dimension = "deviceId", threshold = null, operator = "gt", limit = 10, range = null) => {
+  getGeneralizedAggregate: (metric = "revenue", dimension = "deviceId", threshold = null, operator = "gt", limit = null, range = null) => {
     const match = { actionStatus: 1 };
     const dateFilter = analyticsQueryLibrary._getRangeMatch(range);
     if (dateFilter) match.createdAt = dateFilter;
@@ -885,7 +885,15 @@ const analyticsQueryLibrary = {
       latency: { $avg: "$tMsgTimeElapsed" },
     };
 
-    const groupField = dimension === "hour" ? { hour: { $hour: "$createdAt" } } : `$${dimension}`;
+    const groupFieldMap = {
+      hour: { $hour: "$createdAt" },
+      day: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+      week: { $week: "$createdAt" },
+      month: { $dateToString: { format: "%Y-%m", date: "$createdAt" } },
+      dayOfWeek: { $dayOfWeek: "$createdAt" },
+    };
+
+    const groupField = groupFieldMap[dimension] || `$${dimension}`;
     const valueKey = metric === "revenue" ? "revenue" : metric === "volume" ? "count" : metric;
 
     const pipeline = [
@@ -905,13 +913,25 @@ const analyticsQueryLibrary = {
       pipeline.push({ $match: { [valueKey]: { [mongoOp]: Number(threshold) } } });
     }
 
-    pipeline.push({ $sort: { [valueKey]: -1 } });
-    if (limit && limit !== "null") pipeline.push({ $limit: Number(limit) });
+    // Dynamic Sort: Chronological for trends, Descending Value for rankings
+    const isTemporal = !!groupFieldMap[dimension];
+    if (isTemporal) {
+      pipeline.push({ $sort: { _id: 1 } }); // Chronological
+    } else {
+      pipeline.push({ $sort: { [valueKey]: -1 } }); // Highest first
+    }
+
+    // Skip limit for temporal trends to show full chart, unless it's a Top-N query
+    const shouldLimit = !isTemporal || (limit && limit !== "null" && limit < 100);
+    if (shouldLimit && limit && limit !== "null") {
+      pipeline.push({ $limit: Number(limit) });
+    }
 
     pipeline.push({
       $project: {
         _id: 0,
         [dimension]: "$_id",
+        label: { $ifNull: ["$_id", "Total"] },
         [valueKey]: 1,
         date: "$lastDate",
       },

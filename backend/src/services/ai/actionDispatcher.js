@@ -43,7 +43,22 @@ async function dispatchAction(question) {
     // 3. EXECUTE CAPABILITY
     let capability = getCapabilityById(result.actionId);
     
-    // FALLBACK: If UNKNOWN or DYNAMIC_QUERY, use mongoAgent to generate query
+    // Explicitly handle UNKNOWN (Out of Scope)
+    if (result.actionId === "UNKNOWN") {
+      console.log(`[Action Dispatcher] Query is out-of-scope (UNKNOWN). Returning capability guide.`);
+      return { 
+        intent: "UNKNOWN", 
+        results: [], 
+        systemCapabilities: [
+          "Revenue Analysis (Totals, Trends, Daily/Monthly)",
+          "Transaction Volume (Counts, by Mode, by Device)",
+          "Device Performance (Best/Worst devices, Failures)",
+          "Technical Metrics (Audio Latency, Success Rates)"
+        ]
+      };
+    }
+
+    // FALLBACK: If DYNAMIC_QUERY, use mongoAgent to generate query
     if (!capability || result.actionId === "DYNAMIC_QUERY") {
       console.log(`[Action Dispatcher] No pre-built capability for "${result.actionId}". Falling back to Ad-hoc Analyst...`);
       try {
@@ -59,7 +74,15 @@ async function dispatchAction(question) {
         };
       } catch (genError) {
         console.error("[Action Dispatcher] Ad-hoc generation failed:", genError.message);
-        return { intent: "UNKNOWN", results: [] };
+        return { 
+          intent: "UNKNOWN", 
+          results: [], 
+          systemCapabilities: [
+            "Revenue Analysis",
+            "Transaction Volume",
+            "Device Performance"
+          ]
+        };
       }
     }
 

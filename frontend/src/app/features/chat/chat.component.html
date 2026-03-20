@@ -45,7 +45,7 @@
 
           <!-- Chart Area -->
           <div
-            *ngIf="msg.data?.chartData?.length && msg.data!.columns!.length === 2"
+            *ngIf="msg.data?.chartData?.length"
             class="bg-white p-3 rounded-xl shadow-sm border border-gray-100 mt-2"
           >
             <highcharts-chart

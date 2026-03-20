@@ -182,27 +182,52 @@ function processAnalytics(data) {
     { regex: /amt/i, score: 75 },
     { regex: /total/i, score: 50 },
     { regex: /sum/i, score: 40 },
-    { regex: /volume/i, score: 10 },
-    { regex: /count/i, score: 5 },
+    { regex: /volume/i, score: 60 },
+    { regex: /count/i, score: 55 },
     { regex: /id/i, score: 1 },
+  ];
+
+  const LABEL_PRIORITIES = [
+    { regex: /day/i, score: 100 },
+    { regex: /month/i, score: 90 },
+    { regex: /date/i, score: 80 },
+    { regex: /hour/i, score: 70 },
+    { regex: /deviceId/i, score: 50 },
+    { regex: /mode/i, score: 40 },
+    { regex: /label/i, score: 30 },
   ];
 
   let labelKey = null;
   let valueKey = null;
+  let bestLabelScore = -1;
   let bestValueScore = -1;
 
   for (const key of keys) {
     const val = firstRow[key];
     const lowerKey = key.toLowerCase();
 
-    // Label detection
-    if (!labelKey && typeof val === "string" && isNaN(Number(val))) {
-      labelKey = key;
+    // 1. Label detection with priority scoring
+    if (typeof val === "string" || typeof val === "number") {
+      let score = 5; // Default score for strings
+      for (const p of LABEL_PRIORITIES) {
+        if (p.regex.test(key)) {
+          score = p.score;
+          break;
+        }
+      }
+      if (score > bestLabelScore) {
+        bestLabelScore = score;
+        labelKey = key;
+      }
     }
 
-    // Value detection with priority scoring
-    if (!isNaN(Number(val)) || typeof val === "number") {
-      let score = 20; // Default base score for any numeric field
+    // 2. Value detection with priority scoring (must be numeric)
+    const isDateLike = lowerKey.includes("date") || lowerKey.includes("time") || lowerKey.includes("day") || lowerKey.includes("month");
+    if (!isDateLike && (!isNaN(Number(val)) || typeof val === "number")) {
+      // Don't use the same field as both label and value if possible
+      if (key === labelKey && bestLabelScore > 50) continue; 
+
+      let score = 20; 
       for (const p of PRIORITIES) {
         if (p.regex.test(key)) {
           score = p.score;
@@ -223,6 +248,7 @@ function processAnalytics(data) {
   if (!valueKey && keys.length > 0) valueKey = keys[0];
 
   if (!labelKey || !valueKey) {
+    console.warn(`[Data Processor] Identification Failed. Keys: ${keys.join(", ")}`);
     return {
       summary: "Could not identify usable columns for analysis",
       kpis: [],
@@ -231,6 +257,8 @@ function processAnalytics(data) {
       columns: keys,
     };
   }
+
+  console.log(`[Data Processor] Analysis Keys - Label: ${labelKey}, Value: ${valueKey}`);
 
   data.forEach((row) => {
     const rawVal = row[valueKey];

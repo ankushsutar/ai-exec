@@ -125,51 +125,43 @@ export class ChatComponent implements OnInit, AfterViewChecked {
                 this.scrollToBottom();
 
                 // 3. Request the LLM Summary in the background (Streaming)
-                if (dataResponse.intent !== 'UNKNOWN') {
-                    // Start with an empty summary so we can append
-                    if (this.messages[msgIndex] && this.messages[msgIndex].data) {
-                        this.messages[msgIndex].data!.summary = '';
-                    }
-
-                    this.apiService.askSummaryStream(dataResponse.rawAnalytics, currentQuestion, this.abortController!.signal).subscribe({
-                        next: (chunk: string) => {
-                            // Append each new word/token to the summary in real-time
-                            if (this.messages[msgIndex] && this.messages[msgIndex].data) {
-                                this.messages[msgIndex].data!.summary += chunk;
-                                this.cdr.detectChanges(); // Tell Angular to render new chunk
-                                this.scrollToBottom();
-                            }
-                        },
-                        error: (err: any) => {
-                            this.isLoading = false;
-                            console.error('LLM Summary stream error:', err);
-                            if (this.messages[msgIndex] && this.messages[msgIndex].data) {
-                                this.messages[msgIndex].data!.summary += '\n\n[Analysis generation failed or timed out.]';
-                                this.cdr.detectChanges();
-                            }
-                        },
-                        complete: () => {
-                            this.isLoading = false;
-                            // When stream finishes, set final confidence score
-                            if (this.messages[msgIndex] && this.messages[msgIndex].data) {
-                                this.messages[msgIndex].data!.confidence = 0.95; // Hardcoded default confidence
-
-                                // Explicitly mark aborted if the user stopped it early
-                                if (this.abortController?.signal?.aborted) {
-                                    this.messages[msgIndex].data!.summary += ' [Aborted by User]';
-                                }
-
-                                this.cdr.detectChanges();
-                            }
-                        }
-                    });
-                } else {
-                    this.isLoading = false;
-                    if (this.messages[msgIndex] && this.messages[msgIndex].data) {
-                        this.messages[msgIndex].data!.summary = "I could not understand the question. Try asking 'Total revenue for Jan 2025' or 'Show top 5 transactions above 10000'.";
-                        this.cdr.detectChanges();
-                    }
+                // Start with an empty summary so we can append
+                if (this.messages[msgIndex] && this.messages[msgIndex].data) {
+                    this.messages[msgIndex].data!.summary = '';
                 }
+
+                this.apiService.askSummaryStream(dataResponse, currentQuestion, this.abortController!.signal).subscribe({
+                    next: (chunk: string) => {
+                        // Append each new word/token to the summary in real-time
+                        if (this.messages[msgIndex] && this.messages[msgIndex].data) {
+                            this.messages[msgIndex].data!.summary += chunk;
+                            this.cdr.detectChanges(); // Tell Angular to render new chunk
+                            this.scrollToBottom();
+                        }
+                    },
+                    error: (err: any) => {
+                        this.isLoading = false;
+                        console.error('LLM Summary stream error:', err);
+                        if (this.messages[msgIndex] && this.messages[msgIndex].data) {
+                            this.messages[msgIndex].data!.summary += '\n\n[Analysis generation failed or timed out.]';
+                            this.cdr.detectChanges();
+                        }
+                    },
+                    complete: () => {
+                        this.isLoading = false;
+                        // When stream finishes, set final confidence score
+                        if (this.messages[msgIndex] && this.messages[msgIndex].data) {
+                            this.messages[msgIndex].data!.confidence = 0.95; // Hardcoded default confidence
+
+                            // Explicitly mark aborted if the user stopped it early
+                            if (this.abortController?.signal?.aborted) {
+                                this.messages[msgIndex].data!.summary += ' [Aborted by User]';
+                            }
+
+                            this.cdr.detectChanges();
+                        }
+                    }
+                });
             },
             error: (err: any) => {
                 this.messages.push({
@@ -195,28 +187,57 @@ export class ChatComponent implements OnInit, AfterViewChecked {
         const categories = chartData.map(d => d.label);
         const data = chartData.map(d => d.value);
 
+        // Use 'column' (Bar Chart) as requested for all analytics
+        const type: any = 'column';
+
         return {
-            chart: { type: 'column', style: { fontFamily: 'inherit' }, borderRadius: 8 },
+            chart: {
+                type: type,
+                style: { fontFamily: 'inherit' },
+                borderRadius: 12,
+                backgroundColor: '#ffffff'
+            },
             title: { text: '' },
-            xAxis: { categories, crosshair: true },
-            yAxis: { min: 0, title: { text: 'Value' } },
+            xAxis: {
+                categories,
+                crosshair: true,
+                labels: {
+                    style: { fontSize: '10px' },
+                    rotation: chartData.length > 10 ? -45 : 0
+                }
+            },
+            yAxis: {
+                min: 0,
+                title: { text: undefined },
+                gridLineColor: '#f1f5f9'
+            },
             tooltip: {
                 headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
                 pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td><td style="padding:0"><b>{point.y}</b></td></tr>',
                 footerFormat: '</table>',
                 shared: true,
-                useHTML: true
+                useHTML: true,
+                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                borderRadius: 8,
+                borderWidth: 0,
+                shadow: true
             },
             plotOptions: {
-                column: { pointPadding: 0.2, borderWidth: 0, borderRadius: 4 }
+                column: { 
+                    pointPadding: 0.2, 
+                    borderWidth: 0, 
+                    borderRadius: 4,
+                    color: '#2563eb' // Primary Blue
+                }
             },
             series: [{
                 type: 'column',
-                name: 'Metric',
+                name: 'Value',
                 data: data,
                 color: '#2563eb'
             }],
-            credits: { enabled: false }
+            credits: { enabled: false },
+            legend: { enabled: false }
         };
     }
 }

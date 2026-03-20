@@ -14,7 +14,7 @@ async function planAndExecute(question) {
   
   if (actionResult.intent === "ANALYTICS_QUERY" && actionResult.results?.length > 0) {
     console.log(`[Query Planner] Analytics Success: ${actionResult.capabilityId}`);
-    return actionResult.results;
+    return actionResult;
   }
 
   // 2. MERCHANT OR FAIL-OVER LOGIC
@@ -28,11 +28,14 @@ async function planAndExecute(question) {
     
     if (results && results.length > 0) {
       console.log(`[Query Planner] Found ${results.length} specific devices for merchant: ${merchant}`);
-      // In a real system, we'd further plan for these devices.
+      // Return these if no analytics results exist
+      if (!actionResult.results || actionResult.results.length === 0) {
+        actionResult.results = results;
+      }
     }
   }
 
-  return actionResult.results || [];
+  return actionResult;
 }
 
 module.exports = { planAndExecute };
